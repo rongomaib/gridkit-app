@@ -1,0 +1,6 @@
+packages:
+  - 'dev/*'
+  - 'util/*'
+  - 'ui/*'
+  - 'parts/*'
+  - 'apps/*'

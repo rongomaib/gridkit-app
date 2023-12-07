@@ -1,0 +1,8 @@
+{
+  "extends": "@villagekit/tsconfig/react-library.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "include": ["src", "stories"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,38 @@
+{
+  "name": "@villagekit/storybook",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "storybook dev -p 6006",
+    "build": "storybook build",
+    "lint": "biome lint ."
+  },
+  "dependencies": {
+    "@fontsource/bitter": "^5.0.15",
+    "@fontsource/fredoka-one": "^5.0.5",
+    "@villagekit/tsconfig": "workspace:*",
+    "@villagekit/ui": "workspace:*",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "use-query-params": "^2.2.1"
+  },
+  "devDependencies": {
+    "@storybook/addon-essentials": "^7.6.3",
+    "@storybook/addon-interactions": "^7.6.3",
+    "@storybook/addon-links": "^7.6.3",
+    "@storybook/blocks": "^7.6.3",
+    "@storybook/cli": "^7.6.3",
+    "@storybook/react": "^7.6.3",
+    "@storybook/react-vite": "^7.6.3",
+    "@storybook/test": "^7.6.3",
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@typescript-eslint/eslint-plugin": "^6.10.0",
+    "@typescript-eslint/parser": "^6.10.0",
+    "@vitejs/plugin-react-swc": "^3.5.0",
+    "storybook": "^7.6.3",
+    "typescript": "^5.2.2",
+    "vite": "^5.0.0"
+  }
+}

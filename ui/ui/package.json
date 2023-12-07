@@ -1,0 +1,43 @@
+{
+  "name": "@villagekit/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "source": "src/index.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "deps": "depcheck",
+    "build": "tsup src --dts",
+    "lint": "biome lint ."
+  },
+  "dependencies": {
+    "@chakra-ui/react": "^2.8.0",
+    "@chakra-ui/react-types": "^2.0.6",
+    "@chakra-ui/theme": "^2.2.4",
+    "@chakra-ui/utils": "^2.0.14",
+    "@ctrl/tinycolor": "^3.4.1",
+    "@storybook/react": "^7.6.3",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^20.5.2",
+    "@types/react": "^18.2.0",
+    "lodash-es": "^4.17.21",
+    "react": "^18.2.0",
+    "react-icons": "^4.12.0"
+  },
+  "devDependencies": {
+    "@villagekit/tsconfig": "workspace:*",
+    "tsup": "^8.0.1",
+    "typescript": "^5.2.2"
+  }
+}

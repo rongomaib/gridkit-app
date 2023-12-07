@@ -1,0 +1,3 @@
+{
+  "extends": "@villagekit/tsconfig/base.json"
+}
