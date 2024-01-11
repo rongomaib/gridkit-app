@@ -1,0 +1,42 @@
+{
+  "name": "@villagekit/part-gridpanel",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "source": "src/index.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build:pkg": "tsup src --dts",
+    "lint": "biome lint ."
+  },
+  "dependencies": {
+    "@types/react": "^18.2.37",
+    "@types/three": "^0.150.1",
+    "@villagekit/part": "workspace:*",
+    "@villagekit/part-base": "workspace:*",
+    "@villagekit/part-base-grid": "workspace:*",
+    "@villagekit/ui": "workspace:*",
+    "@villagekit/util-math": "workspace:*",
+    "@villagekit/util-units": "workspace:*",
+    "deadbeef": "github:ahdinosaur/deadbeef#fix-typescript-declarations"
+  },
+  "devDependencies": {
+    "@storybook/react": "^7.6.3"
+  },
+  "peerDependencies": {
+    "@react-three/fiber": "^8.12.0",
+    "react": "18.2.0",
+    "three": "^0.150.1"
+  }
+}

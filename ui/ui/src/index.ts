@@ -58,6 +58,20 @@ export { CSSReset } from '@chakra-ui/react'
 // @chakra-ui/focus-lock
 
 // @chakra-ui/form-control
+export type {
+  FormLabelProps,
+  FormControlProps,
+  FormControlOptions,
+  FormHelperTextProps,
+  FormErrorMessageProps,
+} from '@chakra-ui/react'
+export {
+  FormLabel,
+  FormControl,
+  FormErrorIcon,
+  FormHelperText,
+  FormErrorMessage,
+} from '@chakra-ui/react'
 
 // @chakra-ui/hooks
 export type {
@@ -105,6 +119,8 @@ export type {
   AspectRatioProps,
   LinkBoxProps,
   LinkOverlayProps,
+  ListProps,
+  ListItemProps,
 } from '@chakra-ui/react'
 export {
   Box,
@@ -115,6 +131,11 @@ export {
   Grid,
   Wrap,
   AspectRatio,
+  List,
+  ListItem,
+  ListIcon,
+  UnorderedList,
+  OrderedList,
   LinkBox,
   LinkOverlay,
 } from '@chakra-ui/react'
@@ -165,7 +186,7 @@ export { Select } from './components/Select.js'
 
 // @chakra-ui/slider
 export type { SliderProps } from './components/Slider.js'
-export { Slider } from './components/Slider.js'
+export { Slider, SliderTrack, SliderFilledTrack, SliderThumb } from './components/Slider.js'
 
 // @chakra-ui/spinner
 export type { SpinnerProps } from './components/Spinner.js'

@@ -3,4 +3,5 @@ packages:
   - 'util/*'
   - 'ui/*'
   - 'parts/*'
+  - 'products/*'
   - 'apps/*'

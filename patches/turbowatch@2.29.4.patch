@@ -1,0 +1,12 @@
+diff --git a/dist/backends/ChokidarWatcher.js b/dist/backends/ChokidarWatcher.js
+index e6e49ea65ef7a3e83d748d77b53cb9df98a785aa..a4fab4cacd2299bb2f877c2f0362d42273c794ee 100644
+--- a/dist/backends/ChokidarWatcher.js
++++ b/dist/backends/ChokidarWatcher.js
+@@ -38,6 +38,7 @@ class ChokidarWatcher extends FileWatchingBackend_1.FileWatchingBackend {
+             log.trace('indexed %s %s...', discoveredFileCount.toLocaleString('en-US'), discoveredFileCount === 1 ? 'file' : 'files');
+         }, 5000);
+         this.chokidar = chokidar.watch(project, {
++            ignored: ['**/node_modules/**'],
+             awaitWriteFinish: false,
+             followSymlinks: true,
+         });

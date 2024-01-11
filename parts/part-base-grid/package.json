@@ -1,0 +1,33 @@
+{
+  "name": "@villagekit/part-base-grid",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "source": "src/index.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build:pkg": "tsup src --dts",
+    "lint": "biome lint ."
+  },
+  "dependencies": {
+    "@types/react": "^18.2.37",
+    "@villagekit/part-base": "workspace:*",
+    "@villagekit/util-units": "workspace:*",
+    "@villagekit/ui": "workspace:*",
+    "constate": "^3.3.2"
+  },
+  "peerDependencies": {
+    "react": "18.2.0"
+  }
+}

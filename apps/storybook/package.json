@@ -4,14 +4,18 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "storybook dev -p 6006",
-    "build": "storybook build",
+    "dev:app": "storybook dev -p 6006",
+    "build:app": "storybook build",
     "lint": "biome lint ."
   },
   "dependencies": {
     "@fontsource/bitter": "^5.0.15",
     "@fontsource/fredoka-one": "^5.0.5",
     "@villagekit/tsconfig": "workspace:*",
+    "@villagekit/parameters": "workspace:*",
+    "@villagekit/part-gridbeam": "workspace:*",
+    "@villagekit/part-gridpanel": "workspace:*",
+    "@villagekit/sandbox": "workspace:*",
     "@villagekit/ui": "workspace:*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",

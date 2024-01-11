@@ -1,0 +1,25 @@
+{
+  "name": "@villagekit/util-units",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "source": "src/index.ts",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "deps": "depcheck",
+    "build:pkg": "tsup src --dts",
+    "lint": "biome lint ."
+  },
+  "dependencies": {}
+}
