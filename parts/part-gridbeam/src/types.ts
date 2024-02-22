@@ -4,6 +4,8 @@ import { AxisId, Direction, Location, ScaleX } from '@villagekit/util-math'
 import { Length } from '@villagekit/util-units'
 import { Quaternion } from 'three'
 
+export type GridBeamType = 'gridbeam'
+
 export interface GridBeamVariant {
   id: string
   gridLength: Length
@@ -16,7 +18,7 @@ export interface GridBeamVariant {
 }
 
 export interface GridBeamState extends BaseGridPartState {
-  type: 'gridbeam'
+  type: GridBeamType
   variant: GridBeamVariant
   axis: AxisId
   locationInGrids: Location
@@ -42,7 +44,7 @@ export interface GridBeamGlValue extends GridBeamState {
 }
 
 export interface GridBeamSummaryValue extends BasePartSummaryValue {
-  type: GridBeamState['type']
+  type: GridBeamType
   variant: GridBeamVariant
   lengthInGrids: ScaleX
 }

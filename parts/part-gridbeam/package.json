@@ -31,7 +31,8 @@
     "@villagekit/part-base-grid": "workspace:*",
     "@villagekit/ui": "workspace:*",
     "@villagekit/util-math": "workspace:*",
-    "@villagekit/util-units": "workspace:*"
+    "@villagekit/util-units": "workspace:*",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@storybook/react": "^7.6.3"

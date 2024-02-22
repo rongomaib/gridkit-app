@@ -12,6 +12,8 @@ Open source software to power [Village Kit](https://villagekit.com/):
 
 #### `@villagekit/designer`: A Storybook app
 
+- [Pre-requisites](https://tauri.app/v1/guides/getting-started/prerequisites)
+
 ### `ui`: User interface
 
 #### `@villagekit/ui`: Base Component Library

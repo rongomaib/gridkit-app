@@ -1,0 +1,12 @@
+{
+  "extends": "@villagekit/tsconfig/react-library.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "allowJs": true,
+    "baseUrl": "src/",
+    "paths": {
+      "@/*": ["*"]
+    }
+  },
+  "include": ["src"]
+}

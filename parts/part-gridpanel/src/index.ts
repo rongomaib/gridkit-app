@@ -11,8 +11,9 @@ import {
   calculateSummaryValue,
 } from './methods'
 import { PartsSummary } from './summary'
-import { GridPanelGlValue, GridPanelState, GridPanelSummaryValue } from './types'
-import { variants } from './variants'
+import { GridPanelGlValue, GridPanelState, GridPanelSummaryValue, GridPanelType } from './types'
+import { gridPanelVariants } from './variants'
+import { gridPanelSchemas } from './schemas'
 
 export * from './svg'
 export * from './types'
@@ -21,6 +22,9 @@ export * from './variants'
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   namespace VK {
+    interface EveryPartTypeId {
+      gridpanel: GridPanelType
+    }
     interface EveryPartCreator {
       gridpanel: GridPanelCreator
     }
@@ -28,7 +32,7 @@ declare global {
       gridpanel: GridPanelState
     }
     interface EveryPartVariants {
-      gridpanel: typeof variants
+      gridpanel: typeof gridPanelVariants
     }
     interface EveryPartGlValue {
       gridpanel: GridPanelGlValue
@@ -54,5 +58,6 @@ registerPartModule({
     calculateSummaryKey,
     calculateSummaryValue,
   },
-  variants,
+  variants: gridPanelVariants,
+  schemas: gridPanelSchemas,
 })

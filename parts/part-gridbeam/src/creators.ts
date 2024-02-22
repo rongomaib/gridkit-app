@@ -2,7 +2,7 @@ import { BasePartCreator } from '@villagekit/part-base'
 import { AxisId, Location } from '@villagekit/util-math'
 
 import { GridBeamState } from './types'
-import { variants } from './variants'
+import { gridBeamVariants } from './variants'
 
 export type GridBeamCreator = GridBeamX | GridBeamY | GridBeamZ
 
@@ -10,7 +10,7 @@ const getDefaultVariantId = () => '40mm:8mm:douglas-fir'
 
 interface BaseOptions extends BasePartCreator {
   id: string
-  variant?: keyof typeof variants
+  variant?: keyof typeof gridBeamVariants
 }
 
 interface GridBeamX extends BaseOptions {
@@ -26,7 +26,7 @@ function calculateXState(creator: GridBeamX): GridBeamState {
   const axis = AxisId.X
   const locationInGrids: Location = [Math.min(x[0], x[1]), y, z]
   const lengthInGrids = Math.abs(x[0] - x[1])
-  const variant = variants[variantId]
+  const variant = gridBeamVariants[variantId]
 
   if (variant === undefined) throw new Error(`invalid gridbeam variant: ${variantId}`)
 
@@ -52,7 +52,7 @@ function calculateYState(creator: GridBeamY): GridBeamState {
   const axis = AxisId.Y
   const locationInGrids: Location = [x, Math.min(y[0], y[1]), z]
   const lengthInGrids = Math.abs(y[0] - y[1])
-  const variant = variants[variantId]
+  const variant = gridBeamVariants[variantId]
 
   if (variant === undefined) throw new Error(`invalid gridbeam variant: ${variantId}`)
 
@@ -78,7 +78,7 @@ function calculateZState(creator: GridBeamZ): GridBeamState {
   const axis = AxisId.Z
   const locationInGrids: Location = [x, y, Math.min(z[0], z[1])]
   const lengthInGrids = Math.abs(z[0] - z[1])
-  const variant = variants[variantId]
+  const variant = gridBeamVariants[variantId]
 
   if (variant === undefined) throw new Error(`invalid gridbeam variant: ${variantId}`)
 

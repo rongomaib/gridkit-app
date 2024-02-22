@@ -2,15 +2,15 @@ import { BasePartCreator } from '@villagekit/part-base'
 import { AxisId } from '@villagekit/util-math'
 
 import { GridPanelState } from './types'
-import { variants } from './variants'
+import { gridPanelVariants } from './variants'
 
 export type GridPanelCreator = GridPanelXY | GridPanelYZ | GridPanelXZ
 
-const getDefaultVariantId = (): keyof typeof variants => '40mm:8mm:12mm:douglas-fir'
+const getDefaultVariantId = (): keyof typeof gridPanelVariants => '40mm:8mm:12mm:douglas-fir'
 
 interface BaseGridPanelOptions extends BasePartCreator {
   id: string
-  variant?: keyof typeof variants
+  variant?: keyof typeof gridPanelVariants
   fit?: GridPanelState['fit']
   holes?: GridPanelState['holes']
 }
@@ -33,7 +33,7 @@ function calculateXYState(creator: GridPanelXY): GridPanelState {
   const crossLength = Math.abs(y[0] - y[1])
   const thicknessAxis = AxisId.Z
   const thicknessStart = z
-  const variant = variants[variantId]
+  const variant = gridPanelVariants[variantId]
 
   if (variant === undefined) throw new Error(`invalid gridpanel variant: ${variantId}`)
 
@@ -72,7 +72,7 @@ function calculateYZState(creator: GridPanelYZ): GridPanelState {
   const crossLength = Math.abs(z[0] - z[1])
   const thicknessAxis = AxisId.X
   const thicknessStart = x
-  const variant = variants[variantId]
+  const variant = gridPanelVariants[variantId]
 
   if (variant === undefined) throw new Error(`invalid gridpanel variant: ${variantId}`)
 
@@ -111,7 +111,7 @@ function calculateXZState(creator: GridPanelXZ): GridPanelState {
   const crossLength = Math.abs(z[0] - z[1])
   const thicknessAxis = AxisId.Y
   const thicknessStart = y
-  const variant = variants[variantId]
+  const variant = gridPanelVariants[variantId]
 
   if (variant === undefined) throw new Error(`invalid gridpanel variant: ${variantId}`)
 

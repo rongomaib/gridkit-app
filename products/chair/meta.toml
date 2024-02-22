@@ -1,0 +1,8 @@
+[product]
+id = "chair"
+label = "Chair"
+description = "A conventional 4 legged chair. Useful for sitting at a desk, table, or to help you reach that top shelf."
+categories = ["seating"]
+
+type = "assembly"
+entry = "./assembly.ts"

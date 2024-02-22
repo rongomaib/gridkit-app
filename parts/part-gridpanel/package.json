@@ -29,7 +29,8 @@
     "@villagekit/ui": "workspace:*",
     "@villagekit/util-math": "workspace:*",
     "@villagekit/util-units": "workspace:*",
-    "deadbeef": "github:ahdinosaur/deadbeef#fix-typescript-declarations"
+    "deadbeef": "github:ahdinosaur/deadbeef#fix-typescript-declarations",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@storybook/react": "^7.6.3"

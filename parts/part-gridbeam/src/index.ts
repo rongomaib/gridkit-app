@@ -11,8 +11,9 @@ import {
   calculateSummaryValue,
 } from './methods'
 import { PartsSummary } from './summary'
-import { GridBeamGlValue, GridBeamState, GridBeamSummaryValue } from './types'
-import { variants } from './variants'
+import { GridBeamGlValue, GridBeamState, GridBeamSummaryValue, GridBeamType } from './types'
+import { gridBeamVariants } from './variants'
+import { gridBeamSchemas } from './schemas'
 
 export * from './svg'
 export * from './types'
@@ -21,6 +22,9 @@ export * from './variants'
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   namespace VK {
+    interface EveryPartTypeId {
+      gridbeam: GridBeamType
+    }
     interface EveryPartCreator {
       gridbeam: GridBeamCreator
     }
@@ -28,7 +32,7 @@ declare global {
       gridbeam: GridBeamState
     }
     interface EveryPartVariants {
-      gridbeam: typeof variants
+      gridbeam: typeof gridBeamVariants
     }
     interface EveryPartGlValue {
       gridbeam: GridBeamGlValue
@@ -54,5 +58,6 @@ registerPartModule({
     calculateSummaryKey,
     calculateSummaryValue,
   },
-  variants,
+  variants: gridBeamVariants,
+  schemas: gridBeamSchemas,
 })
