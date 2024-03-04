@@ -12,7 +12,7 @@
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "lint": "biome lint .",
-    "editor:types": "dts-bundle-generator --project '../../tsconfig.json' --external-inlines 'zod' --inline-declare-global --export-referenced-types -o ./src/components/editor/types.d.ts --no-check ./src/components/editor/types.ts"
+    "editor:types": "dts-bundle-generator --project '../../tsconfig.json' --external-inlines 'zod' --inline-declare-global --export-referenced-types -o ./src/editor/types.d.ts --no-check ./src/editor/types.ts"
   },
   "devDependencies": {
     "@electron-forge/cli": "^7.2.0",
@@ -40,7 +40,6 @@
     "@codemirror/state": "^6.4.1",
     "@codemirror/view": "^6.24.0",
     "@electron-forge/shared-types": "^7.2.0",
-    "@swc/wasm-web": "^1.4.2",
     "@tanstack/react-query": "^4",
     "@tanstack/react-query-devtools": "^4",
     "@trpc/client": "^10",
@@ -59,6 +58,7 @@
     "add": "^2.0.6",
     "codemirror": "^6.0.1",
     "codemirror-theme-catppuccin": "^0.3.0",
+    "comlink": "^4.4.1",
     "constate": "^3.3.2",
     "electron-squirrel-startup": "^1.0.0",
     "electron-trpc": "^0.5.2",

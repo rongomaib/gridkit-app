@@ -25,8 +25,8 @@ const gridPanelXZSchema = z.object({
   fit: gridPanelFitSchema.optional(),
   holes: gridPanelHolesSchema.optional(),
   type: z.literal('gridpanel:xz'),
-  x: z.number(),
-  y: z.tuple([z.number(), z.number()]),
+  x: z.tuple([z.number(), z.number()]),
+  y: z.number(),
   z: z.tuple([z.number(), z.number()]),
 })
 

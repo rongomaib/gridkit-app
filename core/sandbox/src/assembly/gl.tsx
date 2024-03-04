@@ -1,7 +1,7 @@
-import { useDesignContext } from '@villagekit/design'
 import { PartsGlForAll } from '@villagekit/part'
 import { useEffect } from 'react'
 import { Box3 } from 'three'
+import { useSandboxAssemblyContext } from './context'
 
 interface AssemblyGlProps {
   setBoundingBox: (box: Box3) => void
@@ -10,7 +10,7 @@ interface AssemblyGlProps {
 export function AssemblyGl(props: AssemblyGlProps) {
   const { setBoundingBox } = props
 
-  const { boundingBox, partValues: partGlValues } = useDesignContext()
+  const { boundingBox, partValues: partGlValues } = useSandboxAssemblyContext()
 
   useEffect(() => {
     setBoundingBox(boundingBox)

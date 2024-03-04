@@ -5,6 +5,7 @@ import { camelCase, kebabCase } from 'lodash-es'
 import { access, constants, mkdir, readFile, readdir, writeFile } from 'fs/promises'
 import { basename, join } from 'path'
 import { parse as parseToml, stringify as stringifyToml } from 'smol-toml'
+import { DesignFile } from '@villagekit/sandbox'
 
 const t = initTRPC.create({ isServer: true })
 
@@ -37,9 +38,6 @@ const productTypeSchema = z.enum(['assembly'])
 export type ProductType = z.infer<typeof productTypeSchema>
 
 const productMetaSchema = z.object({
-  id: productIdSchema,
-  label: z.string(),
-  description: z.string(),
   type: productTypeSchema,
   entry: pathSchema,
 })
@@ -104,22 +102,22 @@ export const router = t.router({
     .input(z.object({ productPath: productPathSchema }))
     .query(async function getProductMeta(opts) {
       const { productPath } = opts.input
-      const productMetaPath = join(productPath, 'meta.toml')
+      const productMetaPath = join(productPath, 'villagekit.toml')
       const productMetaData = await readTomlFile(productMetaPath)
       const productMetaFile = await productMetaFileSchema.parseAsync(productMetaData)
-      const { entry, ...rest } = productMetaFile.product
+      const { type, entry } = productMetaFile.product
       const productMeta = {
-        ...rest,
+        type,
         entry: join(productPath, entry),
       }
       return productMeta
     }),
 
-  getProductAssembly: t.procedure
-    .input(z.object({ productAssemblyPath: productEntrySchema }))
+  getProductEntry: t.procedure
+    .input(z.object({ productEntryPath: productEntrySchema }))
     .query(async function getProductAssemblyMeta(opts) {
-      const { productAssemblyPath } = opts.input
-      const productAssemblyData = await readFile(productAssemblyPath, 'utf-8')
+      const { productEntryPath } = opts.input
+      const productAssemblyData = await readFile(productEntryPath, 'utf8')
       return productAssemblyData
     }),
 })

@@ -1,11 +1,11 @@
 import constate from 'constate'
 import { useColorModeValue } from '@villagekit/ui'
-import { createRef, useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { EditorState } from '@codemirror/state'
 import { EditorView, EditorViewConfig } from '@codemirror/view'
 import { Variant } from 'codemirror-theme-catppuccin'
 
-import { CodeMirror, updateCode, updateTheme } from '@/editor'
+import { CodeMirror, updateCode, updateLanguageExtensions, updateTheme } from '@/editor'
 
 function useEditor() {
   const [parentEl, setParentEl] = useState<HTMLDivElement | null>(null)
@@ -61,6 +61,12 @@ function useEditor() {
     if (view == null) return
     updateTheme(view, theme)
   }, [view, theme])
+
+  // on language extensions change
+  useEffect(() => {
+    if (view == null) return
+    updateLanguageExtensions(view, languageExtensions)
+  }, [view, languageExtensions])
 
   return {
     setParentEl,

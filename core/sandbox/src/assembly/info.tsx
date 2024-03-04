@@ -1,8 +1,8 @@
-import { useDesignContext } from '@villagekit/design'
 import { HStack, InfoTooltip, Text, VStack } from '@villagekit/ui'
 import { convert, meter, millimeter } from '@villagekit/util-units'
 import React, { useMemo } from 'react'
 import { Vector3 } from 'three'
+import { useSandboxAssemblyContext } from './context'
 
 interface AssemblyInfoProps {
   containerRef?: React.RefObject<HTMLElement | null>
@@ -11,7 +11,7 @@ interface AssemblyInfoProps {
 export function AssemblyInfo(props: AssemblyInfoProps) {
   const { containerRef } = props
 
-  const { boundingBox } = useDesignContext()
+  const { boundingBox } = useSandboxAssemblyContext()
 
   const dimensionsInMillimeters = useMemo(
     () =>

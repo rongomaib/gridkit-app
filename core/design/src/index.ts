@@ -1,5 +1,3 @@
-export * from './component'
-export * from './context'
 export * from './helpers'
 export * from './plugins'
 export * from './types'

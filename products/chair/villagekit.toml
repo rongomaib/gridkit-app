@@ -1,0 +1,3 @@
+[product]
+type = "assembly"
+entry = "./assembly.ts"

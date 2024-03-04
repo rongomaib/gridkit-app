@@ -28,7 +28,6 @@
     "@villagekit/parameters": "workspace:*",
     "@villagekit/part": "workspace:*",
     "lodash-es": "^4.17.21",
-    "p-debounce": "^4.0.0",
     "zod": "^3.22.4"
   },
   "peerDependencies": {

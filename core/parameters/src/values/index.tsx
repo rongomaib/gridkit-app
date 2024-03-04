@@ -55,6 +55,9 @@ export const parameterValueSchema = z.union([
   numberValueSchema,
 ])
 
+export type ParameterValue = BooleanValue | ChoiceValue | NumberValue
+export type ParametersValues = Record<string, ParameterValue>
+
 export const parameterQueryParamsByType = {
   [BooleanId]: BooleanQueryParam,
   [ChoiceId]: ChoiceQueryParam,

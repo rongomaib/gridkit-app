@@ -1,4 +1,3 @@
-import { useDesignContext } from '@villagekit/design'
 import {
   calculateSummaryValueForAll,
   PartsSummaryForAll,
@@ -8,6 +7,7 @@ import {
 import { SummaryContextProvider } from '@villagekit/part-base'
 import { debounce } from 'lodash-es'
 import { useEffect, useMemo, useState } from 'react'
+import { useSandboxAssemblyContext } from './context'
 
 interface AssemblySummaryProps {
   displayUnit: 'gu' | 'mm'
@@ -17,7 +17,7 @@ interface AssemblySummaryProps {
 export function AssemblySummary(props: AssemblySummaryProps) {
   const { displayUnit, groupParts } = props
 
-  const { parts } = useDesignContext()
+  const { parts } = useSandboxAssemblyContext()
 
   const [localParts, setLocalParts] = useState(parts)
 

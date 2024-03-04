@@ -13,70 +13,16 @@ export type DesignPart = WithOptionalId<PartCreator>
 export type DesignParts = RecursiveArray<DesignPart | false | undefined | null>
 
 export type DesignCategory = z.infer<typeof designCategorySchema>
-
 export type DesignMeta = z.infer<typeof designMetaSchema>
 
-export function DesignMeta(designMeta: DesignMeta): DesignMeta {
-  return designMeta
-}
+export type DesignParameters = ParametersOptions
+export type DesignPresets<ParamsOptions extends ParametersOptions> = Presets<ParamsOptions>
 
-export interface DesignAssemblyBase {
-  plugins?: Array<AssemblyPlugin>
-}
-
-export interface DesignAssemblyStatic extends DesignAssemblyBase {
-  type: 'static'
-  parts: DesignParts
-}
-
-export interface DesignAssemblyParameterized<ParamsOptions extends ParametersOptions>
-  extends DesignAssemblyBase {
-  type: 'parameterized'
-  parameters: ParamsOptions
-  presets: Presets<ParamsOptions>
-  createParts: (
-    parameters: ExtractValuesFromParametersOptions<ParamsOptions>,
-    partVariants: PartVariantsByType,
-  ) => DesignParts
-}
-
-export type DesignAssembly = DesignAssemblyStatic | DesignAssemblyParameterized<any>
-
-export function DesignAssembly(assembly: Omit<DesignAssemblyStatic, 'type'>): DesignAssemblyStatic {
-  return {
-    type: 'static',
-    ...assembly,
-  }
-}
-
-export function DesignAssemblyParameterized<ParamsOptions extends ParametersOptions,>(
-  assembly: Omit<DesignAssemblyParameterized<ParamsOptions>, 'type'>,
-): DesignAssemblyParameterized<ParamsOptions> {
-  return {
-    type: 'parameterized',
-    ...assembly,
-  }
-}
-
-export interface DesignInstanceStatic {
-  type: 'static'
-  meta: DesignMeta
-  assembly: DesignAssemblyStatic
-}
-
-export interface DesignInstanceParameterized<ParamsOptions extends ParametersOptions,> {
-  type: 'parameterized'
-  meta: DesignMeta
-  assembly: DesignAssemblyParameterized<ParamsOptions>
-  parameterValues: ExtractValuesFromParametersOptions<ParamsOptions> | null
-}
-
-export type DesignInstance = DesignInstanceStatic | DesignInstanceParameterized<any>
-
-export type Design = {
-  meta: DesignMeta
-  assembly: DesignAssembly
-}
+export type DesignAssembly<ParamsOptions extends ParametersOptions = never> = (
+  parameters: ExtractValuesFromParametersOptions<ParamsOptions>,
+  partVariants: PartVariantsByType,
+) => DesignParts
+export type DesignAssemblyPlugins = Array<AssemblyPlugin>
 
 /* utils */
 
