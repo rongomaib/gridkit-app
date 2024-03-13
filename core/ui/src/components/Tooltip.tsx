@@ -1,6 +1,6 @@
 'use client'
 
-import { Tooltip as BaseTooltip, TooltipProps as BaseTooltipProps } from '@chakra-ui/react'
+import { Tooltip as BaseTooltip, type TooltipProps as BaseTooltipProps } from '@chakra-ui/react'
 
 export interface TooltipProps
   extends Pick<

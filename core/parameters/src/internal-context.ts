@@ -5,8 +5,7 @@ interface ParameterControlsInternalContextProps {
   children: React.ReactNode | Array<React.ReactNode>
 }
 
-interface ParameterControlsInternalContextType
-  extends ParameterControlsInternalContextProps {}
+interface ParameterControlsInternalContextType extends ParameterControlsInternalContextProps {}
 
 function useParameters(
   props: ParameterControlsInternalContextProps,
@@ -14,7 +13,5 @@ function useParameters(
   return props
 }
 
-export const [
-  ParameterControlsInternalContextProvider,
-  useParameterControlsInternalContext,
-] = constate(useParameters)
+export const [ParameterControlsInternalContextProvider, useParameterControlsInternalContext] =
+  constate(useParameters)

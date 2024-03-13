@@ -1,11 +1,10 @@
 import { FormControl, Select as SelectComponent } from '@villagekit/ui'
 import { map } from 'lodash-es'
-import { ChangeEvent, useCallback } from 'react'
+import { type ChangeEvent, useCallback } from 'react'
 import { StringParam } from 'serialize-query-params'
-
-import { Label } from '../components/label'
-import { BaseProps, baseOptionsSchema } from './base'
 import { z } from 'zod'
+import { Label } from '../components/label'
+import { type BaseProps, baseOptionsSchema } from './base'
 
 export const ChoiceId = 'choice'
 export type ChoiceValue = string

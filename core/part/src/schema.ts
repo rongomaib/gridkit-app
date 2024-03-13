@@ -1,7 +1,6 @@
-import { z, ZodDiscriminatedUnionOption } from 'zod'
-
+import { type ZodDiscriminatedUnionOption, z } from 'zod'
 import { partModules } from './modules'
-import { PartCreator } from './types'
+import type { PartCreator } from './types'
 
 export const partSchema = z.lazy(() => {
   const partSchemas: Array<ZodDiscriminatedUnionOption<'type'>> = Object.values(partModules).reduce(

@@ -1,6 +1,5 @@
 import { millimeter } from '@villagekit/util-units'
-
-import { GridBeamVariant } from './types'
+import type { GridBeamVariant } from './types'
 
 export const gridBeamVariants: Record<string, GridBeamVariant> = {
   '40mm:8mm:douglas-fir': {

@@ -1,14 +1,13 @@
-import {
+import type {
   ExtractValuesFromParametersOptions,
   ParametersOptions,
   ParametersValues,
   Presets,
 } from '@villagekit/parameters'
-import { PartCreator, PartVariantsByType } from '@villagekit/part'
-import { z } from 'zod'
-
-import { AssemblyPlugin } from './plugins'
-import { designCategorySchema, designMetaSchema } from './schema'
+import type { PartCreator, PartVariantsByType } from '@villagekit/part'
+import type { z } from 'zod'
+import type { AssemblyPlugin } from './plugins'
+import type { designCategorySchema, designMetaSchema } from './schema'
 
 export type DesignPart = WithOptionalId<PartCreator>
 export type DesignParts = RecursiveArray<DesignPart | false | undefined | null>

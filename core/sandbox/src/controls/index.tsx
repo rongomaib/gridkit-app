@@ -7,11 +7,12 @@ import {
   Icon,
   IconButton,
   Tooltip,
+  VStack,
   useBreakpointValue,
   useMobileFriendlyTooltip,
-  VStack,
 } from '@villagekit/ui'
-import React, { useCallback, useEffect, useMemo, useState } from 'react'
+import type React from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   FaBorderAll,
   FaCompressAlt,
@@ -23,9 +24,8 @@ import {
   FaUndoAlt,
 } from 'react-icons/fa'
 import screenfull from 'screenfull'
-
 import { AssemblyInfo } from '../assembly'
-import { CameraControlsRef } from '../camera'
+import type { CameraControlsRef } from '../camera'
 import { ControlsContextProvider } from './context'
 import { Control } from './control'
 

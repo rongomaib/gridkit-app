@@ -1,6 +1,5 @@
 import { autocompletion } from '@codemirror/autocomplete'
 import { javascript } from '@codemirror/lang-javascript'
-import { basicSetup } from 'codemirror'
 import {
   tsAutocompleteWorker,
   tsFacetWorker,
@@ -8,8 +7,8 @@ import {
   tsLinterWorker,
   tsSyncWorker,
 } from '@valtown/codemirror-ts'
-import { type WorkerShape } from '@valtown/codemirror-ts/worker'
-
+import type { WorkerShape } from '@valtown/codemirror-ts/worker'
+import { basicSetup } from 'codemirror'
 import * as Comlink from 'comlink'
 
 const innerWorker = new Worker(

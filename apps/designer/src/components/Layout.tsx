@@ -1,15 +1,14 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useState } from 'react'
-import { ipcLink } from 'electron-trpc/renderer'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { ChakraProvider, Flex } from '@villagekit/ui'
-
 import { client } from '@/client'
-import { theme } from '@/theme'
+import { EditorProvider } from '@/context/editor'
 import { ProductProvider } from '@/context/product'
 import { WorkspaceProvider, useWorkspaceContext } from '@/context/workspace'
 import { WorkspacesProvider, useWorkspacesContext } from '@/context/workspaces'
-import { EditorProvider } from '@/context/editor'
+import { theme } from '@/theme'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ChakraProvider, Flex } from '@villagekit/ui'
+import { ipcLink } from 'electron-trpc/renderer'
+import { useState } from 'react'
 
 export interface LayoutProps {
   children: React.ReactNode

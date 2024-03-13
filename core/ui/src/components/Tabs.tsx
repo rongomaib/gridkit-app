@@ -1,6 +1,11 @@
 'use client'
 
-import { TabList as BaseTabList, Tabs as BaseTabs, TabListProps, TabsProps } from '@chakra-ui/react'
+import {
+  TabList as BaseTabList,
+  Tabs as BaseTabs,
+  type TabListProps,
+  type TabsProps,
+} from '@chakra-ui/react'
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 export type { TabsProps }

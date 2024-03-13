@@ -19,7 +19,7 @@
   "scripts": {
     "deps": "depcheck",
     "build:pkg": "tsup src --dts",
-    "lint": "biome lint ."
+    "lint": "biome check ."
   },
   "dependencies": {
     "@chakra-ui/react": "^2.8.0",

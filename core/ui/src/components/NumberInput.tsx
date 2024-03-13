@@ -2,7 +2,7 @@
 
 import {
   NumberInput as BaseNumberInput,
-  NumberInputProps as BaseNumberInputProps,
+  type NumberInputProps as BaseNumberInputProps,
   useTheme,
 } from '@chakra-ui/react'
 import { forwardRef } from 'react'
@@ -34,22 +34,21 @@ export interface NumberInputProps
   ref?: any
 }
 
-export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(function NumberInput(
-  props,
-  ref,
-) {
-  const { variant } = props
+export const NumberInput = forwardRef<HTMLInputElement, NumberInputProps>(
+  function NumberInput(props, ref) {
+    const { variant } = props
 
-  const {
-    colors: { outlineColor },
-  } = useTheme()
+    const {
+      colors: { outlineColor },
+    } = useTheme()
 
-  return (
-    <BaseNumberInput
-      ref={ref}
-      background={variant === 'flushed' ? 'transparent' : 'white'}
-      focusBorderColor={outlineColor}
-      {...props}
-    />
-  )
-})
+    return (
+      <BaseNumberInput
+        ref={ref}
+        background={variant === 'flushed' ? 'transparent' : 'white'}
+        focusBorderColor={outlineColor}
+        {...props}
+      />
+    )
+  },
+)

@@ -1,5 +1,4 @@
 import { Flex, Spinner, Text } from '@villagekit/ui'
-import React from 'react'
 
 interface LoadingProps {
   errorMessage?: string

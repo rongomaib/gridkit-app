@@ -5,9 +5,9 @@ import CameraControlsImpl from 'camera-controls'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react'
 import {
   Box3,
+  MOUSE,
   MathUtils,
   Matrix4,
-  MOUSE,
   Quaternion,
   Raycaster,
   Sphere,
@@ -16,7 +16,6 @@ import {
   Vector3,
   Vector4,
 } from 'three'
-
 import type { SandboxMode } from '../'
 import { createMachine } from './machine'
 
@@ -159,8 +158,8 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
       return (camera as THREE.PerspectiveCamera).isPerspectiveCamera
         ? ACTION.DOLLY
         : (camera as THREE.OrthographicCamera).isOrthographicCamera
-        ? ACTION.ZOOM
-        : ACTION.NONE
+          ? ACTION.ZOOM
+          : ACTION.NONE
     }, [camera])
 
     return (

@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react'
 import { HStack } from '@chakra-ui/react'
+import type { Meta, StoryObj } from '@storybook/react'
 import { FaSearch } from 'react-icons/fa/index.js'
 
-import { useTheme } from '../src/index.js'
 import { buttonTheme } from '../src/components/Button.js'
-import { IconButton, IconButtonProps } from '../src/components/IconButton.js'
+import { IconButton, type IconButtonProps } from '../src/components/IconButton.js'
+import { useTheme } from '../src/index.js'
 
 export default {
   component: IconButton,

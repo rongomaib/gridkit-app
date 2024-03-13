@@ -3,7 +3,11 @@
   "vcs": {
     "enabled": true,
     "clientKind": "git",
-    "useIgnoreFile": true
+    "useIgnoreFile": true,
+    "defaultBranch": "main"
+  },
+  "files": {
+    "ignore": ["./apps/designer/src/editor/types.d.ts"]
   },
   "organizeImports": {
     "enabled": true

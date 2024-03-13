@@ -1,8 +1,8 @@
-import { BasePartSummaryValue } from '@villagekit/part-base'
-import { BaseGridPartState } from '@villagekit/part-base-grid'
-import { AxisId, Direction, Location, ScaleX } from '@villagekit/util-math'
-import { Length } from '@villagekit/util-units'
-import { Quaternion } from 'three'
+import type { BasePartSummaryValue } from '@villagekit/part-base'
+import type { BaseGridPartState } from '@villagekit/part-base-grid'
+import type { AxisId, Direction, Location, ScaleX } from '@villagekit/util-math'
+import type { Length } from '@villagekit/util-units'
+import type { Quaternion } from 'three'
 
 export type GridBeamType = 'gridbeam'
 

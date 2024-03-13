@@ -6,7 +6,7 @@
   "scripts": {
     "dev:app": "storybook dev -p 6006",
     "build:app": "storybook build",
-    "lint": "biome lint ."
+    "lint": "biome check ."
   },
   "dependencies": {
     "@fontsource/bitter": "^5.0.15",

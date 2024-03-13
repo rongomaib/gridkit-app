@@ -1,11 +1,10 @@
+import { constants, access, mkdir, readFile, readdir, writeFile } from 'node:fs/promises'
+import { basename, join } from 'node:path'
 import { initTRPC } from '@trpc/server'
-import { z } from 'zod'
 import { app, dialog } from 'electron'
 import { camelCase, kebabCase } from 'lodash-es'
-import { access, constants, mkdir, readFile, readdir, writeFile } from 'fs/promises'
-import { basename, join } from 'path'
 import { parse as parseToml, stringify as stringifyToml } from 'smol-toml'
-import { DesignFile } from '@villagekit/sandbox'
+import { z } from 'zod'
 
 const t = initTRPC.create({ isServer: true })
 
@@ -62,9 +61,8 @@ export const router = t.router({
     if (openDialogResult.filePaths[0]) {
       const selectedDirectory = openDialogResult.filePaths[0]
       return selectedDirectory
-    } else {
-      return null
     }
+    return null
   }),
   addWorkspace: t.procedure
     .input(z.object({ workspace: workspaceConfigSchema }))
@@ -145,9 +143,8 @@ async function loadAppConfig(): Promise<AppConfig> {
     const appConfigData = await readTomlFile(appConfigPath)
     const appConfig = await appConfigSchema.parseAsync(appConfigData)
     return appConfig
-  } else {
-    return { workspaces: [] }
   }
+  return { workspaces: [] }
 }
 
 async function saveAppConfig(appConfig: AppConfig) {

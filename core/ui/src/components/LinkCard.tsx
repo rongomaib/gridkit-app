@@ -3,14 +3,14 @@
 import {
   Heading,
   HoverCard,
-  HoverCardProps,
+  type HoverCardProps,
   Icon,
   LinkBox,
   LinkOverlay,
-  LinkOverlayProps,
+  type LinkOverlayProps,
   Stack,
   Text,
-} from '..//index.js'
+} from '../'
 
 export interface LinkCardProps {
   as?: HoverCardProps['as']

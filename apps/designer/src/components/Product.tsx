@@ -1,27 +1,25 @@
 import '@villagekit/part-gridbeam'
 import '@villagekit/part-gridpanel'
 
-import React, { useMemo } from 'react'
+import { useProductContext } from '@/context/product'
+import Ansi from '@curvenote/ansi-to-react'
+import { ParameterControls } from '@villagekit/parameters'
 import {
   AssemblyInfo,
+  type DesignRenderError,
+  type DesignValidationError,
+  type DesignValidationErrors,
   Sandbox,
   useSandboxContext,
-  DesignRenderError,
-  DesignValidationErrors,
-  DesignValidationError,
 } from '@villagekit/sandbox'
-import { Box, Flex, HStack, Heading, List, ListIcon, ListItem, Text, VStack } from '@villagekit/ui'
-import { Resplit } from 'react-resplit'
-import { ParameterControls } from '@villagekit/parameters'
-
-import { useProductContext } from '@/context/product'
-
-import { Loading } from './Loading'
-import { ProductEditor } from './ProductEditor'
-import Ansi from '@curvenote/ansi-to-react'
+import { Box, Flex, Heading, List, ListIcon, ListItem, Text, VStack } from '@villagekit/ui'
+import React, { type ReactElement, useMemo } from 'react'
 import { MdChevronRight } from 'react-icons/md'
+import { Resplit } from 'react-resplit'
 import useFitText from 'use-fit-text-new'
 import { toStructuredError } from 'zod-structured-error'
+import { Loading } from './Loading'
+import { ProductEditor } from './ProductEditor'
 
 export default function Product() {
   const product = useProductContext()
@@ -128,7 +126,7 @@ type RenderErrorDisplayProps = {
 function RenderErrorDisplay(props: RenderErrorDisplayProps) {
   const { renderError } = props
 
-  let inner
+  let inner: ReactElement
   switch (renderError.type) {
     case 'typescript.transform':
       inner = (

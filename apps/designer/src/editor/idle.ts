@@ -1,5 +1,5 @@
-import { ViewPlugin, ViewUpdate, EditorView } from '@codemirror/view'
-import { Extension, Facet, combineConfig } from '@codemirror/state'
+import { type Extension, Facet, combineConfig } from '@codemirror/state'
+import { type EditorView, ViewPlugin, type ViewUpdate } from '@codemirror/view'
 
 export type IdleListener = (view: EditorView) => void
 

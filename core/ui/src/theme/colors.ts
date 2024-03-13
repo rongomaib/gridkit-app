@@ -1,6 +1,5 @@
 import { theme } from '@chakra-ui/theme'
-
-import { transparentize } from '../utility.js'
+import { transparentize } from '../utility'
 
 const { colors } = theme
 

@@ -1,25 +1,25 @@
+import { debounce, intersection, isEqual } from 'lodash-es'
 import { parse as parseQueryString } from 'query-string'
 import {
   BooleanParam,
-  DecodedValueMap,
+  type DecodedValueMap,
+  type EncodedValueMap,
+  NumberParam,
+  type QueryParamConfigMap,
+  StringParam,
   decodeQueryParams,
   encodeQueryParams,
-  NumberParam,
-  QueryParamConfigMap,
-  StringParam,
   updateLocation,
   withDefault,
 } from 'serialize-query-params'
-
-import { Preset, Presets } from './presets'
-import {
+import { assign, fromCallback, sendTo, setup } from 'xstate'
+import type { Preset, Presets } from './presets'
+import type {
   ExtractValuesFromParametersOptions,
   ParameterOptions,
   ParametersOptions,
   ParametersValues,
 } from './values'
-import { assign, fromCallback, sendTo, setup } from 'xstate'
-import { debounce, intersection, isEqual } from 'lodash-es'
 
 export type OnLocationUpdate = (location: Location) => void
 export type ParametersInput = {
@@ -85,7 +85,7 @@ const queryParamsActor = fromCallback<UpdateParamsEvent, ParametersInput>(
       const { presetId: currentQueryPresetId, values: currentQueryParametersValues } =
         getQueryParamsValues(currentParameters, queryParameterDefinitions)
 
-      let urlParams
+      let urlParams: Partial<EncodedValueMap<QueryParamConfigMap>>
       switch (event.type) {
         case 'updatePresetId': {
           const { presetId } = event

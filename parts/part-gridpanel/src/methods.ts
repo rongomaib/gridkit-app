@@ -1,7 +1,7 @@
-import { FasteningPoint } from '@villagekit/part'
+import type { FasteningPoint } from '@villagekit/part'
 import {
+  type AxisValues,
   axisIdToDirection,
-  AxisValues,
   axisValuesToVector,
   flipAxisId,
   mapRange,
@@ -9,8 +9,7 @@ import {
 import { convert, meter } from '@villagekit/util-units'
 import generateKey, { sorted as generateKeySorted } from 'deadbeef'
 import { Box3, Vector3 } from 'three'
-
-import { GridPanelGlValue, GridPanelState, GridPanelSummaryValue } from './types'
+import type { GridPanelGlValue, GridPanelState, GridPanelSummaryValue } from './types'
 
 export function calculateGlValue(state: GridPanelState): GridPanelGlValue {
   const {
@@ -107,12 +106,11 @@ export function calculateSummaryKey(summary: GridPanelSummaryValue): string {
 
   if (typeof holes === 'boolean') {
     return generateKey(type, variant.id, ...sizeInGrids, holes)
-  } else {
-    return (
-      generateKey(type, variant.id, ...sizeInGrids) +
-      generateKeySorted(...holes.map(([a, b]) => `${a},${b}`))
-    )
   }
+  return (
+    generateKey(type, variant.id, ...sizeInGrids) +
+    generateKeySorted(...holes.map(([a, b]) => `${a},${b}`))
+  )
 }
 
 export function calculateFasteningPoints(state: GridPanelState): Array<FasteningPoint> {

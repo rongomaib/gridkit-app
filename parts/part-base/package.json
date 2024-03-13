@@ -18,7 +18,7 @@
   "sideEffects": false,
   "scripts": {
     "build:pkg": "tsup src --dts",
-    "lint": "biome lint ."
+    "lint": "biome check ."
   },
   "dependencies": {
     "@types/react": "^18.2.37",

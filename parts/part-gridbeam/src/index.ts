@@ -1,6 +1,5 @@
 import { registerPartModule } from '@villagekit/part'
-
-import { calculateState, GridBeamCreator } from './creators'
+import { type GridBeamCreator, calculateState } from './creators'
 import { PartsGl } from './gl'
 import {
   calculateBoundingBox,
@@ -10,10 +9,10 @@ import {
   calculateSummaryKey,
   calculateSummaryValue,
 } from './methods'
-import { PartsSummary } from './summary'
-import { GridBeamGlValue, GridBeamState, GridBeamSummaryValue, GridBeamType } from './types'
-import { gridBeamVariants } from './variants'
 import { gridBeamSchemas } from './schemas'
+import { PartsSummary } from './summary'
+import type { GridBeamGlValue, GridBeamState, GridBeamSummaryValue, GridBeamType } from './types'
+import { gridBeamVariants } from './variants'
 
 export * from './svg'
 export * from './types'

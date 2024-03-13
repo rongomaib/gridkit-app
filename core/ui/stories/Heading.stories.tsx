@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
+import { Heading, type HeadingProps } from '../src/components/Heading.js'
 import { useTheme } from '../src/index.js'
-import { Heading, HeadingProps } from '../src/components/Heading.js'
 
 export default {
   component: Heading,

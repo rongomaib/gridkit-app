@@ -11,5 +11,4 @@ function useControls(props: ControlsContextProps): ControlsContextType {
   return props
 }
 
-export const [ControlsContextProvider, useControlsContext] =
-  constate(useControls)
+export const [ControlsContextProvider, useControlsContext] = constate(useControls)

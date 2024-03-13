@@ -1,8 +1,7 @@
-import { assign, sendTo, setup, ActorRefFrom } from 'xstate'
-import { useEffect, useState } from 'react'
 import { useMachine } from '@xstate/react'
-
-import { DesignFile, DesignRender, DesignRenderError } from '../types'
+import { useEffect, useState } from 'react'
+import { type ActorRefFrom, assign, sendTo, setup } from 'xstate'
+import type { DesignFile, DesignRender, DesignRenderError } from '../types'
 import { javascriptAssemblyRenderer } from './javascript'
 import { typescriptAssemblyRenderer } from './typescript'
 

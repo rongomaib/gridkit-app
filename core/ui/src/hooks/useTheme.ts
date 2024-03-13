@@ -1,5 +1,4 @@
 import { useTheme as useBaseTheme } from '@chakra-ui/react'
-
-import { Theme } from '../theme.js'
+import type { Theme } from '../theme'
 
 export const useTheme = (): Theme => useBaseTheme<Theme>()

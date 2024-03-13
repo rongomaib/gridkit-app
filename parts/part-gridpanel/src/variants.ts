@@ -1,6 +1,5 @@
 import { millimeter } from '@villagekit/util-units'
-
-import { GridPanelVariant } from './types'
+import type { GridPanelVariant } from './types'
 
 export const gridPanelVariants: Record<string, GridPanelVariant> = {
   '40mm:8mm:12mm:douglas-fir': {

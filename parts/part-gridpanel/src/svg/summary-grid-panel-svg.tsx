@@ -1,8 +1,7 @@
 import { SvgContextProvider } from '@villagekit/part-base-grid'
 import { Box } from '@villagekit/ui'
 import { useMemo } from 'react'
-
-import { GridPanelHoles } from '../types'
+import type { GridPanelHoles } from '../types'
 import { PanelSvg } from './panel-svg'
 
 const GRID_SPACING = 40

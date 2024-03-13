@@ -11,5 +11,4 @@ function useGridBeamSvg(props: SummaryContextProps): SummaryContextType {
   return props
 }
 
-export const [SummaryContextProvider, useSummaryContext] =
-  constate(useGridBeamSvg)
+export const [SummaryContextProvider, useSummaryContext] = constate(useGridBeamSvg)

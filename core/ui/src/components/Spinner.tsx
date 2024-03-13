@@ -1,8 +1,7 @@
 'use client'
 
 import { Spinner as BaseSpinner } from '@chakra-ui/react'
-
-import { useTheme } from '../hooks/useTheme.js'
+import { useTheme } from '../hooks/useTheme'
 
 export interface SpinnerProps {
   colorScheme?: 'primary' | 'accentA'

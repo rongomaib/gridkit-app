@@ -1,16 +1,16 @@
 import '@react-three/fiber'
-import { PartMaterial, PartsGlProps, useTexture } from '@villagekit/part-base'
-import React, { useMemo } from 'react'
+import { type PartMaterial, type PartsGlProps, useTexture } from '@villagekit/part-base'
+import type React from 'react'
+import { useMemo } from 'react'
 import {
   BoxGeometry,
-  BufferAttribute,
+  type BufferAttribute,
   CircleGeometry,
   InstancedMesh,
   MeshBasicMaterial,
   Object3D,
 } from 'three'
-
-import { GridBeamGlValue } from './types'
+import type { GridBeamGlValue } from './types'
 
 export function PartsGl(props: PartsGlProps<GridBeamGlValue>) {
   const { parts, ...restProps } = props

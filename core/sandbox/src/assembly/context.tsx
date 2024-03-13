@@ -1,26 +1,25 @@
-import { ExtractValuesFromParametersOptions, ParametersOptions } from '@villagekit/parameters'
 import {
-  calculateBoundingBoxForAll,
-  calculateGlValueForAll,
-  calculateStateForAll,
-  getPartVariants,
-  PartCreator,
-  PartGlValue,
-  PartState,
-} from '@villagekit/part'
-import { map, uniq } from 'lodash-es'
-import pDebounce from 'p-debounce'
-import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { Box3 } from 'three'
-import {
-  AssemblyPlugin,
-  DesignParts,
+  type AssemblyPlugin,
+  type DesignParts,
   designPartsSchema,
   generatePartsForPlugins,
   getPartCreatorsFromDesignParts,
 } from '@villagekit/design'
-
-import { DesignRenderAssembly, ExtendDesignValidationErrors } from '../types'
+import type { ExtractValuesFromParametersOptions, ParametersOptions } from '@villagekit/parameters'
+import {
+  type PartCreator,
+  type PartGlValue,
+  type PartState,
+  calculateBoundingBoxForAll,
+  calculateGlValueForAll,
+  calculateStateForAll,
+  getPartVariants,
+} from '@villagekit/part'
+import { map, uniq } from 'lodash-es'
+import pDebounce from 'p-debounce'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import type { Box3 } from 'three'
+import type { DesignRenderAssembly, ExtendDesignValidationErrors } from '../types'
 
 type SandboxAssemblyOptions<ParamsOptions extends ParametersOptions> = {
   assembly: DesignRenderAssembly<ParamsOptions>

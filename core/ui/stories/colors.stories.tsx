@@ -1,5 +1,5 @@
-import type { Meta, StoryObj } from '@storybook/react'
 import { Box, Flex, HStack, StackDivider, VStack } from '@chakra-ui/react'
+import type { Meta, StoryObj } from '@storybook/react'
 
 import { Heading, Text, useTheme } from '../src/index.js'
 

@@ -1,9 +1,9 @@
-import {
-  DesignParameters,
-  DesignMeta,
+import type {
   DesignAssembly,
-  DesignPresets,
+  DesignMeta,
+  DesignParameters,
   DesignParts,
+  DesignPresets,
 } from '@villagekit/design'
 
 export const meta: DesignMeta = {

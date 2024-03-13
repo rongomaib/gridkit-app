@@ -3,8 +3,8 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { capitalize } from 'lodash-es'
 import { FaSearch } from 'react-icons/fa/index.js'
 
+import { Button, type ButtonProps, buttonTheme } from '../src/components/Button.js'
 import { useTheme } from '../src/index.js'
-import { Button, ButtonProps, buttonTheme } from '../src/components/Button.js'
 
 const meta: Meta<ButtonProps> = {
   component: Button,

@@ -1,15 +1,14 @@
-import { FasteningPoint } from '@villagekit/part'
+import type { FasteningPoint } from '@villagekit/part'
 import {
   AxisId,
+  type Location,
   axisIdToDirection,
   axisIdToDirectionVector,
-  Location,
   mapRange,
 } from '@villagekit/util-math'
 import { convert, meter } from '@villagekit/util-units'
 import { Box3, Quaternion, Vector3 } from 'three'
-
-import { GridBeamGlValue, GridBeamState, GridBeamSummaryValue } from './types'
+import type { GridBeamGlValue, GridBeamState, GridBeamSummaryValue } from './types'
 
 const X_AXIS = axisIdToDirectionVector(AxisId.X)
 

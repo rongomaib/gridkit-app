@@ -2,10 +2,10 @@ import '@villagekit/part-gridbeam'
 import '@villagekit/part-gridpanel'
 
 import type { Meta, StoryObj } from '@storybook/react'
-import { Design, DesignPart, DesignWrapper } from '@villagekit/design'
+import { type Design, type DesignPart, DesignWrapper } from '@villagekit/design'
 import React from 'react'
 
-import { Sandbox, SandboxProps } from '../src'
+import { Sandbox, type SandboxProps } from '../src'
 
 const decorator = (Story: React.FC) => (
   <React.Suspense fallback={null}>

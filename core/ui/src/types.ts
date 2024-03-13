@@ -1,4 +1,4 @@
-import { AriaLabelingProps, IdProps } from '@chakra-ui/react-types'
+import type { AriaLabelingProps, IdProps } from '@chakra-ui/react-types'
 
 export interface AriaRoleProps {
   role?: React.AriaRole

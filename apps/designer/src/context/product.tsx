@@ -1,5 +1,5 @@
 import { client } from '@/client'
-import { SandboxProvider, DesignFile } from '@villagekit/sandbox'
+import { type DesignFile, SandboxProvider } from '@villagekit/sandbox'
 import { createContext, useContext, useEffect, useMemo } from 'react'
 import { useEditorContext } from './editor'
 
@@ -39,8 +39,8 @@ function useProduct(options: ProductOptions): ProductState {
     const language = entry.endsWith('.ts')
       ? 'typescript'
       : entry.endsWith('.js')
-      ? 'javascript'
-      : 'unknown'
+        ? 'javascript'
+        : 'unknown'
 
     if (language === 'unknown') throw new Error(`Unexpected product entry extension: ${entry}`)
 

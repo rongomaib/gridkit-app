@@ -1,6 +1,6 @@
 import { useLoader } from '@react-three/fiber'
 import { useEffect } from 'react'
-import { NearestFilter, RepeatWrapping, Texture, TextureLoader } from 'three'
+import { NearestFilter, RepeatWrapping, type Texture, TextureLoader } from 'three'
 
 export * from './context'
 export * from './svg'

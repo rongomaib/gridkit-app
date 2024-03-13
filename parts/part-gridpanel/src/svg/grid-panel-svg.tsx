@@ -1,4 +1,4 @@
-import { GridPanelHoles } from '../types'
+import type { GridPanelHoles } from '../types'
 import { PanelSvg } from './panel-svg'
 
 const GRID_SPACING = 40

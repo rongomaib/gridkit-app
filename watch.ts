@@ -1,5 +1,5 @@
-import { KickstartContext, PackageInfo, Trigger, watchTree } from 'turbotree'
 import { join } from 'node:path'
+import { type KickstartContext, type PackageInfo, type Trigger, watchTree } from 'turbotree'
 
 const triggers = (p: PackageInfo): Trigger[] => [
   {

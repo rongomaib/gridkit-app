@@ -15,14 +15,11 @@
     },
     "./package.json": "./package.json"
   },
-  "sideEffects": [
-    "./src/globals.ts",
-    "./dist/globals.js"
-  ],
+  "sideEffects": ["./src/globals.ts", "./dist/globals.js"],
   "scripts": {
     "build:comlink": "node ./scripts/generate-comlink-dataurl.cjs",
     "build:pkg": "npm run build:comlink && tsup src --dts",
-    "lint": "biome lint ."
+    "lint": "biome check ."
   },
   "dependencies": {
     "@jridgewell/trace-mapping": "^0.3.25",

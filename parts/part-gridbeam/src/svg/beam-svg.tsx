@@ -1,6 +1,7 @@
 import { SizeMarkerX } from '@villagekit/part-base-grid'
 import { useTheme } from '@villagekit/ui'
-import React, { useMemo } from 'react'
+import type React from 'react'
+import { useMemo } from 'react'
 
 const GRID_SPACING = 40
 

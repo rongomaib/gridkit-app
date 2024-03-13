@@ -1,4 +1,11 @@
-import { DesignPart, DesignParts, DesignMeta, DesignParameters, DesignPresets, DesignAssembly } from '@villagekit/design'
+import type {
+  DesignAssembly,
+  DesignMeta,
+  DesignParameters,
+  DesignPart,
+  DesignParts,
+  DesignPresets,
+} from '@villagekit/design'
 
 export type { Location } from '@villagekit/util-math'
 

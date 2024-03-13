@@ -3,7 +3,7 @@ import type { Meta, StoryObj } from '@storybook/react'
 import {
   Slider,
   SliderFilledTrack,
-  SliderProps,
+  type SliderProps,
   SliderThumb,
   SliderTrack,
 } from '../src/components/Slider.js'

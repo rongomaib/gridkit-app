@@ -1,8 +1,7 @@
-import initSwc, { transformSync } from '@swc/wasm-web'
-import { fromCallback, ActorRefFrom } from 'xstate'
-
-import { RenderInputEvent } from './'
-import { javascriptAssemblyRenderer } from './javascript'
+import initSwc, { type Output as TransformOutput, transformSync } from '@swc/wasm-web'
+import { type ActorRefFrom, fromCallback } from 'xstate'
+import type { RenderInputEvent } from './'
+import type { javascriptAssemblyRenderer } from './javascript'
 
 export const typescriptAssemblyRenderer = fromCallback<
   RenderInputEvent,
@@ -21,7 +20,7 @@ export const typescriptAssemblyRenderer = fromCallback<
   async function handleCode(tsCode: string) {
     await swcInitialized
 
-    let tsTransformOutput
+    let tsTransformOutput: TransformOutput
     try {
       tsTransformOutput = transformSync(tsCode, {
         jsc: {

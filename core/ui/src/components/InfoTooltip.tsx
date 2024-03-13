@@ -1,9 +1,8 @@
 'use client'
 
 import { FaInfoCircle } from 'react-icons/fa/index.js'
-
-import { Box, Icon, Tooltip, useMobileFriendlyTooltip } from '../index.js'
-import { TooltipProps } from './Tooltip.js'
+import { Box, Icon, Tooltip, useMobileFriendlyTooltip } from '../index'
+import type { TooltipProps } from './Tooltip'
 
 export interface InfoTooltipProps extends Partial<TooltipProps> {
   label: React.ReactNode

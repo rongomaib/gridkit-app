@@ -1,10 +1,16 @@
 import '@react-three/fiber'
-import { PartMaterial, PartsGlProps, useTexture } from '@villagekit/part-base'
-import { AxisId, axisIdToDirection, AxisValues, axisValuesToVector } from '@villagekit/util-math'
-import React, { useMemo } from 'react'
+import { type PartMaterial, type PartsGlProps, useTexture } from '@villagekit/part-base'
+import {
+  type AxisId,
+  type AxisValues,
+  axisIdToDirection,
+  axisValuesToVector,
+} from '@villagekit/util-math'
+import type React from 'react'
+import { useMemo } from 'react'
 import {
   BoxGeometry,
-  BufferAttribute,
+  type BufferAttribute,
   CircleGeometry,
   InstancedMesh,
   MeshBasicMaterial,
@@ -12,9 +18,8 @@ import {
   Quaternion,
   Vector3,
 } from 'three'
-
 import { getEveryHolePosition } from './helpers'
-import { GridPanelGlValue } from './types'
+import type { GridPanelGlValue } from './types'
 
 export function PartsGl(props: PartsGlProps<GridPanelGlValue>) {
   const { parts, ...restProps } = props

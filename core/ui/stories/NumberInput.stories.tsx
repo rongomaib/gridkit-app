@@ -5,7 +5,7 @@ import {
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
-  NumberInputProps,
+  type NumberInputProps,
   NumberInputStepper,
 } from '../src/components/NumberInput.js'
 

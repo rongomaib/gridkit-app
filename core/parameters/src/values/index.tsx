@@ -1,13 +1,14 @@
 import { Box, VStack } from '@villagekit/ui'
 import { map, mapValues } from 'lodash-es'
 import { memo, useCallback } from 'react'
-
+import { z } from 'zod'
+import { useParameters, useParametersValues, useShowControls, useUpdateParametersValues } from '..'
 import {
   // biome-ignore lint/suspicious/noShadowRestrictedNames:
   Boolean,
   BooleanId,
   BooleanQueryParam,
-  BooleanValue,
+  type BooleanValue,
   booleanOptionsSchema,
   booleanValueSchema,
 } from './boolean'
@@ -15,7 +16,7 @@ import {
   Choice,
   ChoiceId,
   ChoiceQueryParam,
-  ChoiceValue,
+  type ChoiceValue,
   choiceOptionsSchema,
   choiceValueSchema,
 } from './choice'
@@ -24,12 +25,10 @@ import {
   Number,
   NumberId,
   NumberQueryParam,
-  NumberValue,
+  type NumberValue,
   numberOptionsSchema,
   numberValueSchema,
 } from './number'
-import { z } from 'zod'
-import { useParameters, useParametersValues, useShowControls, useUpdateParametersValues } from '..'
 
 export const parameterOptionsSchema = z.discriminatedUnion('type', [
   booleanOptionsSchema,

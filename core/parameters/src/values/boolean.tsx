@@ -1,10 +1,9 @@
 import { FormControl, Switch as SwitchComponent } from '@villagekit/ui'
-import { ChangeEvent, useCallback } from 'react'
+import { type ChangeEvent, useCallback } from 'react'
 import { BooleanParam } from 'serialize-query-params'
-
-import { Label } from '../components/label'
-import { BaseProps, baseOptionsSchema } from './base'
 import { z } from 'zod'
+import { Label } from '../components/label'
+import { type BaseProps, baseOptionsSchema } from './base'
 
 export const BooleanId = 'boolean'
 export type BooleanValue = boolean

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
+import { InfoTooltip, type InfoTooltipProps } from '../src/components/InfoTooltip.js'
 import { HStack, Text } from '../src/index.js'
-import { InfoTooltip, InfoTooltipProps } from '../src/components/InfoTooltip.js'
 
 export default {
   component: InfoTooltip,

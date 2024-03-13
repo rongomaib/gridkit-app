@@ -1,17 +1,16 @@
 import { FormControl, FormLabel, Select } from '@villagekit/ui'
-import { ChangeEvent, useCallback } from 'react'
+import { find } from 'lodash-es'
+import { type ChangeEvent, useCallback } from 'react'
 import { z } from 'zod'
-
 import {
-  ExtractValuesFromParametersOptions,
-  ParametersOptions,
+  type ExtractValuesFromParametersOptions,
+  type ParametersOptions,
   extractValuesSchemaFromParametersOptions,
   usePresetId,
   usePresets,
   useUpdateParametersValues,
   useUpdatePresetId,
 } from '../'
-import { find } from 'lodash-es'
 
 export interface Preset<ParamsOptions extends ParametersOptions> {
   id: string

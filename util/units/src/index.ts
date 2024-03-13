@@ -75,8 +75,8 @@ export type Unit<Dimension> =
 export type Unit<Dim extends Dimension> = Dim extends BaseDimension
   ? BaseUnit<Dim> | ConversionUnit<Dim> | PrefixUnit<Dim>
   : Dim extends CompositeDimension
-  ? CompositeUnit<Dim> | ConversionUnit<Dim> | PrefixUnit<Dim>
-  : never
+    ? CompositeUnit<Dim> | ConversionUnit<Dim> | PrefixUnit<Dim>
+    : never
 
 export interface Quantity<Dim extends Dimension, Value = number> {
   type: 'quantity'

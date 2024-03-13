@@ -1,11 +1,10 @@
-import { EditorState, Compartment } from '@codemirror/state'
-import { basicSetup } from 'codemirror'
-import { EditorView, EditorViewConfig } from '@codemirror/view'
-import { catppuccin, Variant } from 'codemirror-theme-catppuccin'
 import { variants } from '@catppuccin/palette'
-
-import { createDiagnosticTheme, createDiagnosticGutterTheme } from './theme'
+import { Compartment, EditorState } from '@codemirror/state'
+import { EditorView, type EditorViewConfig } from '@codemirror/view'
+import { basicSetup } from 'codemirror'
+import { type Variant, catppuccin } from 'codemirror-theme-catppuccin'
 import { createIdler } from './idle'
+import { createDiagnosticGutterTheme, createDiagnosticTheme } from './theme'
 
 export type CodeMirrorOptions = {
   code: string

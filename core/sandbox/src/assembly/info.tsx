@@ -1,6 +1,7 @@
 import { HStack, InfoTooltip, Text, VStack } from '@villagekit/ui'
 import { convert, meter, millimeter } from '@villagekit/util-units'
-import React, { useMemo } from 'react'
+import type React from 'react'
+import { useMemo } from 'react'
 import { Vector3 } from 'three'
 import { useSandboxAssemblyContext } from './context'
 

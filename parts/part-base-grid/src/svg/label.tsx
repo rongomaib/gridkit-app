@@ -1,5 +1,4 @@
 import { useTheme } from '@villagekit/ui'
-
 import { useSvgContext } from './context'
 
 const GRID_SPACING = 40

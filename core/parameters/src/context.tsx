@@ -1,9 +1,9 @@
 import { useActorRef, useSelector } from '@xstate/react'
-import React, { createContext, useCallback, useContext, useEffect } from 'react'
-import { ActorRefFrom, SnapshotFrom } from 'xstate'
-
-import { ParametersInput, parametersMachine } from './machine'
-import { ParametersValues } from './values'
+import type React from 'react'
+import { createContext, useCallback, useContext, useEffect } from 'react'
+import type { ActorRefFrom, SnapshotFrom } from 'xstate'
+import { type ParametersInput, parametersMachine } from './machine'
+import type { ParametersValues } from './values'
 
 export const ParametersContext = createContext<ActorRefFrom<typeof parametersMachine> | null>(null)
 

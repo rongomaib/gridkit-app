@@ -1,4 +1,4 @@
-import { calculateStateForAll, PartCreator, PartState } from '@villagekit/part'
+import { type PartCreator, type PartState, calculateStateForAll } from '@villagekit/part'
 import { flatten } from 'lodash-es'
 
 export interface AssemblyPlugin<PluginState = unknown> {

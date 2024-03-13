@@ -1,10 +1,9 @@
 import { useBreakpointValue } from '@chakra-ui/react'
 import { useMemo } from 'react'
-
-import { useTheme } from './useTheme.js'
+import { useTheme } from './useTheme'
 
 export const breakpointNames = ['base', 'sm', 'md', 'lg', 'xl', '2xl'] as const
-export type BreakpointName = typeof breakpointNames[number]
+export type BreakpointName = (typeof breakpointNames)[number]
 
 export function useBreakpointWidths(): Record<BreakpointName, number> {
   const { breakpoints } = useTheme()

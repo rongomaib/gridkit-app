@@ -24,7 +24,12 @@ export function CutGridBeamSvg(props: CutGridBeamSvgProps) {
 
   const absoluteCuts = useMemo(() => {
     let sum = 0
-    return cuts.map((cut) => (sum += cut)).filter((cut) => cut !== sizeInGrids)
+    return cuts
+      .map((cut) => {
+        sum += cut
+        return sum
+      })
+      .filter((cut) => cut !== sizeInGrids)
   }, [cuts, sizeInGrids])
 
   const label = useMemo(() => {
@@ -34,13 +39,12 @@ export function CutGridBeamSvg(props: CutGridBeamSvgProps) {
       )} unit grid beams made from a ${sizeInGrids} unit grid beam cut at ${joinAnd(
         absoluteCuts,
       )} grid unit markers.`
-    } else {
-      return `${joinAnd(
-        cuts.map((cut) => cut * GRID_SPACING),
-      )} millimeter grid beams made from a ${beamWidth} millimeter grid beam cut at ${joinAnd(
-        absoluteCuts.map((cut) => cut * GRID_SPACING),
-      )} millimeter markers.`
     }
+    return `${joinAnd(
+      cuts.map((cut) => cut * GRID_SPACING),
+    )} millimeter grid beams made from a ${beamWidth} millimeter grid beam cut at ${joinAnd(
+      absoluteCuts.map((cut) => cut * GRID_SPACING),
+    )} millimeter markers.`
   }, [displayUnit, beamWidth, cuts, absoluteCuts, sizeInGrids])
 
   const { colors } = useTheme()
@@ -95,7 +99,7 @@ export function CutGridBeamSvg(props: CutGridBeamSvgProps) {
 
 function joinAnd(strs: Array<string | number>): string {
   if (strs.length === 0) return ''
-  else if (strs.length === 1) return `${strs[0]}`
-  else if (strs.length === 2) return `${strs[0]} and ${strs[1]}`
-  return strs.slice(0, strs.length - 1).join(', ') + ', and ' + String(strs.at(-1))
+  if (strs.length === 1) return `${strs[0]}`
+  if (strs.length === 2) return `${strs[0]} and ${strs[1]}`
+  return `${strs.slice(0, strs.length - 1).join(', ')}, and ${String(strs.at(-1))}`
 }

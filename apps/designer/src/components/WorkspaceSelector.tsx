@@ -1,5 +1,5 @@
 import { useWorkspacesContext } from '@/context/workspaces'
-import { Button, Heading, Icon, IconButton, List, ListItem, Text, VStack } from '@villagekit/ui'
+import { Button, Heading, Icon, IconButton, List, ListItem, VStack } from '@villagekit/ui'
 import { FaTimes } from 'react-icons/fa'
 
 export default function WorkspaceSelector() {

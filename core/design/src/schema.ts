@@ -1,8 +1,7 @@
 import { getPresetsSchema, parametersOptionsSchema } from '@villagekit/parameters'
 import { partSchema } from '@villagekit/part'
-
 import { z } from 'zod'
-import { RecursiveArray } from '.'
+import type { RecursiveArray } from '.'
 
 export const designCategorySchema = z.enum(['seating', 'tables', 'storage', 'office'])
 

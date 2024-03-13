@@ -1,12 +1,12 @@
 // @chakra-ui/accordion
-export type { AccordionProps } from './components/Accordion.js'
+export type { AccordionProps } from './components/Accordion'
 export {
   Accordion,
   AccordionButton,
   AccordionIcon,
   AccordionItem,
   AccordionPanel,
-} from './components/Accordion.js'
+} from './components/Accordion'
 
 /*
 
@@ -34,14 +34,14 @@ export { Avatar, AvatarBadge, AvatarGroup } from '@chakra-ui/react'
 // @chakra-ui/breadcrumb
 
 // @chakra-ui/button
-export type { ButtonProps } from './components/Button.js'
-export { Button } from './components/Button.js'
+export type { ButtonProps } from './components/Button'
+export { Button } from './components/Button'
 
 // @chakra-ui/card
 
 // @chakra-ui/checkbox
-export type { CheckboxProps } from './components/Checkbox.js'
-export { Checkbox } from './components/Checkbox.js'
+export type { CheckboxProps } from './components/Checkbox'
+export { Checkbox } from './components/Checkbox'
 
 // @chakra-ui/close-button
 
@@ -88,29 +88,29 @@ export {
   useColorModePreference,
 } from '@chakra-ui/react'
 
-export type { HeadingProps } from './components/Heading.js'
-export { Heading } from './components/Heading.js'
+export type { HeadingProps } from './components/Heading'
+export { Heading } from './components/Heading'
 
-export type { HoverCardContainerProps, HoverCardProps } from './components/HoverCard.js'
-export { HoverCard, HoverCardContainer } from './components/HoverCard.js'
+export type { HoverCardContainerProps, HoverCardProps } from './components/HoverCard'
+export { HoverCard, HoverCardContainer } from './components/HoverCard'
 
 // @chakra-ui/icon
 export type { IconProps } from '@chakra-ui/react'
 export { Icon } from '@chakra-ui/react'
 
-export type { IconButtonProps } from './components/IconButton.js'
-export { IconButton } from './components/IconButton.js'
+export type { IconButtonProps } from './components/IconButton'
+export { IconButton } from './components/IconButton'
 
 // @chakra-ui/image
 export type { ImageProps } from '@chakra-ui/react'
 export { Image } from '@chakra-ui/react'
 
-export type { InfoTooltipProps } from './components/InfoTooltip.js'
-export { InfoTooltip } from './components/InfoTooltip.js'
+export type { InfoTooltipProps } from './components/InfoTooltip'
+export { InfoTooltip } from './components/InfoTooltip'
 
 // @chakra-ui/input
-export type { InputProps } from './components/Input.js'
-export { Input } from './components/Input.js'
+export type { InputProps } from './components/Input'
+export { Input } from './components/Input'
 
 // @chakra-ui/layout
 export type {
@@ -144,28 +144,28 @@ export {
   LinkBox,
   LinkOverlay,
 } from '@chakra-ui/react'
-export type { TextProps } from './components/Text.js'
-export { Text } from './components/Text.js'
-export type { LinkProps } from './components/Link.js'
-export { Link } from './components/Link.js'
+export type { TextProps } from './components/Text'
+export { Text } from './components/Text'
+export type { LinkProps } from './components/Link'
+export { Link } from './components/Link'
 
-export type { LinkButtonProps } from './components/LinkButton.js'
-export { LinkButton } from './components/LinkButton.js'
-export type { LinkCardProps } from './components/LinkCard.js'
-export { LinkCard } from './components/LinkCard.js'
-export type { LinkIconButtonProps } from './components/LinkIconButton.js'
-export { LinkIconButton } from './components/LinkIconButton.js'
+export type { LinkButtonProps } from './components/LinkButton'
+export { LinkButton } from './components/LinkButton'
+export type { LinkCardProps } from './components/LinkCard'
+export { LinkCard } from './components/LinkCard'
+export type { LinkIconButtonProps } from './components/LinkIconButton'
+export { LinkIconButton } from './components/LinkIconButton'
 
 // @chakra-ui/menu
 //
 // @chakra-ui/modal
 
-export type { NavLinkProps } from './components/NavLink.js'
-export { NavLink } from './components/NavLink.js'
+export type { NavLinkProps } from './components/NavLink'
+export { NavLink } from './components/NavLink'
 
 // @chakra-ui/number-input
-export type { NumberInputProps } from './components/NumberInput.js'
-export { NumberInput } from './components/NumberInput.js'
+export type { NumberInputProps } from './components/NumberInput'
+export { NumberInput } from './components/NumberInput'
 
 // @chakra-ui/pin-input
 
@@ -182,50 +182,50 @@ export { NumberInput } from './components/NumberInput.js'
 // @chakra-ui/react-env
 
 // @chakra-ui/select
-export type { SelectProps } from './components/Select.js'
-export { Select } from './components/Select.js'
+export type { SelectProps } from './components/Select'
+export { Select } from './components/Select'
 
 // @chakra-ui/skeleton
 
 // @chakra-ui/skip-nav
 
 // @chakra-ui/slider
-export type { SliderProps } from './components/Slider.js'
-export { Slider, SliderTrack, SliderFilledTrack, SliderThumb } from './components/Slider.js'
+export type { SliderProps } from './components/Slider'
+export { Slider, SliderTrack, SliderFilledTrack, SliderThumb } from './components/Slider'
 
 // @chakra-ui/spinner
-export type { SpinnerProps } from './components/Spinner.js'
-export { Spinner } from './components/Spinner.js'
+export type { SpinnerProps } from './components/Spinner'
+export { Spinner } from './components/Spinner'
 
 // @chakra-ui/stepper
 
 // @chakra-ui/switch
-export type { SwitchProps } from './components/Switch.js'
-export { Switch } from './components/Switch.js'
+export type { SwitchProps } from './components/Switch'
+export { Switch } from './components/Switch'
 
 // @chakra-ui/styled-system
 export type { SystemStyleObject } from '@chakra-ui/react'
 
 // @chakra-ui/tabs
-export type { TabsProps } from './components/Tabs.js'
-export { Tab, TabList, TabPanel, TabPanels, Tabs } from './components/Tabs.js'
+export type { TabsProps } from './components/Tabs'
+export { Tab, TabList, TabPanel, TabPanels, Tabs } from './components/Tabs'
 
 // @chakra-ui/table
 
 // @chakra-ui/tag
 
 // @chakra-ui/textarea
-export type { TextareaProps } from './components/Textarea.js'
-export { Textarea } from './components/Textarea.js'
+export type { TextareaProps } from './components/Textarea'
+export { Textarea } from './components/Textarea'
 
 // @chakra-ui/theme-utils
 
 // @chakra-ui/tooltip
-export type { TooltipProps } from './components/Tooltip.js'
-export { Tooltip } from './components/Tooltip.js'
+export type { TooltipProps } from './components/Tooltip'
+export { Tooltip } from './components/Tooltip'
 
 // @chakra-ui/theme
-export { theme } from './theme.js'
+export { theme } from './theme'
 
 // @chakra-ui/toast
 export type { UseToastOptions } from '@chakra-ui/react'
@@ -235,8 +235,8 @@ export { useToast } from '@chakra-ui/react'
 
 // @chakra-ui/visually-hidden
 
-export * from './utility.js'
+export * from './utility'
 
 export { ChakraProvider } from '@chakra-ui/react'
 
-export * from './hooks/index.js'
+export * from './hooks/index'

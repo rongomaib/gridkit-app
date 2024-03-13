@@ -1,11 +1,11 @@
-import { DesignAssemblyPlugins, DesignMeta, DesignParts } from '@villagekit/design'
-import {
+import type { DesignAssemblyPlugins, DesignMeta, DesignParts } from '@villagekit/design'
+import type {
   ExtractValuesFromParametersOptions,
   ParametersOptions,
   Presets,
 } from '@villagekit/parameters'
-import { PartVariantsByType } from '@villagekit/part'
-import { ZodError } from 'zod'
+import type { PartVariantsByType } from '@villagekit/part'
+import type { ZodError } from 'zod'
 
 export type DesignFileAssembly = {
   type: 'assembly'

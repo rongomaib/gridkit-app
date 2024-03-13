@@ -1,5 +1,4 @@
 import { FormLabel, HStack } from '@villagekit/ui'
-
 import { HelperTooltip } from './helper-tooltip'
 
 interface LabelProps {

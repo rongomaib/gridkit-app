@@ -1,11 +1,11 @@
-import '@fontsource/fredoka-one'
 import '@fontsource/bitter'
+import '@fontsource/fredoka-one'
 
-import React from 'react'
+import type { Preview } from '@storybook/react'
 import { ChakraProvider, theme } from '@villagekit/ui'
+import React from 'react'
 import { QueryParamProvider } from 'use-query-params'
 import { WindowHistoryAdapter } from 'use-query-params/adapters/window'
-import type { Preview } from '@storybook/react'
 
 const preview: Preview = {
   parameters: {

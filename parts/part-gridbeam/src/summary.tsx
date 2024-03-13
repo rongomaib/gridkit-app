@@ -1,15 +1,14 @@
 import {
   PartCount,
-  PartsSummaryProps,
+  type PartSummaryEntry,
+  type PartSummaryQuota,
+  type PartsSummaryProps,
   partsToPartQuotas,
-  PartSummaryEntry,
-  PartSummaryQuota,
   useSummaryContext,
 } from '@villagekit/part-base'
 import { HStack, Text, VStack } from '@villagekit/ui'
 import { useMemo } from 'react'
-
-import { GridBeamSummaryValue } from './'
+import type { GridBeamSummaryValue } from './'
 import { calculateSummaryKey } from './methods'
 import { SummaryGridBeamSvg } from './svg/summary-grid-beam-svg'
 

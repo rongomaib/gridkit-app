@@ -1,17 +1,17 @@
-import { fromCallback } from 'xstate'
-import { RenderInputEvent } from './'
-import * as Comlink from 'comlink'
-import { comlinkDataUrl } from '../comlink'
-import {
+import { AnyMap, type TraceMap, originalPositionFor } from '@jridgewell/trace-mapping'
+import type {
   DesignMeta,
   DesignParameters,
-  DesignParts,
-  DesignPresets,
   DesignParametersValues,
   DesignPartVariantsByType,
+  DesignParts,
+  DesignPresets,
 } from '@villagekit/design'
-import { AnyMap, TraceMap, originalPositionFor } from '@jridgewell/trace-mapping'
+import * as Comlink from 'comlink'
 import { parseStackTrace } from 'errorstacks'
+import { fromCallback } from 'xstate'
+import { comlinkDataUrl } from '../comlink'
+import type { RenderInputEvent } from './'
 
 type AssemblyEvaluator = {
   loadModule: (code: string) => Promise<string>
@@ -55,7 +55,7 @@ export const javascriptAssemblyRenderer = fromCallback<RenderInputEvent>(
 
       const moduleUrl = await evaluator.loadModule(jsCode)
 
-      let jsModule
+      let jsModule: Awaited<ReturnType<AssemblyEvaluator['evaluateModule']>>
       try {
         jsModule = await evaluator.evaluateModule()
       } catch (error) {

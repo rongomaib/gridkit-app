@@ -4,8 +4,8 @@ import { useState } from 'react'
 import {
   ParameterControls,
   ParameterControlsContextProvider,
-  ParametersOptions,
   ParameterValueControls,
+  ParametersOptions,
   PresetControls,
   Presets,
 } from '../src'

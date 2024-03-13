@@ -2,7 +2,7 @@
 
 import {
   IconButton as BaseIconButton,
-  IconButtonProps as BaseIconButtonProps,
+  type IconButtonProps as BaseIconButtonProps,
 } from '@chakra-ui/react'
 import { forwardRef } from 'react'
 
@@ -13,11 +13,10 @@ export interface IconButtonProps
   icon: BaseIconButtonProps['icon']
 }
 
-export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton(
-  props,
-  ref,
-) {
-  const { title } = props
-  // @ts-ignore
-  return <BaseIconButton ref={ref} isRound aria-label={title} {...props} />
-})
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(
+  function IconButton(props, ref) {
+    const { title } = props
+    // @ts-ignore
+    return <BaseIconButton ref={ref} isRound aria-label={title} {...props} />
+  },
+)

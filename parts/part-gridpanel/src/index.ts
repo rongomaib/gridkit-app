@@ -1,6 +1,5 @@
 import { registerPartModule } from '@villagekit/part'
-
-import { calculateState, GridPanelCreator } from './creators'
+import { type GridPanelCreator, calculateState } from './creators'
 import { PartsGl } from './gl'
 import {
   calculateBoundingBox,
@@ -10,10 +9,15 @@ import {
   calculateSummaryKey,
   calculateSummaryValue,
 } from './methods'
-import { PartsSummary } from './summary'
-import { GridPanelGlValue, GridPanelState, GridPanelSummaryValue, GridPanelType } from './types'
-import { gridPanelVariants } from './variants'
 import { gridPanelSchemas } from './schemas'
+import { PartsSummary } from './summary'
+import type {
+  GridPanelGlValue,
+  GridPanelState,
+  GridPanelSummaryValue,
+  GridPanelType,
+} from './types'
+import { gridPanelVariants } from './variants'
 
 export * from './svg'
 export * from './types'

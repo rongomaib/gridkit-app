@@ -1,8 +1,8 @@
-import { BasePartSummaryValue, PartsGlProps, PartsSummaryProps } from '@villagekit/part-base'
-import { AxisId, Location } from '@villagekit/util-math'
-import { ReactElement } from 'react'
-import { Box3 } from 'three'
-import { ZodDiscriminatedUnionOption } from 'zod'
+import type { BasePartSummaryValue, PartsGlProps, PartsSummaryProps } from '@villagekit/part-base'
+import type { AxisId, Location } from '@villagekit/util-math'
+import type { ReactElement } from 'react'
+import type { Box3 } from 'three'
+import type { ZodDiscriminatedUnionOption } from 'zod'
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace

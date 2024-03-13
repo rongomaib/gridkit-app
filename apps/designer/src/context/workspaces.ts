@@ -1,6 +1,6 @@
+import { client } from '@/client'
 import constate from 'constate'
 import { useCallback, useMemo, useState } from 'react'
-import { client } from '@/client'
 
 export interface Workspace {
   path: string

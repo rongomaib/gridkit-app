@@ -1,6 +1,5 @@
 import { useMemo } from 'react'
-
-import { useTheme } from './useTheme.js'
+import { useTheme } from './useTheme'
 
 export const sizeNames = [
   'full',
@@ -23,7 +22,7 @@ export const sizeNames = [
   'container.lg',
   'container.xl',
 ] as const
-export type SizeName = typeof sizeNames[number]
+export type SizeName = (typeof sizeNames)[number]
 
 export function useSizeWidths(): Record<SizeName, number | '100%'> {
   const { sizes } = useTheme()

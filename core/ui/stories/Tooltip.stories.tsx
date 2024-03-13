@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react'
 
-import { Button } from '../src/index.js'
 import { Tooltip } from '../src/components/Tooltip.js'
+import { Button } from '../src/index.js'
 
 export default {
   component: Tooltip,

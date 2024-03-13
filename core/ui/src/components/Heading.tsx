@@ -1,6 +1,6 @@
 'use client'
 
-import { Heading as BaseHeading, HeadingProps as BaseHeadingProps } from '@chakra-ui/react'
+import { Heading as BaseHeading, type HeadingProps as BaseHeadingProps } from '@chakra-ui/react'
 
 export interface HeadingProps {
   as?: React.ComponentType | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'

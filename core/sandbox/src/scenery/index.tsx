@@ -1,6 +1,5 @@
 import { useThree } from '@react-three/fiber'
 import React, { useMemo } from 'react'
-
 import type { SandboxMode } from '../'
 import Floor from './floor'
 import Lights from './lights'

@@ -1,6 +1,6 @@
 'use client'
 
-import { Link as BaseLink, LinkProps as BaseLinkProps } from '@chakra-ui/react'
+import { Link as BaseLink, type LinkProps as BaseLinkProps } from '@chakra-ui/react'
 import { forwardRef } from 'react'
 
 export interface LinkProps {

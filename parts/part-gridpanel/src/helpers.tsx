@@ -1,6 +1,4 @@
-export function getEveryHolePosition(
-  sizeInGrids: [number, number],
-): Array<[number, number]> {
+export function getEveryHolePosition(sizeInGrids: [number, number]): Array<[number, number]> {
   const [mainLength, crossLength] = sizeInGrids
 
   const positions: Array<[number, number]> = new Array(mainLength * crossLength)

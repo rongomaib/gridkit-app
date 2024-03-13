@@ -1,6 +1,6 @@
 import { PartsGlForAll } from '@villagekit/part'
 import { useEffect } from 'react'
-import { Box3 } from 'three'
+import type { Box3 } from 'three'
 import { useSandboxAssemblyContext } from './context'
 
 interface AssemblyGlProps {

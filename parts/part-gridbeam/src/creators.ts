@@ -1,7 +1,6 @@
-import { BasePartCreator } from '@villagekit/part-base'
-import { AxisId, Location } from '@villagekit/util-math'
-
-import { GridBeamState } from './types'
+import type { BasePartCreator } from '@villagekit/part-base'
+import { AxisId, type Location } from '@villagekit/util-math'
+import type { GridBeamState } from './types'
 import { gridBeamVariants } from './variants'
 
 export type GridBeamCreator = GridBeamX | GridBeamY | GridBeamZ

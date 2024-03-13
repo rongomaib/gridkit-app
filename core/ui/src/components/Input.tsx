@@ -1,9 +1,8 @@
 'use client'
 
-import { Input as BaseInput, InputProps as BaseInputProps } from '@chakra-ui/react'
+import { Input as BaseInput, type InputProps as BaseInputProps } from '@chakra-ui/react'
 import { forwardRef } from 'react'
-
-import { useTheme } from '../hooks/useTheme.js'
+import { useTheme } from '../hooks/useTheme'
 
 export interface InputProps
   extends Pick<

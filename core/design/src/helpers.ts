@@ -1,6 +1,5 @@
-import { PartCreator } from '@villagekit/part'
-
-import { DesignParts, RecursiveArray } from './types'
+import type { PartCreator } from '@villagekit/part'
+import type { DesignParts, RecursiveArray } from './types'
 
 export function getPartCreatorsFromDesignParts(parts: DesignParts): Array<PartCreator> {
   const results: Array<PartCreator> = []
@@ -12,8 +11,8 @@ export function getPartCreatorsFromDesignParts(parts: DesignParts): Array<PartCr
       value.id === undefined
         ? indices.join('__')
         : indices.length === 1
-        ? value.id
-        : `${indices.slice(0, -1).join('__')}__${value.id}`
+          ? value.id
+          : `${indices.slice(0, -1).join('__')}__${value.id}`
     const result: PartCreator = { ...value, id }
     results.push(result)
   })

@@ -1,8 +1,8 @@
-import type { StoryObj, Meta } from '@storybook/react'
 import { HStack, VStack } from '@chakra-ui/react'
+import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 
-import { NavLink, NavLinkProps, navLinkTheme } from '../src/components/NavLink.js'
+import { NavLink, type NavLinkProps, navLinkTheme } from '../src/components/NavLink.js'
 
 export default {
   component: NavLink,
