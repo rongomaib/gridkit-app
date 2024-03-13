@@ -1,15 +1,22 @@
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
-import {
-  ExtractValuesFromParametersOptions,
-  ParameterControlsContextProvider,
-  ParametersOptions,
-  Presets,
-} from '@villagekit/parameters'
+import React, { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { ParametersProvider, ParametersValues } from '@villagekit/parameters'
 
 import { SandboxAssemblyProvider } from './assembly/context'
-import { RenderOutput, RenderError, DesignRenderer } from './renders'
-import { DesignFile } from '.'
-import { DesignInstance } from './types'
+import { useDesignRender } from './renders'
+import {
+  DesignFile,
+  DesignInstance,
+  DesignRender,
+  DesignValidationError,
+  DesignValidationErrors,
+  DesignValidationKey,
+  ExtendDesignValidationErrors,
+} from './types'
+import {
+  designMetaSchema,
+  designParametersSchema,
+  getDesignPresetsSchema,
+} from '@villagekit/design'
 
 type ProviderProps = {
   children: React.ReactNode
@@ -32,23 +39,33 @@ export function useSandboxContext(): SandboxState {
   return context
 }
 
-export function SandboxProvider(props: SandboxOptions & ProviderProps) {
-  const { file, onLocationUpdate, children } = props
+const defaultOnLocationUpdate = (location: Location) => console.log('location', location)
 
-  const [render, setRender] = useState<RenderOutput<any>>(null)
-  const [renderError, setRenderError] = useState<RenderError>(null)
+export function SandboxProvider(props: SandboxOptions & ProviderProps) {
+  const { file, onLocationUpdate = defaultOnLocationUpdate, children } = props
+
+  const { render, renderError } = useDesignRender({ file })
+
+  const [parameterValues, setParameterValues] = useState<ParametersValues | null>(null)
 
   const parameters = render?.parameters
   const presets = render?.presets
-  const hasParameters = parameters != null
-  const hasPresets = presets != null
 
-  const [parameterValues, setParameterValues] = useState<object | null>(null)
+  const [validationErrors, setValidationErrors] = useState({})
+  const extendValidationErrors = useCallback((nextValidationErrors: DesignValidationErrors) => {
+    setValidationErrors((validationErrors) => ({
+      ...validationErrors,
+      ...nextValidationErrors,
+    }))
+  }, [])
+
+  useValidateRender(render, extendValidationErrors)
 
   const state = {
     file,
     render,
     renderError,
+    validationErrors,
     parameters,
     presets,
     parameterValues,
@@ -56,71 +73,57 @@ export function SandboxProvider(props: SandboxOptions & ProviderProps) {
 
   const renderTyped =
     render?.type === 'assembly' ? (
-      <SandboxAssemblyProvider assembly={render} parameterValues={parameterValues}>
+      <SandboxAssemblyProvider
+        assembly={render}
+        parameterValues={parameterValues}
+        extendValidationErrors={extendValidationErrors}
+      >
         {children}
       </SandboxAssemblyProvider>
     ) : (
       children
     )
 
-  const parameterized =
-    hasParameters && hasPresets ? (
-      <SandboxParameters
-        onLocationUpdate={onLocationUpdate}
-        parameters={parameters}
-        presets={presets}
-        setParameterValues={setParameterValues}
-      >
-        {renderTyped}
-      </SandboxParameters>
-    ) : (
-      renderTyped
-    )
-
   return (
     <SandboxContext.Provider value={state}>
-      <DesignRenderer file={file} setRender={setRender} setError={setRenderError} />
-      {parameterized}
+      <ParametersProvider
+        parameters={parameters}
+        presets={presets}
+        onParametersValuesUpdate={setParameterValues}
+        onLocationUpdate={onLocationUpdate}
+      >
+        {renderTyped}
+      </ParametersProvider>
     </SandboxContext.Provider>
   )
 }
 
-type SandboxParametersProps<ParamsOptions extends ParametersOptions> = Pick<
-  SandboxOptions,
-  'onLocationUpdate'
-> &
-  ProviderProps & {
-    parameters: ParamsOptions
-    presets: Presets<ParamsOptions>
-    setParameterValues: (
-      parameterValues: ExtractValuesFromParametersOptions<ParamsOptions> | null,
-    ) => void
-  }
-
-function SandboxParameters<ParamsOptions extends ParametersOptions>(
-  props: SandboxParametersProps<ParamsOptions>,
+function useValidateRender(
+  render: DesignRender<any>,
+  extendValidationErrors: ExtendDesignValidationErrors,
 ) {
-  const { onLocationUpdate, parameters, presets, setParameterValues, children } = props
-
   useEffect(() => {
-    setParameterValues(presets[0].values)
-  }, [setParameterValues, presets])
+    if (render == null) return
+    const errors: DesignValidationErrors = {}
+    errors.meta = validateRenderKey(render, 'meta', designMetaSchema)
+    errors.parameters = validateRenderKey(render, 'parameters', designParametersSchema)
+    if (errors.parameters == null) {
+      errors.presets = validateRenderKey(
+        render,
+        'presets',
+        getDesignPresetsSchema(render.parameters),
+      )
+    }
+    extendValidationErrors(errors)
+  }, [render, extendValidationErrors])
+}
 
-  const handleParamValuesChange = useCallback(
-    (_presetId: string, values: ExtractValuesFromParametersOptions<ParamsOptions> | null) => {
-      setParameterValues(values)
-    },
-    [setParameterValues],
-  )
-
-  return (
-    <ParameterControlsContextProvider
-      parameters={parameters}
-      presets={presets}
-      onChange={handleParamValuesChange}
-      onLocationUpdate={onLocationUpdate}
-    >
-      {children}
-    </ParameterControlsContextProvider>
-  )
+function validateRenderKey(
+  render: NonNullable<DesignRender<any>>,
+  key: DesignValidationKey,
+  schema: Zod.Schema,
+): DesignValidationError {
+  const result = schema.safeParse(render[key])
+  if (result.success) return null
+  return result.error
 }

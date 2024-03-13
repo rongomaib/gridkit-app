@@ -1,46 +1,23 @@
-import { assign, createMachine } from 'xstate'
-
-/* eslint-disable sort-keys-fix/sort-keys-fix, @typescript-eslint/ban-types */
+import { assign, setup } from 'xstate'
 
 const timeBeforeAutoRotation = 5000
 const maxAutoRotationSpeed = 0.5
 const autoRotationAcceleration = 0.1
 
-export type CameraControlEvent =
-  | { type: 'CONTROL.USER.START' }
-  | { type: 'CONTROL.USER.END' }
-  | { type: 'CONTROL.AUTO.START' }
-  | { type: 'CONTROL.AUTO.TICK'; delta: number }
-  | { type: 'CONTROL.AUTO.OFF' }
-
-export interface CameraControlContext {
-  autoRotationSpeed: number
-}
-
-export type CameraControlState =
-  | {
-      value: 'idle'
-      context: CameraControlContext
-    }
-  | {
-      value: 'user'
-      context: CameraControlContext
-    }
-  | {
-      value: 'auto'
-      context: CameraControlContext
-    }
-  | {
-      value: 'off'
-      context: CameraControlContext
-    }
-
-export function machine(initialState = 'auto') {
-  return createMachine<
-    CameraControlContext,
-    CameraControlEvent,
-    CameraControlState
-  >({
+export function createMachine(initialState = 'auto') {
+  return setup({
+    types: {} as {
+      context: {
+        autoRotationSpeed: number
+      }
+      events:
+        | { type: 'control.user.start' }
+        | { type: 'control.user.end' }
+        | { type: 'control.auto.start' }
+        | { type: 'control.auto.tick'; delta: number }
+        | { type: 'control.auto.off' }
+    },
+  }).createMachine({
     context: {
       autoRotationSpeed: maxAutoRotationSpeed,
     },
@@ -51,37 +28,37 @@ export function machine(initialState = 'auto') {
           [timeBeforeAutoRotation]: 'auto',
         },
         on: {
-          'CONTROL.USER.START': 'user',
-          'CONTROL.AUTO.OFF': 'off',
+          'control.user.start': 'user',
+          'control.auto.off': 'off',
         },
       },
       auto: {
         on: {
-          'CONTROL.USER.START': 'user',
-          'CONTROL.AUTO.OFF': 'off',
+          'control.user.start': 'user',
+          'control.auto.off': 'off',
         },
       },
       user: {
         on: {
-          'CONTROL.USER.END': 'idle',
-          'CONTROL.AUTO.OFF': 'off',
+          'control.user.end': 'idle',
+          'control.auto.off': 'off',
         },
       },
       off: {
         on: {
-          'CONTROL.AUTO.START': 'auto',
+          'control.auto.start': 'auto',
         },
       },
     },
     on: {
-      'CONTROL.USER.START': {
+      'control.user.start': {
         actions: assign({
           autoRotationSpeed: 0,
         }),
       },
-      'CONTROL.AUTO.TICK': {
+      'control.auto.tick': {
         actions: assign({
-          autoRotationSpeed: ({ autoRotationSpeed }, { delta }) => {
+          autoRotationSpeed: ({ context: { autoRotationSpeed }, event: { delta } }) => {
             return Math.min(
               maxAutoRotationSpeed,
               autoRotationSpeed + autoRotationAcceleration * delta,

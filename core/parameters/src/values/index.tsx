@@ -29,6 +29,7 @@ import {
   numberValueSchema,
 } from './number'
 import { z } from 'zod'
+import { useParameters, useParametersValues, useShowControls, useUpdateParametersValues } from '..'
 
 export const parameterOptionsSchema = z.discriminatedUnion('type', [
   booleanOptionsSchema,
@@ -94,27 +95,25 @@ export function extractValuesSchemaFromParametersOptions<ParamsOptions extends P
   return z.object(mapValues(parameters, extractValueSchemaFromParameterOptions))
 }
 
-export interface ParameterValueControlsProps<Params extends ParametersOptions> {
-  parameters: Params
-  values: ExtractValuesFromParametersOptions<Params>
-  onChange: (values: ExtractValuesFromParametersOptions<Params>) => void
-}
+export function ParameterValueControls() {
+  const parameters = useParameters()
+  const values = useParametersValues()
+  const updateParametersValues = useUpdateParametersValues()
+  const showControls = useShowControls()
 
-export function ParameterValueControls<Params extends ParametersOptions>(
-  props: ParameterValueControlsProps<Params>,
-) {
-  const { parameters, values, onChange } = props
+  if (!showControls) return null
+  if (values == null) return null
 
   return (
     <Box role="menu" sx={{ width: '100%' }}>
       <VStack spacing="4">
         {map(parameters, (parameter, id) => (
-          <ParameterValueControl<Params, typeof parameter>
+          <ParameterValueControl<typeof parameters, typeof parameter>
             key={id}
             id={id}
             parameter={parameter}
             values={values}
-            setValues={onChange}
+            setValues={updateParametersValues}
           />
         ))}
       </VStack>

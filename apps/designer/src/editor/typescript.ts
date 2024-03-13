@@ -12,19 +12,19 @@ import { type WorkerShape } from '@valtown/codemirror-ts/worker'
 
 import * as Comlink from 'comlink'
 
-export async function getTypeScriptExtensions() {
-  const innerWorker = new Worker(
-    new URL(
-      './workers/typescript.ts',
-      // @ts-ignore
-      import.meta.url,
-    ),
-    {
-      type: 'module',
-    },
-  )
-  const worker = Comlink.wrap(innerWorker) as WorkerShape
+const innerWorker = new Worker(
+  new URL(
+    './workers/typescript.ts',
+    // @ts-ignore
+    import.meta.url,
+  ),
+  {
+    type: 'module',
+  },
+)
+const worker = Comlink.wrap<WorkerShape>(innerWorker)
 
+export async function getTypeScriptExtensions() {
   await worker.initialize()
 
   const path = 'index.ts'

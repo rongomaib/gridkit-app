@@ -1,6 +1,7 @@
 import {
   ExtractValuesFromParametersOptions,
   ParametersOptions,
+  ParametersValues,
   Presets,
 } from '@villagekit/parameters'
 import { PartCreator, PartVariantsByType } from '@villagekit/part'
@@ -18,9 +19,12 @@ export type DesignMeta = z.infer<typeof designMetaSchema>
 export type DesignParameters = ParametersOptions
 export type DesignPresets<ParamsOptions extends ParametersOptions> = Presets<ParamsOptions>
 
+export type DesignParametersValues = ParametersValues
+export type DesignPartVariantsByType = PartVariantsByType
+
 export type DesignAssembly<ParamsOptions extends ParametersOptions = never> = (
   parameters: ExtractValuesFromParametersOptions<ParamsOptions>,
-  partVariants: PartVariantsByType,
+  partVariants: DesignPartVariantsByType,
 ) => DesignParts
 export type DesignAssemblyPlugins = Array<AssemblyPlugin>
 

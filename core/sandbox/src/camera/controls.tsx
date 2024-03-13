@@ -1,5 +1,5 @@
 import { useFrame, useThree } from '@react-three/fiber'
-import { useInterpret } from '@xstate/react'
+import { useActorRef } from '@xstate/react'
 import type CameraControlsType from 'camera-controls'
 import CameraControlsImpl from 'camera-controls'
 import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react'
@@ -16,10 +16,9 @@ import {
   Vector3,
   Vector4,
 } from 'three'
-import { InterpreterFrom } from 'xstate'
 
 import type { SandboxMode } from '../'
-import { machine } from './machine'
+import { createMachine } from './machine'
 
 const ROT = 2 * Math.PI
 
@@ -62,7 +61,11 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
   function CameraControls(props, ref) {
     const { boundingBox, mode, shouldAutoRotate } = props
 
-    const service = useInterpret(() => machine(mode === 'screenshot' ? 'off' : 'auto'))
+    const actorMachine = useMemo(
+      () => createMachine(mode === 'screenshot' ? 'off' : 'auto'),
+      [mode],
+    )
+    const actor = useActorRef(actorMachine)
 
     const isControlEnabled = true
 
@@ -141,7 +144,7 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
       }
     }, [controls, invalidate])
 
-    useAutoRotate({ controls, mode, service, shouldAutoRotate })
+    useAutoRotate({ controls, mode, actor, shouldAutoRotate })
 
     useEffect(() => {
       resetControlsBox()
@@ -178,24 +181,25 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
 )
 
 interface AutoRotateOptions {
-  service: InterpreterFrom<ReturnType<typeof machine>>
+  actor: ReturnType<typeof useActorRef<ReturnType<typeof createMachine>>>
   shouldAutoRotate: boolean
   controls: CameraControlsType
   mode: SandboxMode
 }
 
 function useAutoRotate(options: AutoRotateOptions) {
-  const { controls, shouldAutoRotate, service, mode } = options
+  const { controls, shouldAutoRotate, actor, mode } = options
 
   // use ref and custom subscribe for performance
-  const controlModeRef = useRef(service.initialState.value)
-  const rotationSpeedRef = useRef(service.initialState.context.autoRotationSpeed)
+  const initialState = actor.getSnapshot()
+  const controlModeRef = useRef(initialState.value)
+  const rotationSpeedRef = useRef(initialState.context.autoRotationSpeed)
 
   useFrame((_, delta) => {
     if (controls == null) return
 
     if (controlModeRef.current === 'auto') {
-      service.send({ delta, type: 'CONTROL.AUTO.TICK' })
+      actor.send({ delta, type: 'control.auto.tick' })
 
       // clamp to handle game loop sleeping
       const clampedDelta = Math.min(delta, 0.5)
@@ -210,20 +214,20 @@ function useAutoRotate(options: AutoRotateOptions) {
     }
 
     if (shouldAutoRotate) {
-      service.send({ type: 'CONTROL.AUTO.START' })
+      actor.send({ type: 'control.auto.start' })
     } else {
-      service.send({ type: 'CONTROL.AUTO.OFF' })
+      actor.send({ type: 'control.auto.off' })
     }
-  }, [mode, shouldAutoRotate, service])
+  }, [mode, shouldAutoRotate, actor])
 
   useEffect(() => {
-    const subscription = service.subscribe((state) => {
+    const subscription = actor.subscribe((state) => {
       controlModeRef.current = state.value
       rotationSpeedRef.current = state.context.autoRotationSpeed
     })
 
     return subscription.unsubscribe
-  }, [service])
+  }, [actor])
 
   useEffect(() => {
     controls.addEventListener('controlstart', onControlStart)
@@ -234,10 +238,10 @@ function useAutoRotate(options: AutoRotateOptions) {
     }
 
     function onControlStart() {
-      service.send('CONTROL.USER.START')
+      actor.send({ type: 'control.user.start' })
     }
     function onControlEnd() {
-      service.send('CONTROL.USER.END')
+      actor.send({ type: 'control.user.end' })
     }
-  }, [controls, service])
+  }, [controls, actor])
 }

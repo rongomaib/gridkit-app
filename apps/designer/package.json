@@ -39,6 +39,7 @@
     "@codemirror/lint": "^6.5.0",
     "@codemirror/state": "^6.4.1",
     "@codemirror/view": "^6.24.0",
+    "@curvenote/ansi-to-react": "^7.0.0",
     "@electron-forge/shared-types": "^7.2.0",
     "@tanstack/react-query": "^4",
     "@tanstack/react-query-devtools": "^4",
@@ -55,6 +56,7 @@
     "@villagekit/sandbox": "workspace:^",
     "@villagekit/ui": "workspace:^",
     "@villagekit/util-math": "workspace:^",
+    "@xstate/react": "^4.1.0",
     "add": "^2.0.6",
     "codemirror": "^6.0.1",
     "codemirror-theme-catppuccin": "^0.3.0",
@@ -68,7 +70,10 @@
     "react-icons": "^5.0.1",
     "react-resplit": "^1.2.0",
     "smol-toml": "^1.1.4",
-    "three": "^0.161.0",
-    "zod": "^3.22.4"
+    "three": "^0.150.1",
+    "use-fit-text-new": "^3.0.0",
+    "xstate": "^5.9.1",
+    "zod": "^3.22.4",
+    "zod-structured-error": "^1.0.0"
   }
 }

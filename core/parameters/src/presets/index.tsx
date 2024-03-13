@@ -1,12 +1,17 @@
 import { FormControl, FormLabel, Select } from '@villagekit/ui'
-import { ChangeEvent, memo, useCallback } from 'react'
+import { ChangeEvent, useCallback } from 'react'
 import { z } from 'zod'
 
 import {
   ExtractValuesFromParametersOptions,
   ParametersOptions,
   extractValuesSchemaFromParametersOptions,
+  usePresetId,
+  usePresets,
+  useUpdateParametersValues,
+  useUpdatePresetId,
 } from '../'
+import { find } from 'lodash-es'
 
 export interface Preset<ParamsOptions extends ParametersOptions> {
   id: string
@@ -48,29 +53,31 @@ export function getPresetsSchema<ParamsOptions extends ParametersOptions>(
   return z.array(presetSchema).min(1)
 }
 
-export interface PresetControlsProps<ParamsOptions extends ParametersOptions> {
-  currentPresetId: Preset<ParamsOptions>['id']
-  presets: Presets<ParamsOptions>
-  onPresetChange: (preset: Preset<ParamsOptions>['id']) => void
-}
-
-export const PresetControls = memo(function PresetControls<
-  ParamsOptions extends ParametersOptions,
->(props: PresetControlsProps<ParamsOptions>) {
-  const { currentPresetId, presets, onPresetChange } = props
+export function PresetControls() {
+  const presetId = usePresetId()
+  const presets = usePresets()
+  const updatePresetId = useUpdatePresetId()
+  const updateParametersValues = useUpdateParametersValues()
 
   const handlePresetChange = useCallback(
     (ev: ChangeEvent<HTMLSelectElement>) => {
-      onPresetChange(ev.target.value)
+      const selectedPresetId = ev.target.value
+      if (selectedPresetId === 'custom') {
+        const preset = find(presets, ['id', presetId])
+        if (preset == null) return
+        updateParametersValues(preset.values)
+      } else {
+        updatePresetId(selectedPresetId)
+      }
     },
-    [onPresetChange],
+    [updatePresetId, updateParametersValues, presets, presetId],
   )
 
   return (
     <FormControl id="preset" role="group">
       <FormLabel>Preset</FormLabel>
 
-      <Select role="menuitem" value={currentPresetId} onChange={handlePresetChange}>
+      <Select role="menuitem" value={presetId || 'custom'} onChange={handlePresetChange}>
         {presets.map((preset) => (
           <option key={preset.id} value={preset.id}>
             {preset.label}
@@ -81,4 +88,4 @@ export const PresetControls = memo(function PresetControls<
       </Select>
     </FormControl>
   )
-})
+}

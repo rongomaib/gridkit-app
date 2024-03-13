@@ -1,6 +1,6 @@
 import { client } from '@/client'
 import { SandboxProvider, DesignFile } from '@villagekit/sandbox'
-import { createContext, useContext, useEffect } from 'react'
+import { createContext, useContext, useEffect, useMemo } from 'react'
 import { useEditorContext } from './editor'
 
 type ProviderProps = {
@@ -32,25 +32,26 @@ function useProduct(options: ProductOptions): ProductState {
     setEditorCode(productEntryQuery.data)
   }, [productEntryQuery.isSuccess, productEntryQuery.data, setEditorCode])
 
-  if (!productMetaQuery.isSuccess || !productEntryQuery.isSuccess) return null
+  return useMemo(() => {
+    if (!productMetaQuery.isSuccess) return null
+    const { type, entry } = productMetaQuery.data
 
-  const { type, entry } = productMetaQuery.data
+    const language = entry.endsWith('.ts')
+      ? 'typescript'
+      : entry.endsWith('.js')
+      ? 'javascript'
+      : 'unknown'
 
-  const language = entry.endsWith('.ts')
-    ? 'typescript'
-    : entry.endsWith('.js')
-    ? 'javascript'
-    : 'unknown'
+    if (language === 'unknown') throw new Error(`Unexpected product entry extension: ${entry}`)
 
-  if (language === 'unknown') throw new Error(`Unexpected product entry extension: ${entry}`)
-
-  return {
-    file: {
-      type,
-      code: editorCode,
-      language,
-    },
-  }
+    return {
+      file: {
+        type,
+        code: editorCode,
+        language,
+      },
+    }
+  }, [productMetaQuery.isSuccess, productMetaQuery.data, editorCode])
 }
 
 export const ProductContext = createContext<ProductState | null>(null)

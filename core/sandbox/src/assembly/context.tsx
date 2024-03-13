@@ -15,16 +15,19 @@ import { Box3 } from 'three'
 import {
   AssemblyPlugin,
   DesignParts,
+  designPartsSchema,
   generatePartsForPlugins,
   getPartCreatorsFromDesignParts,
 } from '@villagekit/design'
-import { DesignRenderAssembly } from '../types'
+
+import { DesignRenderAssembly, ExtendDesignValidationErrors } from '../types'
 
 type SandboxAssemblyOptions<ParamsOptions extends ParametersOptions> = {
   assembly: DesignRenderAssembly<ParamsOptions>
   parameterValues: ParamsOptions extends never
     ? null
     : ExtractValuesFromParametersOptions<ParamsOptions>
+  extendValidationErrors: ExtendDesignValidationErrors
 }
 
 type SandboxAssemblyState = {
@@ -75,15 +78,23 @@ const noPlugins: Array<AssemblyPlugin> = []
 function useParts<ParamsOptions extends ParametersOptions>(
   options: SandboxAssemblyOptions<ParamsOptions>,
 ): UsePartsValue {
-  const { assembly, parameterValues } = options
+  const { assembly, parameterValues, extendValidationErrors } = options
 
   const partVariants = useMemo(() => getPartVariants(), [])
 
   const [assemblyParts, setAssemblyParts] = useState<DesignParts>([])
   useEffect(() => {
     if (parameterValues == null) return
-    assembly.createParts(parameterValues, partVariants).then(setAssemblyParts)
-  }, [assembly, parameterValues, partVariants])
+    assembly.assembly(parameterValues, partVariants).then((parts) => {
+      const result = designPartsSchema.safeParse(parts)
+      if (result.success) {
+        setAssemblyParts(result.data)
+        extendValidationErrors({ assembly: null })
+      } else {
+        extendValidationErrors({ assembly: result.error })
+      }
+    })
+  }, [assembly, parameterValues, partVariants, extendValidationErrors])
 
   const [partCreators, setPartCreators] = useState<Array<PartCreator>>([])
   const [isLoading, setLoading] = useState(false)

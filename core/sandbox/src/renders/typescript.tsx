@@ -1,21 +1,25 @@
-import { useEffect, useState } from 'react'
 import initSwc, { transformSync } from '@swc/wasm-web'
+import { fromCallback, ActorRefFrom } from 'xstate'
 
-import { RendererProps } from './'
-import { DesignRendererAssemblyJavaScript } from './javascript'
+import { RenderInputEvent } from './'
+import { javascriptAssemblyRenderer } from './javascript'
 
-export function DesignRendererAssemblyTypeScript(props: RendererProps<any> & { code: string }) {
-  const { code: tsCode, setRender, setError } = props
+export const typescriptAssemblyRenderer = fromCallback<
+  RenderInputEvent,
+  { javascriptAssemblyRenderer: ActorRefFrom<typeof javascriptAssemblyRenderer> }
+>(({ input, sendBack, receive }) => {
+  const { javascriptAssemblyRenderer } = input
 
-  const [isSwcInitialized, setSwcInitialized] = useState(false)
-  useEffect(() => {
-    initSwc().then(() => setSwcInitialized(true))
-  }, [])
+  const swcInitialized = initSwc()
 
-  const [jsCode, setJsCode] = useState<string | null>(null)
+  receive((event) => {
+    handleCode(event.code)
+  })
 
-  useEffect(() => {
-    if (!isSwcInitialized) return
+  return () => {}
+
+  async function handleCode(tsCode: string) {
+    await swcInitialized
 
     let tsTransformOutput
     try {
@@ -30,20 +34,22 @@ export function DesignRendererAssemblyTypeScript(props: RendererProps<any> & { c
           strict: true,
           noInterop: true,
         },
+        sourceMaps: 'inline',
       })
     } catch (error) {
-      if (error instanceof Error || typeof error === 'string') {
-        console.error('swc', error)
-        setError(error)
-        return
-      } else {
-        throw error
-      }
+      sendBack({
+        type: 'renderer.failure',
+        renderError: {
+          type: 'typescript.transform',
+          error: error,
+        },
+      })
+      return
     }
-    setJsCode(tsTransformOutput.code)
-  }, [tsCode, setError, isSwcInitialized])
 
-  return (
-    <DesignRendererAssemblyJavaScript code={jsCode} setRender={setRender} setError={setError} />
-  )
-}
+    javascriptAssemblyRenderer.send({
+      type: 'render',
+      code: tsTransformOutput.code,
+    })
+  }
+})

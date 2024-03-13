@@ -29,6 +29,9 @@
   "pnpm": {
     "patchedDependencies": {
       "turbowatch@2.29.4": "patches/turbowatch@2.29.4.patch"
+    },
+    "overrides": {
+      "three": "^0.150.1"
     }
   }
 }

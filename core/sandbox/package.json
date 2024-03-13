@@ -20,10 +20,12 @@
     "./dist/globals.js"
   ],
   "scripts": {
-    "build:pkg": "tsup src --dts",
+    "build:comlink": "node ./scripts/generate-comlink-dataurl.cjs",
+    "build:pkg": "npm run build:comlink && tsup src --dts",
     "lint": "biome lint ."
   },
   "dependencies": {
+    "@jridgewell/trace-mapping": "^0.3.25",
     "@juggle/resize-observer": "^3.4.0",
     "@react-three/drei": "^9.57.3",
     "@swc/wasm-web": "^1.4.2",
@@ -38,26 +40,29 @@
     "@villagekit/ui": "workspace:*",
     "@villagekit/util-units": "workspace:*",
     "camera-controls": "^1.37.3",
+    "comlink": "^4.4.1",
     "constate": "^3.3.2",
     "dnum": "^2.9.0",
+    "errorstacks": "^2.4.1",
     "lodash-es": "^4.17.21",
     "p-debounce": "^4.0.0",
     "r3f-perf": "^7.1.2",
     "react-icons": "^4.10.1",
-    "screenfull": "^6.0.2"
+    "screenfull": "^6.0.2",
+    "zod": "^3.22.4"
   },
   "peerDependencies": {
     "@react-three/fiber": "^8.12.0",
-    "@xstate/react": "^3.0.1",
+    "@xstate/react": "^4.1.0",
     "react": "^18.2.0",
     "three": "^0.150.1",
-    "xstate": "^4.33.6"
+    "xstate": "^5.9.1"
   },
   "devDependencies": {
     "@storybook/react": "^7.6.3",
-    "@villagekit/tsconfig": "workspace:*",
     "@villagekit/part-gridbeam": "workspace:*",
     "@villagekit/part-gridpanel": "workspace:*",
+    "@villagekit/tsconfig": "workspace:*",
     "tsup": "^8.0.1",
     "typescript": "^5.2.2"
   }
