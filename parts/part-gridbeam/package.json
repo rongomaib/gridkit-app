@@ -17,7 +17,7 @@
   },
   "sideEffects": ["./src/index.ts", "./dist/index.js"],
   "scripts": {
-    "build:pkg": "tsup src --dts",
+    "build:pkg": "tsup src",
     "lint": "biome check ."
   },
   "dependencies": {

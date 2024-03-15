@@ -8,7 +8,8 @@
     "dev:app": "turbo dev:app --concurrency 1000",
     "dev": "pnpm run '/^dev:.*/'",
     "lint": "turbo lint",
-    "format": "biome check --apply ."
+    "format": "biome check --apply .",
+    "test": "turbo test"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.6.1",
@@ -19,7 +20,7 @@
     "patch-package": "^8.0.0",
     "tsup": "^8.0.1",
     "tsx": "^4.7.0",
-    "turbo": "^1.11.3",
+    "turbo": "^1.12.5",
     "turbotree": "^1.0.1",
     "turbowatch": "^2.29.4",
     "vite": "^5.0.0",

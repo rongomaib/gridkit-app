@@ -1,0 +1,44 @@
+name: Checks
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        task: [lint, test, 'build:pkg']
+
+    name: ${{ matrix.task }}
+    steps:
+      - name: Checkout the commit
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Setup turbo cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.cache/turbo
+          key: ${{ runner.os }}-turbo-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-turbo-
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Run ${{ matrix.task }}
+        run: FORCE_COLOR=1 pnpm run ${{ matrix.task }} ${{ env.CLI_ARGS }}

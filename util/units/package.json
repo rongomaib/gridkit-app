@@ -18,8 +18,11 @@
   "sideEffects": false,
   "scripts": {
     "deps": "depcheck",
-    "build:pkg": "tsup src --dts",
-    "lint": "biome check ."
+    "build:pkg": "tsup src",
+    "lint": "biome check .",
+    "test": "vitest run"
   },
-  "dependencies": {}
+  "devDependencies": {
+    "vitest": "^1.3.1"
+  }
 }

@@ -10,6 +10,8 @@
       "dependsOn": ["^build:app"],
       "outputs": [".next/**", "!.next/cache/**", "storybook-static/**"]
     },
+    "types": {},
+    "test": {},
     "lint": {},
     "dev:pkg": {
       "cache": false,
