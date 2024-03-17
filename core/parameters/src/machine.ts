@@ -12,41 +12,36 @@ import {
   updateLocation,
   withDefault,
 } from 'serialize-query-params'
-import { assign, fromCallback, sendTo, setup } from 'xstate'
+import { assertEvent, assign, fromCallback, sendTo, setup } from 'xstate'
 import type { Preset, Presets } from './presets'
-import type {
-  ExtractValuesFromParametersOptions,
-  ParameterOptions,
-  ParametersOptions,
-  ParametersValues,
-} from './values'
+import type { ExtractValuesFromParams, Param, Params, ParamsValues } from './values'
 
 export type OnLocationUpdate = (location: Location) => void
-export type ParametersInput = {
-  parameters: ParametersOptions
-  presets: Presets<any>
+export type ParamsMachineInput = {
   onLocationUpdate?: OnLocationUpdate
 }
 
+type UpdateParamsEvent = {
+  type: 'updateParams'
+  params: Params
+  presets: Presets<any>
+}
 type UpdatePresetIdEvent = {
   type: 'updatePresetId'
   presetId: string
 }
-type UpdateParametersValuesEvent = {
-  type: 'updateParametersValues'
-  parametersValues: ParametersValues
+type UpdateParamsValuesEvent = {
+  type: 'updateParamsValues'
+  paramsValues: ParamsValues
 }
-type UpdateStateEvent = UpdatePresetIdEvent | UpdateParametersValuesEvent
-type UpdateInputEvent = { type: 'updateInput' } & ParametersInput
-type UpdateParamsEvent = UpdateStateEvent | UpdateInputEvent
-
-const queryParamsActor = fromCallback<UpdateParamsEvent, ParametersInput>(
+type QueryParamsEvent = UpdateParamsEvent | UpdatePresetIdEvent | UpdateParamsValuesEvent
+const queryParamsActor = fromCallback<QueryParamsEvent, ParamsMachineInput>(
   ({ input, receive, sendBack }) => {
-    let currentOnLocationUpdate: OnLocationUpdate | undefined
-    let currentParameters: ParametersOptions
-    let queryParameterDefinitions: QueryParamConfigMap
+    const { onLocationUpdate } = input
 
-    setupInput(input)
+    type Current = Omit<UpdateParamsEvent, 'type'> | null
+    let current: Current = null
+    let queryParamDefinitions: QueryParamConfigMap
 
     const handleUpdateDebounced = debounce(handleUpdateState, 1000, {
       leading: false,
@@ -55,66 +50,62 @@ const queryParamsActor = fromCallback<UpdateParamsEvent, ParametersInput>(
 
     receive((event) => {
       switch (event.type) {
-        case 'updateInput': {
-          const { parameters, presets, onLocationUpdate } = event
-          return setupInput({ parameters, presets, onLocationUpdate })
+        case 'updateParams': {
+          return setupParams(event)
         }
         case 'updatePresetId':
-        case 'updateParametersValues':
+        case 'updateParamsValues':
           return handleUpdateDebounced(event)
       }
     })
 
-    loadQueryParams()
-
     return () => {}
 
-    function setupInput(input: ParametersInput) {
-      const { parameters, presets, onLocationUpdate } = input
+    function setupParams(event: UpdateParamsEvent) {
+      const { params, presets } = event
 
-      currentOnLocationUpdate = onLocationUpdate
-
-      assertPresets(parameters, presets)
-      currentParameters = parameters
+      assertPresets(params, presets)
+      current = { params, presets }
 
       const defaultPreset = presets[0]
-      queryParameterDefinitions = calculateQueryParameterDefinitions(parameters, defaultPreset)
+      queryParamDefinitions = calculateQueryParamDefinitions(params, defaultPreset)
+
+      loadQueryParams(current)
     }
 
-    function handleUpdateState(event: UpdateStateEvent) {
-      const { presetId: currentQueryPresetId, values: currentQueryParametersValues } =
-        getQueryParamsValues(currentParameters, queryParameterDefinitions)
+    function handleUpdateState(event: UpdatePresetIdEvent | UpdateParamsValuesEvent) {
+      if (current == null) return
+
+      const { presetId: currentQueryPresetId, values: currentQueryParamsValues } =
+        getQueryParamsValues(current.params, queryParamDefinitions)
 
       let urlParams: Partial<EncodedValueMap<QueryParamConfigMap>>
       switch (event.type) {
         case 'updatePresetId': {
           const { presetId } = event
           if (presetId === currentQueryPresetId) return
-          urlParams = encodeQueryParams(queryParameterDefinitions, { preset: presetId })
+          urlParams = encodeQueryParams(queryParamDefinitions, { preset: presetId })
           break
         }
-        case 'updateParametersValues': {
-          const { parametersValues } = event
-          if (isEqual(parametersValues, currentQueryParametersValues)) return
+        case 'updateParamsValues': {
+          const { paramsValues } = event
+          if (isEqual(paramsValues, currentQueryParamsValues)) return
           urlParams = encodeQueryParams(
-            queryParameterDefinitions,
-            mapValuesToQueryValueMap(currentParameters, parametersValues),
+            queryParamDefinitions,
+            mapValuesToQueryValueMap(current.params, paramsValues),
           )
           break
         }
       }
 
-      if (currentOnLocationUpdate != null) {
+      if (onLocationUpdate != null) {
         const nextLocation = updateLocation(urlParams, location)
-        currentOnLocationUpdate(nextLocation)
+        onLocationUpdate(nextLocation)
       }
     }
 
-    function loadQueryParams() {
-      const { presetId, values } = getQueryParamsValues(
-        currentParameters,
-        queryParameterDefinitions,
-      )
+    function loadQueryParams(current: NonNullable<Current>) {
+      const { presetId, values } = getQueryParamsValues(current.params, queryParamDefinitions)
       if (presetId != null) {
         sendBack({
           type: 'updatePresetId',
@@ -122,17 +113,19 @@ const queryParamsActor = fromCallback<UpdateParamsEvent, ParametersInput>(
         })
       } else if (Object.keys(values).length > 0) {
         sendBack({
-          type: 'updateParametersValues',
-          parametersValues: values,
+          type: 'updateParamsValues',
+          paramsValues: values,
         })
       }
     }
   },
 )
 
-type ParametersContext = ParametersInput & {
+type ParamsMachineContext = ParamsMachineInput & {
+  params: Params | null
+  presets: Presets<any> | null
   presetId: string | null
-  parametersValues: ParametersValues
+  paramsValues: ParamsValues | null
   showControls: boolean
 }
 
@@ -140,56 +133,60 @@ type SetShowControlsEvent = {
   type: 'setShowControls'
   showControls: boolean
 }
-type ParametersEvent = UpdateParamsEvent | SetShowControlsEvent
 
-export const parametersMachine = setup({
+export type ParamsMachineEvent =
+  | UpdateParamsEvent
+  | UpdatePresetIdEvent
+  | UpdateParamsValuesEvent
+  | SetShowControlsEvent
+
+export const paramsMachine = setup({
   types: {} as {
-    input: ParametersInput
-    context: ParametersContext
-    events: ParametersEvent
+    input: ParamsMachineInput
+    context: ParamsMachineContext
+    events: ParamsMachineEvent
   },
   actors: {
     queryParams: queryParamsActor,
   },
 }).createMachine({
-  id: 'parameters',
+  id: 'params',
   invoke: [
     {
       id: 'queryParams',
       src: 'queryParams',
-      input: ({ context: { parameters, presets, onLocationUpdate } }) => ({
-        parameters,
-        presets,
+      input: ({ context: { onLocationUpdate } }) => ({
         onLocationUpdate,
       }),
     },
   ],
   context: ({ input }) => {
-    const { parameters, presets, onLocationUpdate } = input
-    assertPresets(parameters, presets)
-    const defaultPreset = presets[0]
+    const { onLocationUpdate } = input
     return {
-      parameters,
-      presets,
+      type: 'unset',
       onLocationUpdate,
-      presetId: defaultPreset.id,
-      parametersValues: defaultPreset.values,
       showControls: false,
+      params: null,
+      presets: null,
+      presetId: null,
+      paramsValues: null,
     }
   },
   on: {
-    updateInput: {
+    updateParams: {
       actions: [
         assign(({ context, event }) => {
-          const { parameters, presets, onLocationUpdate } = event
-          assertPresets(parameters, presets)
-          // TODO assert presetId?
-          // TODO assert parametersValues?
+          const { onLocationUpdate, showControls, presetId, paramsValues } = context
+          const { params, presets } = event
+          assertPresets(params, presets)
+          const defaultPreset = presets[0]
           return {
-            ...context,
-            parameters,
-            presets,
             onLocationUpdate,
+            showControls,
+            params,
+            presets,
+            presetId: presetId ?? defaultPreset.id,
+            values: paramsValues ?? defaultPreset.values,
           }
         }),
 
@@ -200,37 +197,48 @@ export const parametersMachine = setup({
       actions: [
         assign(({ context, event }) => {
           const { presets } = context
+          if (presets == null) {
+            throw new Error('Unexpected context: presets are not set')
+          }
           const { presetId } = event
           const preset = presets.find((preset) => preset.id === presetId)
-          return { ...context, presetId, parametersValues: preset?.values }
+          if (preset == null) {
+            throw new Error(`Unknown preset: ${presetId}`)
+          }
+          return { ...context, presetId, paramsValues: preset.values }
         }),
         sendTo('queryParams', ({ event }) => event),
       ],
     },
-    updateParametersValues: {
+    updateParamsValues: {
       actions: [
         assign(({ context, event }) => {
-          const { parametersValues } = event
-          return { ...context, presetId: null, parametersValues }
+          const { params, presets } = context
+          if (params == null || presets == null) {
+            throw new Error('Unexpected context: params or presets are not set')
+          }
+          const { paramsValues } = event
+          return { ...context, presetId: null, paramsValues }
         }),
         sendTo('queryParams', ({ event }) => event),
       ],
     },
     setShowControls: {
-      actions: [
-        assign({
-          showControls: ({ event: { showControls } }) => showControls,
-        }),
-      ],
+      actions: assign({
+        showControls: ({ event }) => {
+          assertEvent(event, 'setShowControls')
+          return event.showControls
+        },
+      }),
     },
   },
 })
 
-function assertPresets<ParamsOptions extends ParametersOptions>(
-  parameters: ParamsOptions,
+function assertPresets<Ps extends Params>(
+  params: Ps,
   presets: Presets<any>,
-): asserts presets is Presets<ParamsOptions> {
-  const paramKeys = Object.keys(parameters)
+): asserts presets is Presets<Ps> {
+  const paramKeys = Object.keys(params)
   const presetKeys = Object.keys(presets[0].values)
   if (
     !(
@@ -238,72 +246,69 @@ function assertPresets<ParamsOptions extends ParametersOptions>(
       intersection(paramKeys, presetKeys).length === paramKeys.length
     )
   ) {
-    throw new Error('presets are not valid for parameters')
+    throw new Error('presets are not valid for params')
   }
 }
 
-function calculateQueryParameterDefinitions<ParamsOptions extends ParametersOptions>(
-  parameters: ParamsOptions,
-  defaultPreset: Preset<ParamsOptions>,
+function calculateQueryParamDefinitions<Ps extends Params>(
+  params: Ps,
+  defaultPreset: Preset<Ps>,
 ): QueryParamConfigMap {
   const configMap: QueryParamConfigMap = {
     preset: withDefault(StringParam, defaultPreset.id),
   }
 
-  for (const parameterKey in parameters) {
-    const parameter = parameters[parameterKey]!
-    configMap[parameter.shortId || parameterKey] = queryParamConfigForParameter(
-      parameterKey,
-      parameter,
-    )
+  for (const paramKey in params) {
+    const param = params[paramKey]!
+    configMap[param.shortId ?? paramKey] = queryParamConfigForParam(paramKey, param)
   }
 
   return configMap
 
-  function queryParamConfigForParameter(parameterKey: string, parameter: ParameterOptions) {
-    switch (parameter.type) {
+  function queryParamConfigForParam(paramKey: string, param: Param) {
+    switch (param.type) {
       case 'boolean':
-        return withDefault(BooleanParam, defaultPreset.values[parameterKey] as boolean)
+        return withDefault(BooleanParam, defaultPreset.values[paramKey] as boolean)
       case 'choice':
-        return withDefault(StringParam, defaultPreset.values[parameterKey] as string)
+        return withDefault(StringParam, defaultPreset.values[paramKey] as string)
       case 'number':
-        return withDefault(NumberParam, defaultPreset.values[parameterKey] as number)
+        return withDefault(NumberParam, defaultPreset.values[paramKey] as number)
     }
   }
 }
 
-function mapValuesToQueryValueMap<ParamsOptions extends ParametersOptions>(
-  parameters: ParamsOptions,
-  values: ExtractValuesFromParametersOptions<ParamsOptions>,
+function mapValuesToQueryValueMap<Ps extends Params>(
+  params: Ps,
+  values: ExtractValuesFromParams<Ps>,
 ): DecodedValueMap<QueryParamConfigMap> {
   const valuesMap: DecodedValueMap<QueryParamConfigMap> = {}
-  for (const parameterKey in parameters) {
-    const parameter = parameters[parameterKey]!
-    valuesMap[parameter.shortId || parameterKey] = values[parameterKey]
+  for (const paramKey in params) {
+    const param = params[paramKey]!
+    valuesMap[param.shortId || paramKey] = values[paramKey]
   }
   return valuesMap
 }
 
-function mapQueryValueMapToValues<ParamsOptions extends ParametersOptions>(
-  parameters: ParamsOptions,
+function mapQueryValueMapToValues<Ps extends Params>(
+  params: Ps,
   valuesMap: DecodedValueMap<QueryParamConfigMap>,
-): ExtractValuesFromParametersOptions<ParamsOptions> {
-  const values: Partial<ExtractValuesFromParametersOptions<ParamsOptions>> = {}
-  for (const parameterKey in parameters) {
-    const parameter = parameters[parameterKey]!
-    values[parameterKey] = valuesMap[parameter.shortId || parameterKey]
+): ExtractValuesFromParams<Ps> {
+  const values: Partial<ExtractValuesFromParams<Ps>> = {}
+  for (const paramKey in params) {
+    const param = params[paramKey]!
+    values[paramKey] = valuesMap[param.shortId || paramKey]
   }
-  return values as ExtractValuesFromParametersOptions<ParamsOptions>
+  return values as ExtractValuesFromParams<Ps>
 }
 
-function getQueryParamsValues<ParamsOptions extends ParametersOptions>(
-  parameters: ParamsOptions,
-  queryParameterDefinitions: QueryParamConfigMap,
+function getQueryParamsValues<Ps extends Params>(
+  params: Ps,
+  queryParamDefinitions: QueryParamConfigMap,
 ) {
   const urlParams = parseQueryString(location.search)
-  const queryValues = decodeQueryParams(queryParameterDefinitions, urlParams)
+  const queryValues = decodeQueryParams(queryParamDefinitions, urlParams)
 
-  const { preset: presetId, ...queryParameterValues } = queryValues
+  const { preset: presetId, ...queryParamValues } = queryValues
 
-  return { presetId, values: mapQueryValueMapToValues(parameters, queryParameterValues) }
+  return { presetId, values: mapQueryValueMapToValues(params, queryParamValues) }
 }

@@ -3,30 +3,26 @@ import { find } from 'lodash-es'
 import { type ChangeEvent, useCallback } from 'react'
 import { z } from 'zod'
 import {
-  type ExtractValuesFromParametersOptions,
-  type ParametersOptions,
-  extractValuesSchemaFromParametersOptions,
+  type ExtractValuesFromParams,
+  type Params,
+  extractValuesSchemaFromParams,
   usePresetId,
   usePresets,
-  useUpdateParametersValues,
+  useUpdateParamsValues,
   useUpdatePresetId,
 } from '../'
 
-export interface Preset<ParamsOptions extends ParametersOptions> {
+export interface Preset<Ps extends Params> {
   id: string
   label: string
-  values: ExtractValuesFromParametersOptions<ParamsOptions>
+  values: ExtractValuesFromParams<Ps>
 }
 
-export function getPresetValuesSchema<ParamsOptions extends ParametersOptions>(
-  parameters: ParamsOptions,
-) {
-  return extractValuesSchemaFromParametersOptions(parameters)
+export function getPresetValuesSchema<Ps extends Params>(parameters: Ps) {
+  return extractValuesSchemaFromParams(parameters)
 }
 
-export function getPresetSchema<ParamsOptions extends ParametersOptions>(
-  parameters: ParamsOptions,
-) {
+export function getPresetSchema<Ps extends Params>(parameters: Ps) {
   return z.object({
     id: z.string(),
     label: z.string(),
@@ -34,20 +30,13 @@ export function getPresetSchema<ParamsOptions extends ParametersOptions>(
   })
 }
 
-export type Presets<ParamsOptions extends ParametersOptions> = [
-  Preset<ParamsOptions>,
-  ...Array<Preset<ParamsOptions>>,
-]
+export type Presets<Ps extends Params> = [Preset<Ps>, ...Array<Preset<Ps>>]
 
-export function Presets<ParamsOptions extends ParametersOptions>(
-  presets: Presets<ParamsOptions>,
-): Presets<ParamsOptions> {
+export function Presets<Ps extends Params>(presets: Presets<Ps>): Presets<Ps> {
   return presets
 }
 
-export function getPresetsSchema<ParamsOptions extends ParametersOptions>(
-  parameters: ParamsOptions,
-) {
+export function getPresetsSchema<Ps extends Params>(parameters: Ps) {
   const presetSchema = getPresetSchema(parameters)
   return z.array(presetSchema).min(1)
 }
@@ -56,7 +45,7 @@ export function PresetControls() {
   const presetId = usePresetId()
   const presets = usePresets()
   const updatePresetId = useUpdatePresetId()
-  const updateParametersValues = useUpdateParametersValues()
+  const updateParamsValues = useUpdateParamsValues()
 
   const handlePresetChange = useCallback(
     (ev: ChangeEvent<HTMLSelectElement>) => {
@@ -64,13 +53,15 @@ export function PresetControls() {
       if (selectedPresetId === 'custom') {
         const preset = find(presets, ['id', presetId])
         if (preset == null) return
-        updateParametersValues(preset.values)
+        updateParamsValues(preset.values)
       } else {
         updatePresetId(selectedPresetId)
       }
     },
-    [updatePresetId, updateParametersValues, presets, presetId],
+    [updatePresetId, updateParamsValues, presets, presetId],
   )
+
+  if (presets == null) return null
 
   return (
     <FormControl id="preset" role="group">

@@ -2,24 +2,24 @@ import type { Meta, StoryObj } from '@storybook/react'
 import { useState } from 'react'
 
 import {
-  ParameterControls,
-  ParameterControlsContextProvider,
-  ParameterValueControls,
-  ParametersOptions,
+  ParamControls,
+  ParamControlsContextProvider,
+  ParamValueControls,
+  Params,
   PresetControls,
   Presets,
 } from '../src'
 
 const meta: Meta = {
-  component: ParameterValueControls,
-  title: 'Parameters',
+  component: ParamValueControls,
+  title: 'Params',
 }
 
 export default meta
 
 type Story = StoryObj
 
-const simpleParameters = ParametersOptions({
+const simpleParams = Params({
   select: {
     helperText: 'String as select',
     label: 'Select',
@@ -45,7 +45,7 @@ const simpleParameters = ParametersOptions({
   },
 })
 
-const simplePresets = Presets<typeof simpleParameters>([
+const simplePresets = Presets<typeof simpleParams>([
   {
     id: 'default',
     name: 'Default',
@@ -69,9 +69,7 @@ const simplePresets = Presets<typeof simpleParameters>([
 export function SimpleValueControls() {
   const [values, setValues] = useState(simplePresets[0].values)
 
-  return (
-    <ParameterValueControls parameters={simpleParameters} values={values} onChange={setValues} />
-  )
+  return <ParamValueControls parameters={simpleParams} values={values} onChange={setValues} />
 }
 
 export function SimplePresetControls() {
@@ -86,10 +84,10 @@ export function SimplePresetControls() {
   )
 }
 
-export function SimpleParameterControls() {
+export function SimpleParamControls() {
   return (
-    <ParameterControlsContextProvider parameters={simpleParameters} presets={simplePresets}>
-      <ParameterControls />
-    </ParameterControlsContextProvider>
+    <ParamControlsContextProvider parameters={simpleParams} presets={simplePresets}>
+      <ParamControls />
+    </ParamControlsContextProvider>
   )
 }

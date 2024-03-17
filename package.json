@@ -9,13 +9,13 @@
     "dev": "pnpm run '/^dev:.*/'",
     "lint": "turbo lint",
     "format": "biome check --apply .",
+    "format:unsafe": "biome check --apply-unsafe .",
     "test": "turbo test"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.6.1",
     "@tauri-apps/cli": "^1.5.9",
     "@types/node": "^20.11.17",
-    "@villagekit/designer": "workspace:^",
     "@villagekit/tsconfig": "workspace:*",
     "patch-package": "^8.0.0",
     "tsup": "^8.0.1",

@@ -6,9 +6,6 @@
     "useIgnoreFile": true,
     "defaultBranch": "main"
   },
-  "files": {
-    "ignore": ["./apps/designer/src/editor/types.d.ts"]
-  },
   "organizeImports": {
     "enabled": true
   },

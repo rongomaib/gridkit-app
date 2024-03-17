@@ -1,7 +1,7 @@
 import { JsonParam } from 'serialize-query-params'
 import { z } from 'zod'
 
-export const baseOptionsSchema = z.object({
+export const baseParamSchema = z.object({
   label: z.string(),
   description: z.string().optional(),
   shortId: z
@@ -10,9 +10,9 @@ export const baseOptionsSchema = z.object({
     .optional(),
 })
 
-export type BaseOptions = z.infer<typeof baseOptionsSchema>
+export type BaseParam = z.infer<typeof baseParamSchema>
 
-export interface BaseProps<Value = any> extends BaseOptions {
+export interface BaseProps<Value = any> extends BaseParam {
   id: string
   value: Value
   onChange: (value: Value) => void

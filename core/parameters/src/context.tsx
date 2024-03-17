@@ -1,103 +1,77 @@
 import { useActorRef, useSelector } from '@xstate/react'
-import type React from 'react'
-import { createContext, useCallback, useContext, useEffect } from 'react'
+import { type PropsWithChildren, createContext, useCallback, useContext } from 'react'
 import type { ActorRefFrom, SnapshotFrom } from 'xstate'
-import { type ParametersInput, parametersMachine } from './machine'
-import type { ParametersValues } from './values'
+import { type ParamsMachineInput, paramsMachine } from './machine'
+import type { Presets } from './presets'
+import type { Params, ParamsValues } from './values'
 
-export const ParametersContext = createContext<ActorRefFrom<typeof parametersMachine> | null>(null)
+export const ParamsContext = createContext<ActorRefFrom<typeof paramsMachine> | null>(null)
 
-type ParametersProviderProps = ParametersInput & {
-  onParametersValuesUpdate: (parametersValues: ParametersValues) => void
-  children: React.ReactNode
-}
+type ParamsProviderProps = PropsWithChildren<ParamsMachineInput>
 
-type Optional<T> = { [K in keyof T]: T[K] | null | undefined }
-type OptionalProps<Object extends object, Keys extends keyof Object> = Omit<Object, Keys> &
-  Optional<Pick<Object, Keys>>
+export function ParamsProvider(props: ParamsProviderProps) {
+  const { children, onLocationUpdate } = props
 
-export function ParametersProvider(
-  props: OptionalProps<ParametersProviderProps, 'parameters' | 'presets'>,
-) {
-  const { children, parameters, presets, ...rest } = props
-
-  if (parameters == null) return children
-  if (presets == null) return children
-
-  return (
-    <ParametersProviderContext parameters={parameters} presets={presets} {...rest}>
-      {children}
-    </ParametersProviderContext>
-  )
-}
-
-function ParametersProviderContext(props: ParametersProviderProps) {
-  const { children, parameters, presets, onParametersValuesUpdate, onLocationUpdate } = props
-
-  const actorRef = useActorRef(parametersMachine, {
-    input: { parameters, presets, onLocationUpdate },
+  const actorRef = useActorRef(paramsMachine, {
+    input: { onLocationUpdate },
   })
 
-  // handle updateInput
-  useEffect(() => {
-    actorRef.send({ type: 'updateInput', parameters, presets, onLocationUpdate })
-  }, [actorRef, parameters, presets, onLocationUpdate])
-
-  // handle onParametersValuesUpdate
-  const parametersValues = useSelector(actorRef, selectParametersValues)
-  useEffect(
-    () => onParametersValuesUpdate(parametersValues),
-    [onParametersValuesUpdate, parametersValues],
-  )
-
-  return <ParametersContext.Provider value={actorRef}>{children}</ParametersContext.Provider>
+  return <ParamsContext.Provider value={actorRef}>{children}</ParamsContext.Provider>
 }
 
-function useParametersActor(): ActorRefFrom<typeof parametersMachine> {
-  const actor = useContext(ParametersContext)
+function useParamsActor(): ActorRefFrom<typeof paramsMachine> {
+  const actor = useContext(ParamsContext)
   if (actor == null) {
     throw new Error(
-      "You used a hook for ParametersContext but it's not inside a ParametersProvider component",
+      "You used a hook for ParamsContext but it's not inside a ParamsProvider component",
     )
   }
   return actor
 }
 
-export const useHasParameters = () => useContext(ParametersContext) != null
+export const useHasParams = () => useContext(ParamsContext) != null
 
-type ParametersSnapshot = SnapshotFrom<typeof parametersMachine>
-const selectParameters = (snapshot: ParametersSnapshot) => snapshot.context.parameters
-export const useParameters = () => useSelector(useParametersActor(), selectParameters)
-const selectPresets = (snapshot: ParametersSnapshot) => snapshot.context.presets
-export const usePresets = () => useSelector(useParametersActor(), selectPresets)
-const selectPresetId = (snapshot: ParametersSnapshot) => snapshot.context.presetId
-export const usePresetId = () => useSelector(useParametersActor(), selectPresetId)
-const selectParametersValues = (snapshot: ParametersSnapshot) => snapshot.context.parametersValues
-export const useParametersValues = () => useSelector(useParametersActor(), selectParametersValues)
-const selectShowControls = (snapshot: ParametersSnapshot) => snapshot.context.showControls
-export const useShowControls = () => useSelector(useParametersActor(), selectShowControls)
+type ParamsSnapshot = SnapshotFrom<typeof paramsMachine>
+const selectParams = (snapshot: ParamsSnapshot) => snapshot.context.params
+export const useParams = () => useSelector(useParamsActor(), selectParams)
+const selectPresets = (snapshot: ParamsSnapshot) => snapshot.context.presets
+export const usePresets = () => useSelector(useParamsActor(), selectPresets)
+const selectPresetId = (snapshot: ParamsSnapshot) => snapshot.context.presetId
+export const usePresetId = () => useSelector(useParamsActor(), selectPresetId)
+const selectParamsValues = (snapshot: ParamsSnapshot) => snapshot.context.paramsValues
+export const useParamsValues = () => useSelector(useParamsActor(), selectParamsValues)
+const selectShowControls = (snapshot: ParamsSnapshot) => snapshot.context.showControls
+export const useShowControls = () => useSelector(useParamsActor(), selectShowControls)
 
-export function useSetShowControls() {
-  const actorRef = useParametersActor()
+export function useUpdateParams() {
+  const actorRef = useParamsActor()
   return useCallback(
-    (showControls: boolean) => actorRef.send({ type: 'setShowControls', showControls }),
+    <Ps extends Params>(params: Ps, presets: Presets<Ps>) =>
+      actorRef.send({ type: 'updateParams', params, presets }),
     [actorRef],
   )
 }
 
 export function useUpdatePresetId() {
-  const actorRef = useParametersActor()
+  const actorRef = useParamsActor()
   return useCallback(
     (presetId: string) => actorRef.send({ type: 'updatePresetId', presetId }),
     [actorRef],
   )
 }
 
-export function useUpdateParametersValues() {
-  const actorRef = useParametersActor()
+export function useUpdateParamsValues() {
+  const actorRef = useParamsActor()
   return useCallback(
-    (parametersValues: ParametersValues) =>
-      actorRef.send({ type: 'updateParametersValues', parametersValues }),
+    (paramsValues: ParamsValues) => actorRef.send({ type: 'updateParamsValues', paramsValues }),
+    [actorRef],
+  )
+}
+
+export function useSetShowControls() {
+  const actorRef = useParamsActor()
+  return useCallback(
+    (showControls: boolean) => actorRef.send({ type: 'setShowControls', showControls }),
     [actorRef],
   )
 }

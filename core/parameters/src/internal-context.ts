@@ -1,17 +1,15 @@
 import constate from 'constate'
 
-interface ParameterControlsInternalContextProps {
+interface ParamControlsInternalContextProps {
   containerRef?: React.RefObject<HTMLElement | null>
   children: React.ReactNode | Array<React.ReactNode>
 }
 
-interface ParameterControlsInternalContextType extends ParameterControlsInternalContextProps {}
+interface ParamControlsInternalContextType extends ParamControlsInternalContextProps {}
 
-function useParameters(
-  props: ParameterControlsInternalContextProps,
-): ParameterControlsInternalContextType {
+function useParams(props: ParamControlsInternalContextProps): ParamControlsInternalContextType {
   return props
 }
 
-export const [ParameterControlsInternalContextProvider, useParameterControlsInternalContext] =
-  constate(useParameters)
+export const [ParamControlsInternalContextProvider, useParamControlsInternalContext] =
+  constate(useParams)

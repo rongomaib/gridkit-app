@@ -1,15 +1,15 @@
 import { Box, VStack } from '@villagekit/ui'
 import { map, mapValues } from 'lodash-es'
-import { memo, useCallback } from 'react'
+import { useCallback } from 'react'
 import { z } from 'zod'
-import { useParameters, useParametersValues, useShowControls, useUpdateParametersValues } from '..'
+import { useParams, useParamsValues, useShowControls, useUpdateParamsValues } from '..'
 import {
   // biome-ignore lint/suspicious/noShadowRestrictedNames:
   Boolean,
   BooleanId,
   BooleanQueryParam,
   type BooleanValue,
-  booleanOptionsSchema,
+  booleanParamSchema,
   booleanValueSchema,
 } from './boolean'
 import {
@@ -17,7 +17,7 @@ import {
   ChoiceId,
   ChoiceQueryParam,
   type ChoiceValue,
-  choiceOptionsSchema,
+  choiceParamSchema,
   choiceValueSchema,
 } from './choice'
 import {
@@ -26,93 +26,90 @@ import {
   NumberId,
   NumberQueryParam,
   type NumberValue,
-  numberOptionsSchema,
+  numberParamSchema,
   numberValueSchema,
 } from './number'
 
-export const parameterOptionsSchema = z.discriminatedUnion('type', [
-  booleanOptionsSchema,
-  choiceOptionsSchema,
-  numberOptionsSchema,
+export const paramSchema = z.discriminatedUnion('type', [
+  booleanParamSchema,
+  choiceParamSchema,
+  numberParamSchema,
 ])
-export type ParameterOptions = z.infer<typeof parameterOptionsSchema>
+export type Param = z.infer<typeof paramSchema>
 
-export type ParameterValuesByType = {
+export type ParamValuesByType = {
   [BooleanId]: BooleanValue
   [ChoiceId]: ChoiceValue
   [NumberId]: NumberValue
 }
 
-export const parameterValueSchemasByType = {
+export const paramValueSchemasByType = {
   [BooleanId]: booleanValueSchema,
   [ChoiceId]: choiceValueSchema,
   [NumberId]: numberValueSchema,
 }
 
-export const parameterValueSchema = z.union([
-  booleanValueSchema,
-  choiceValueSchema,
-  numberValueSchema,
-])
+export const paramValueSchema = z.union([booleanValueSchema, choiceValueSchema, numberValueSchema])
 
-export type ParameterValue = BooleanValue | ChoiceValue | NumberValue
-export type ParametersValues = Record<string, ParameterValue>
+export type ParamValue = BooleanValue | ChoiceValue | NumberValue
+export type ParamsValues = Record<string, ParamValue>
 
-export const parameterQueryParamsByType = {
+export const paramQueryParamsByType = {
   [BooleanId]: BooleanQueryParam,
   [ChoiceId]: ChoiceQueryParam,
   [NumberId]: NumberQueryParam,
 }
 
-export type ParametersOptions = {
-  [Id: string]: ParameterOptions
+export type Params = {
+  [Id: string]: Param
 }
 
-export const parametersOptionsSchema = z.record(z.string(), parameterOptionsSchema)
+export const paramsSchema = z.record(z.string(), paramSchema)
 
-export function ParametersOptions<ParamsOptions extends ParametersOptions>(
-  parameters: ParamsOptions,
-): ParamsOptions {
-  return parameters
+export type ExtractValueFromParam<P extends Param> = ParamValuesByType[P['type']]
+
+export type ExtractValuesFromParams<Ps extends Params> = {
+  [Key in keyof Ps]: ExtractValueFromParam<Ps[Key]>
 }
 
-export type ExtractValueFromParameterOptions<ParamOptions extends ParameterOptions> =
-  ParameterValuesByType[ParamOptions['type']]
-
-export type ExtractValuesFromParametersOptions<ParamsOptions extends ParametersOptions> = {
-  [Key in keyof ParamsOptions]: ExtractValueFromParameterOptions<ParamsOptions[Key]>
+export function extractValueSchemaFromParam<P extends Param>(param: P) {
+  return paramValueSchemasByType[param.type]
+}
+export function extractValuesSchemaFromParams<Ps extends Params>(params: Ps) {
+  return z.object(mapValues(params, extractValueSchemaFromParam))
 }
 
-export function extractValueSchemaFromParameterOptions<ParamOptions extends ParameterOptions>(
-  parameter: ParamOptions,
-) {
-  return parameterValueSchemasByType[parameter.type]
-}
-export function extractValuesSchemaFromParametersOptions<ParamsOptions extends ParametersOptions>(
-  parameters: ParamsOptions,
-) {
-  return z.object(mapValues(parameters, extractValueSchemaFromParameterOptions))
-}
-
-export function ParameterValueControls() {
-  const parameters = useParameters()
-  const values = useParametersValues()
-  const updateParametersValues = useUpdateParametersValues()
+export function ParamValueControls() {
+  const params = useParams()
+  const values = useParamsValues()
+  const updateParamsValues = useUpdateParamsValues()
   const showControls = useShowControls()
+
+  type Values = NonNullable<typeof values>
+  const setValue = useCallback(
+    <Key extends keyof Values>(key: Key, value: Values[Key]) => {
+      const nextValues = Object.assign({}, values, {
+        [key]: value,
+      })
+      updateParamsValues(nextValues)
+    },
+    [values, updateParamsValues],
+  )
 
   if (!showControls) return null
   if (values == null) return null
+  if (params == null) return null
 
   return (
     <Box role="menu" sx={{ width: '100%' }}>
       <VStack spacing="4">
-        {map(parameters, (parameter, id) => (
-          <ParameterValueControl<typeof parameters, typeof parameter>
+        {map(params, (param, id) => (
+          <ParamValueControl<typeof id, typeof params, typeof param>
             key={id}
             id={id}
-            parameter={parameter}
+            param={param}
             values={values}
-            setValues={updateParametersValues}
+            setValue={setValue}
           />
         ))}
       </VStack>
@@ -120,66 +117,55 @@ export function ParameterValueControls() {
   )
 }
 
-export interface ParameterValueControlProps<
-  Params extends ParametersOptions,
-  Param extends ParameterOptions,
-> {
-  id: string
-  parameter: Param
-  values: ExtractValuesFromParametersOptions<Params>
-  setValues: (values: ExtractValuesFromParametersOptions<Params>) => void
+export interface ParamValueControlProps<Id extends string, Ps extends Params, P extends Param> {
+  id: Id
+  param: P
+  values: ExtractValuesFromParams<Ps>
+  setValue: (id: Id, value: ExtractValueFromParam<P>) => void
 }
 
-function ParameterValueControlComponent<
-  Params extends ParametersOptions,
-  Param extends ParameterOptions,
->(props: ParameterValueControlProps<Params, Param>) {
-  const { id, parameter, setValues, values } = props
+function ParamValueControl<Id extends string, Ps extends Params, P extends Param>(
+  props: ParamValueControlProps<Id, Ps, P>,
+) {
+  const { id, param, setValue, values } = props
 
-  type ParameterValue = ExtractValueFromParameterOptions<Param>
-  const setValue = useCallback(
-    (value: ParameterValue) => {
-      const nextValues = Object.assign({}, values, {
-        [id]: value,
-      })
-      setValues(nextValues)
+  const handleChange = useCallback(
+    (value: ExtractValueFromParam<P>) => {
+      setValue(id, value)
     },
-    [id, setValues, values],
+    [id, setValue],
   )
 
-  switch (parameter.type) {
+  switch (param.type) {
     case 'boolean': {
       return (
         <Boolean
-          {...parameter}
+          {...param}
           id={id}
           value={values[id] as BooleanValue}
-          onChange={setValue as (value: BooleanValue) => void}
+          onChange={handleChange as (value: BooleanValue) => void}
         />
       )
     }
     case 'choice': {
       return (
         <Choice
-          {...parameter}
+          {...param}
           id={id}
           value={values[id] as ChoiceValue}
-          onChange={setValue as (value: ChoiceValue) => void}
+          onChange={handleChange as (value: ChoiceValue) => void}
         />
       )
     }
     case 'number': {
       return (
         <Number
-          {...parameter}
+          {...param}
           id={id}
           value={values[id] as NumberValue}
-          onChange={setValue as (value: NumberValue) => void}
+          onChange={handleChange as (value: NumberValue) => void}
         />
       )
     }
   }
 }
-export const ParameterValueControl = memo(
-  ParameterValueControlComponent,
-) as typeof ParameterValueControlComponent

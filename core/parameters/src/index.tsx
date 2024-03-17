@@ -5,24 +5,24 @@ export * from './values'
 import { FormControl, FormLabel, HStack, Switch, VStack } from '@villagekit/ui'
 import type React from 'react'
 import { useCallback } from 'react'
-import { useHasParameters, useSetShowControls, useShowControls } from './context'
-import { ParameterControlsInternalContextProvider } from './internal-context'
+import { useHasParams, useSetShowControls, useShowControls } from './context'
+import { ParamControlsInternalContextProvider } from './internal-context'
 import { PresetControls } from './presets'
-import { ParameterValueControls } from './values'
+import { ParamValueControls } from './values'
 
-export interface ParameterControlsProps {
+export interface ParamControlsProps {
   containerRef?: React.RefObject<HTMLElement | null>
 }
 
-export function ParameterControls(props: ParameterControlsProps) {
+export function ParamControls(props: ParamControlsProps) {
   const { containerRef } = props
 
-  const hasParameters = useHasParameters()
+  const hasParams = useHasParams()
 
-  if (!hasParameters) return null
+  if (!hasParams) return null
 
   return (
-    <ParameterControlsInternalContextProvider containerRef={containerRef}>
+    <ParamControlsInternalContextProvider containerRef={containerRef}>
       <VStack role="menubar" spacing="4" sx={{ width: '100%' }}>
         <HStack alignItems="baseline" spacing="4" sx={{ width: '100%' }}>
           <PresetControls />
@@ -30,9 +30,9 @@ export function ParameterControls(props: ParameterControlsProps) {
           <ShowControls />
         </HStack>
 
-        <ParameterValueControls />
+        <ParamValueControls />
       </VStack>
-    </ParameterControlsInternalContextProvider>
+    </ParamControlsInternalContextProvider>
   )
 }
 
