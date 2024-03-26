@@ -2,7 +2,7 @@ import { Box, VStack } from '@villagekit/ui'
 import { map, mapValues } from 'lodash-es'
 import { useCallback } from 'react'
 import { z } from 'zod'
-import { useParams, useParamsValues, useShowControls, useUpdateParamsValues } from '..'
+import { useParams, useParamsValues, useShowControls, useUpdateParamsValues } from '../index'
 import {
   // biome-ignore lint/suspicious/noShadowRestrictedNames:
   Boolean,

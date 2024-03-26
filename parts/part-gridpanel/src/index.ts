@@ -19,7 +19,7 @@ import type {
 } from './types'
 import { gridPanelVariants } from './variants'
 
-export * from './svg'
+export * from './svg/index'
 export * from './types'
 export * from './variants'
 

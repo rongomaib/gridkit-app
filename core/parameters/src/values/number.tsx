@@ -8,11 +8,13 @@ import {
   Tooltip,
   useMobileFriendlyTooltip,
 } from '@villagekit/ui'
-import { NumberParam as NumberQueryParam } from 'serialize-query-params'
+import * as SerializeQueryParams from 'serialize-query-params'
 import { z } from 'zod'
 import { Label } from '../components/label'
 import { useParamControlsInternalContext } from '../internal-context'
 import { type BaseProps, baseParamSchema } from './base'
+
+const { NumberParam: NumberQueryParam } = SerializeQueryParams
 
 export const NumberId = 'number'
 export type NumberValue = number

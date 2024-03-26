@@ -2,34 +2,27 @@
   "name": "@villagekit/sandbox",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
-  "source": "src/index.ts",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
   },
   "sideEffects": ["./src/globals.ts", "./dist/globals.js"],
   "scripts": {
     "build:pkg": "tsup src",
-    "lint": "biome check ."
+    "lint": "biome check .",
+    "publint": "publint"
   },
   "dependencies": {
     "@juggle/resize-observer": "^3.4.0",
     "@react-three/drei": "^9.57.3",
-    "@types/lodash-es": "^4.17.12",
-    "@types/node": "^20.5.2",
-    "@types/react": "^18.2.0",
-    "@types/three": "^0.150.1",
-    "@villagekit/product": "workspace:*",
-    "@villagekit/parameters": "workspace:*",
-    "@villagekit/ui": "workspace:*",
+    "@villagekit/product": "*",
+    "@villagekit/parameters": "*",
+    "@villagekit/ui": "*",
     "camera-controls": "^1.37.3",
     "constate": "^3.3.2",
     "dnum": "^2.9.0",
@@ -47,10 +40,7 @@
   },
   "devDependencies": {
     "@storybook/react": "^7.6.3",
-    "@villagekit/part-gridbeam": "workspace:*",
-    "@villagekit/part-gridpanel": "workspace:*",
-    "@villagekit/tsconfig": "workspace:*",
-    "tsup": "^8.0.1",
-    "typescript": "^5.2.2"
+    "@villagekit/part-gridbeam": "*",
+    "@villagekit/part-gridpanel": "*"
   }
 }

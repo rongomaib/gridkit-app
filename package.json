@@ -2,23 +2,33 @@
   "name": "villagekit",
   "private": true,
   "scripts": {
+    "postinstall": "patch-package",
+    "build:app": "turbo build:app",
     "build:pkg": "turbo build:pkg",
     "dev:pkg": "tsx ./watch.ts",
-    "//": "--concurrency 1000 until https://github.com/vercel/turbo/pull/6790 fixed",
-    "dev:app": "turbo dev:app --concurrency 1000",
-    "dev": "pnpm run '/^dev:.*/'",
+    "dev:app": "turbo dev:app",
+    "dev": "concurrently 'npm:dev:*'",
     "lint": "turbo lint",
     "format": "biome check --apply .",
     "format:unsafe": "biome check --apply-unsafe .",
+    "publint": "turbo publint",
     "test": "turbo test"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.6.1",
+    "@biomejs/biome": "^1.6.3",
+    "@optimize-lodash/esbuild-plugin": "^2.0.3",
     "@tauri-apps/cli": "^1.5.9",
-    "@types/node": "^20.11.17",
-    "@villagekit/tsconfig": "workspace:*",
+    "@types/lodash-es": "^4.17.0",
+    "@types/node": "^20.11.30",
+    "@types/react": "^18.2.67",
+    "@types/react-dom": "^18.2.22",
+    "@types/three": "^0.150.1",
+    "@villagekit/tsconfig": "*",
+    "concurrently": "^8.2.2",
+    "esbuild-plugin-file-path-extensions": "^2.0.0",
     "patch-package": "^8.0.0",
-    "tsup": "^8.0.1",
+    "publint": "^0.2.7",
+    "tsup": "^8.0.2",
     "tsx": "^4.7.0",
     "turbo": "^1.12.5",
     "turbotree": "^1.0.1",
@@ -26,13 +36,8 @@
     "vite": "^5.0.0",
     "vite-tsconfig-paths": "^4.3.1"
   },
-  "packageManager": "pnpm",
-  "pnpm": {
-    "patchedDependencies": {
-      "turbowatch@2.29.4": "patches/turbowatch@2.29.4.patch"
-    },
-    "overrides": {
-      "three": "^0.150.1"
-    }
+  "workspaces": ["dev/*", "core/*", "util/*", "parts/*", "products/*", "apps/*"],
+  "overrides": {
+    "three": "^0.150.1"
   }
 }

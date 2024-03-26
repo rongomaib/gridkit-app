@@ -1,14 +1,14 @@
 export * from './context'
-export * from './presets'
-export * from './values'
+export * from './presets/index'
+export * from './values/index'
 
 import { FormControl, FormLabel, HStack, Switch, VStack } from '@villagekit/ui'
 import type React from 'react'
 import { useCallback } from 'react'
 import { useHasParams, useSetShowControls, useShowControls } from './context'
 import { ParamControlsInternalContextProvider } from './internal-context'
-import { PresetControls } from './presets'
-import { ParamValueControls } from './values'
+import { PresetControls } from './presets/index'
+import { ParamValueControls } from './values/index'
 
 export interface ParamControlsProps {
   containerRef?: React.RefObject<HTMLElement | null>

@@ -1,20 +1,20 @@
 import { debounce, intersection, isEqual } from 'lodash-es'
 import { parse as parseQueryString } from 'query-string'
-import {
+import type { DecodedValueMap, EncodedValueMap, QueryParamConfigMap } from 'serialize-query-params'
+import * as SerializeQueryParams from 'serialize-query-params'
+import { assertEvent, assign, fromCallback, sendTo, setup } from 'xstate'
+import type { Preset, Presets } from './presets'
+import type { ExtractValuesFromParams, Param, Params, ParamsValues } from './values'
+
+const {
   BooleanParam,
-  type DecodedValueMap,
-  type EncodedValueMap,
   NumberParam,
-  type QueryParamConfigMap,
   StringParam,
   decodeQueryParams,
   encodeQueryParams,
   updateLocation,
   withDefault,
-} from 'serialize-query-params'
-import { assertEvent, assign, fromCallback, sendTo, setup } from 'xstate'
-import type { Preset, Presets } from './presets'
-import type { ExtractValuesFromParams, Param, Params, ParamsValues } from './values'
+} = SerializeQueryParams
 
 export type OnLocationUpdate = (location: Location) => void
 export type ParamsMachineInput = {

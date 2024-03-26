@@ -4,57 +4,89 @@ Open source software to power [Village Kit](https://villagekit.com/):
 
 > Village Kit is a modular system for building physical things with a focus on peer production and circular economies.
 
-## Code
+## Get Started
 
-### `apps`: Applications
+To get started with the CAD-as-code modular design app.
 
-#### `@villagekit/storybook`: A Storybook app
+Download the [latest app release](https://github.com/villagekit/villagekit/releases).
 
-#### `@villagekit/designer`: A Storybook app
+For an example workspace of modular products, see [`villagekit/products`](https://github.com/villagekit/products).
 
-- [Pre-requisites](https://tauri.app/v1/guides/getting-started/prerequisites)
+## Code Overview
 
-### `ui`: User interface
+### `apps`
 
-#### `@villagekit/ui`: Base Component Library
+Applications
 
-#### `@villagekit/parameters`: Module Parameters
+#### `@villagekit/studio`
 
-#### `@villagekit/product`: Modular Product
+A CAD-as-code app for designing products
 
-#### `@villagekit/sandbox`: Product Renderer
+#### `@villagekit/storybook`
 
-### `part`: Modular Parts
+A Storybook app
+
+### `core`
+
+Core modules
+
+#### `@villagekit/ui`
+
+Base component library
+
+#### `@villagekit/parameters`
+
+Module parameters
 
 #### `@villagekit/part`
+
+Modular part type dispatcher
+
+#### `@villagekit/product`
+
+Modular product type dispatcher
+
+#### `@villagekit/sandbox`
+
+WebGL product renderer
+
+#### `@villagekit/design`
+
+User-facing code-as-CAD modeling interface
+
+### `part`
+
+Modular part types
 
 #### `@villagekit/part-gridbeam`
 
 #### `@villagekit/part-gridpanel`
 
-### `dev` Developer tools
+### `product`
 
-#### `@villagekit/eslint-config`
+Modular product types
 
-Shared ESLint configs.
+#### `@villagekit/product-kit`
+
+### `util`
+
+Utility libraries
+
+#### `@villagekit/util-units`
+
+#### `@villagekit/util-math`
+
+### `dev`
+
+Developer tools
 
 #### `@villagekit/tsconfig`
 
-Shared TypeScript configs.
+Shared TypeScript configs
 
 ## Development
 
 To get started, first we need to install [`nvm`](https://github.com/nvm-sh/nvm) (or similar).
-
-```shell
-nvm install --lts
-```
-
-Then install [`pnpm`](https://pnpm.io/)
-
-```shell
-npm install -g pnpm
-```
 
 Then clone this git repo:
 
@@ -62,11 +94,12 @@ Then clone this git repo:
 git clone https://github.com/villagekit/villagekit
 ```
 
-Then move inside and install the dependencies.
+Then move inside, install Node, and install the project dependencies.
 
 ```shell
 cd villagekit
-pnpm install
+nvm install
+npm install
 ```
 
 Now you can run any of the scripts below:
@@ -78,7 +111,7 @@ Now you can run any of the scripts below:
 Start live development servers
 
 ```shell
-pnpm dev
+npm run dev
 ```
 
 ### Build
@@ -86,7 +119,7 @@ pnpm dev
 Build code
 
 ```shell
-pnpm build
+npm run build
 ```
 
 ### Lint
@@ -94,7 +127,7 @@ pnpm build
 Lint code using [Biome](https://biomejs.dev/)
 
 ```shell
-pnpm lint
+npm run lint
 ```
 
 ### Format
@@ -102,5 +135,9 @@ pnpm lint
 Format code using [Biome](https://biomejs.dev/)
 
 ```shell
-pnpm format
+npm run format
 ```
+
+## Code Decisions
+
+- Published JavaScript modules are in Node.js-compatible ESM-only format, due to [dual package hazard](https://nodejs.org/api/packages.html#packages_dual_package_hazard)

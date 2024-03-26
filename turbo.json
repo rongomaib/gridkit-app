@@ -4,15 +4,18 @@
   "pipeline": {
     "build:pkg": {
       "dependsOn": ["^build:pkg"],
-      "outputs": ["dist/**"]
+      "outputs": ["dist/**", "dist-type-bundles/**"],
+      "outputMode": "errors-only"
     },
     "build:app": {
-      "dependsOn": ["^build:app"],
-      "outputs": [".next/**", "!.next/cache/**", "storybook-static/**"]
+      "dependsOn": ["^build:app", "build:pkg"],
+      "outputs": [".next/**", "!.next/cache/**", "storybook-static/**", "out/**"],
+      "outputMode": "new-only"
     },
     "types": {},
     "test": {},
     "lint": {},
+    "publint": {},
     "dev:pkg": {
       "cache": false,
       "persistent": true

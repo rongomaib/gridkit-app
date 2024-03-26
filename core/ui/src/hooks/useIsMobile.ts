@@ -1,4 +1,4 @@
-import { useBreakpointValue } from '../'
+import { useBreakpointValue } from '../index'
 
 export function useIsMobile(): boolean {
   return useBreakpointValue<boolean>(

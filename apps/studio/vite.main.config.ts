@@ -1,12 +1,40 @@
-import { defineConfig } from 'vite'
-import tsconfigPaths from 'vite-tsconfig-paths'
+// https://github.com/electron/forge/blob/main/packages/template/vite-typescript/tmpl/vite.main.config.ts
+import type { ConfigEnv, UserConfig } from 'vite'
+import { defineConfig, mergeConfig } from 'vite'
+import viteRequire from 'vite-plugin-require'
+import viteTsconfigPaths from 'vite-tsconfig-paths'
+import {
+  external,
+  getBuildConfig,
+  getBuildDefine,
+  pluginHotRestart,
+  quietUseClientDirective,
+} from './vite.base.config'
 
 // https://vitejs.dev/config
-export default defineConfig({
-  plugins: [tsconfigPaths()],
-  resolve: {
-    // Some libs that can run in both Web and Node.js, such as `axios`, we need to tell Vite to build them in Node.js.
-    browserField: false,
-    mainFields: ['module', 'jsnext:main', 'jsnext'],
-  },
+export default defineConfig((env) => {
+  const forgeEnv = env as ConfigEnv<'build'>
+  const { forgeConfigSelf } = forgeEnv
+  const define = getBuildDefine(forgeEnv)
+  const config: UserConfig = {
+    build: {
+      lib: {
+        entry: forgeConfigSelf.entry!,
+        fileName: () => '[name].js',
+        formats: ['es'],
+      },
+      rollupOptions: {
+        external,
+        onwarn: quietUseClientDirective,
+      },
+    },
+    plugins: [pluginHotRestart('restart'), viteTsconfigPaths(), (viteRequire as any).default()],
+    define,
+    resolve: {
+      // Load the Node.js entry.
+      mainFields: ['module', 'jsnext:main', 'jsnext'],
+    },
+  }
+
+  return mergeConfig(getBuildConfig(forgeEnv), config)
 })

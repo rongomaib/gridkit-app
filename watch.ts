@@ -5,7 +5,15 @@ const triggers = (p: PackageInfo): Trigger[] => [
   {
     expression: [
       'allof',
-      ['not', ['anyof', ['dirname', 'dist'], ['dirname', 'node_modules']]],
+      [
+        'not',
+        [
+          'anyof',
+          ['dirname', 'dist'],
+          ['dirname', 'dist-type-bundles'],
+          ['dirname', 'node_modules'],
+        ],
+      ],
       [
         'anyof',
         [

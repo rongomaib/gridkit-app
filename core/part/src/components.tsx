@@ -1,7 +1,7 @@
 import { groupBy, map } from 'lodash-es'
 import type React from 'react'
 import { useMemo } from 'react'
-import { type PartGlValue, type PartState, type PartSummaryValue, getPartModule } from './'
+import { type PartGlValue, type PartState, type PartSummaryValue, getPartModule } from './index'
 
 export interface PartsGlForAllProps {
   partGlValues: Array<PartGlValue>

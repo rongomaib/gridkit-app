@@ -27,6 +27,7 @@ out/
 build
 dist
 dist-type-bundles
+.vite
 
 # Debug
 npm-debug.log*

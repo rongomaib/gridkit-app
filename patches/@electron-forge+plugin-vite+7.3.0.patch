@@ -1,0 +1,13 @@
+diff --git a/node_modules/@electron-forge/plugin-vite/dist/VitePlugin.js b/node_modules/@electron-forge/plugin-vite/dist/VitePlugin.js
+index 5e5fa0c..a921253 100644
+--- a/node_modules/@electron-forge/plugin-vite/dist/VitePlugin.js
++++ b/node_modules/@electron-forge/plugin-vite/dist/VitePlugin.js
+@@ -84,7 +84,7 @@ the generated files). Instead, it is ${JSON.stringify(pj.main)}`);
+             });
+             // Copy the dependencies in package.json
+             for (const dep of flatDependencies) {
+-                await fs_extra_1.default.copy(dep.src, node_path_1.default.resolve(buildPath, dep.dest));
++                await fs_extra_1.default.copy(dep.src, node_path_1.default.resolve(buildPath, dep.dest), { dereference: true });
+             }
+         };
+         this.startLogic = async () => {

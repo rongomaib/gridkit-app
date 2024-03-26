@@ -10,7 +10,7 @@ import {
   usePresets,
   useUpdateParamsValues,
   useUpdatePresetId,
-} from '../'
+} from '../index'
 
 export interface Preset<Ps extends Params> {
   id: string

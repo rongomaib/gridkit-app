@@ -2,28 +2,23 @@
   "name": "@villagekit/parameters",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
-  "source": "src/index.ts",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
   "scripts": {
     "build:pkg": "tsup src",
-    "lint": "biome check ."
+    "lint": "biome check .",
+    "publint": "publint"
   },
   "dependencies": {
-    "@types/lodash-es": "^4.17.12",
-    "@types/react": "^18.2.0",
-    "@villagekit/ui": "workspace:*",
+    "@villagekit/ui": "*",
     "@xstate/react": "^4.1.0",
     "constate": "^3.3.2",
     "lodash-es": "^4.17.21",
@@ -35,11 +30,8 @@
   },
   "devDependencies": {
     "@storybook/react": "^7.6.3",
-    "@villagekit/part-gridbeam": "workspace:*",
-    "@villagekit/part-gridpanel": "workspace:*",
-    "@villagekit/tsconfig": "workspace:*",
-    "tsup": "^8.0.1",
-    "typescript": "^5.2.2"
+    "@villagekit/part-gridbeam": "*",
+    "@villagekit/part-gridpanel": "*"
   },
   "peerDependencies": {
     "react": "^18.2.0"

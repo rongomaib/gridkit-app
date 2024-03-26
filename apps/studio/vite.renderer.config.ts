@@ -1,10 +1,33 @@
+// https://github.com/electron/forge/blob/main/packages/template/vite-typescript/tmpl/vite.renderer.config.ts
+
+import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
+import { pluginExposeRenderer, quietUseClientDirective } from './vite.base.config'
 
 // https://vitejs.dev/config
-export default defineConfig({
-  plugins: [tsconfigPaths()],
-  optimizeDeps: {
-    exclude: ['@swc/wasm-web'],
-  },
+export default defineConfig((env) => {
+  const forgeEnv = env as ConfigEnv<'renderer'>
+  const { root, mode, forgeConfigSelf } = forgeEnv
+  const name = forgeConfigSelf.name ?? ''
+
+  return {
+    root,
+    mode,
+    base: './',
+    build: {
+      outDir: `.vite/renderer/${name}`,
+      rollupOptions: {
+        onwarn: quietUseClientDirective,
+      },
+    },
+    plugins: [tsconfigPaths(), pluginExposeRenderer(name)],
+    resolve: {
+      preserveSymlinks: true,
+    },
+    clearScreen: false,
+    optimizeDeps: {
+      exclude: ['@swc/wasm-web'],
+    },
+  } as UserConfig
 })

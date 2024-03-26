@@ -11,12 +11,12 @@
   "dependencies": {
     "@fontsource/bitter": "^5.0.15",
     "@fontsource/fredoka-one": "^5.0.5",
-    "@villagekit/tsconfig": "workspace:*",
-    "@villagekit/parameters": "workspace:*",
-    "@villagekit/part-gridbeam": "workspace:*",
-    "@villagekit/part-gridpanel": "workspace:*",
-    "@villagekit/sandbox": "workspace:*",
-    "@villagekit/ui": "workspace:*",
+    "@villagekit/tsconfig": "*",
+    "@villagekit/parameters": "*",
+    "@villagekit/part-gridbeam": "*",
+    "@villagekit/part-gridpanel": "*",
+    "@villagekit/sandbox": "*",
+    "@villagekit/ui": "*",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "use-query-params": "^2.2.1"

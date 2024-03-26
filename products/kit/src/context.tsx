@@ -24,7 +24,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import type { Box3 } from 'three'
 import { getPartCreatorsFromKitParts } from './helpers'
 import { generatePartsForPlugins } from './plugins'
-import { useRender } from './renders'
+import { useRender } from './renders/index'
 import { partsSchema } from './schema'
 import type { Parts, Plugins, ProductKitRender } from './types'
 

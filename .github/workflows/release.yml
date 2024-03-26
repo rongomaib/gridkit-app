@@ -1,19 +1,31 @@
-name: Checks
+name: Release
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
-    types: [opened, synchronize]
+    tags: ['*']
+
+    # branches: ["test-release"]
+
+  workflow_dispatch:
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  studio:
     strategy:
       matrix:
-        task: [lint, test, 'build:pkg']
+        os:
+          - ubuntu-22.04
+          - windows-2022
+          - macos-12
 
-    name: ${{ matrix.task }}
+      fail-fast: false
+
+    name: release-studio-${{ matrix.os }}
+
+    runs-on: ${{ matrix.os }}
+
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
       - name: Checkout the commit
         uses: actions/checkout@v4
@@ -35,5 +47,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run ${{ matrix.task }}
-        run: FORCE_COLOR=1 npm run ${{ matrix.task }} ${{ env.CLI_ARGS }}
+      - name: Builds workspace packages
+        run: npm run build:pkg
+
+      - name: Package, make, and publish studio app
+        run: npm run -w '@villagekit/studio' publish

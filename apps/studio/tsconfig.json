@@ -1,12 +1,12 @@
 {
   "extends": "@villagekit/tsconfig/react-library.json",
   "compilerOptions": {
-    "module": "CommonJS",
     "allowJs": true,
+    "module": "NodeNext",
     "baseUrl": "src/",
     "paths": {
       "@/*": ["*"]
     }
   },
-  "include": ["src"]
+  "include": ["src", "vite.*.config.ts", "env.d.ts"]
 }

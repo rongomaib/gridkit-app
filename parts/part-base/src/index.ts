@@ -2,8 +2,8 @@ import { useLoader } from '@react-three/fiber'
 import { useEffect } from 'react'
 import { NearestFilter, RepeatWrapping, type Texture, TextureLoader } from 'three'
 
-export * from './context'
-export * from './svg'
+export * from './context/index'
+export * from './svg/index'
 
 export type PartId = string
 export type PartType = string

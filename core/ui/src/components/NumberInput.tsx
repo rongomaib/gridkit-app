@@ -22,7 +22,6 @@ export interface NumberInputProps
     | 'defaultValue'
     | 'onBlur'
     | 'onChange'
-    | 'placeholder'
     | 'variant'
     | 'size'
     | 'min'

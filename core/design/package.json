@@ -2,16 +2,12 @@
   "name": "@villagekit/design",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
-  "source": "src/index.ts",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
   "exports": {
     "./kit": {
       "types": "./dist/kit.d.ts",
-      "import": "./dist/kit.js",
-      "require": "./dist/kit.cjs"
+      "import": "./dist/kit.mjs",
+      "require": "./dist/kit.js",
+      "default": "./dist/kit.mjs"
     },
     "./type-bundles/*.d.ts": {
       "import": "./dist-type-bundles/*.d.ts",
@@ -20,14 +16,15 @@
   },
   "sideEffects": false,
   "scripts": {
-    "build:types:kit": "dts-bundle-generator --project '../../tsconfig.json' --external-inlines 'zod' --inline-declare-global --export-referenced-types -o ./dist-type-bundles/kit.d.ts --no-check ./src/kit.ts",
-    "build:pkg": "npm run build:types:kit && tsup src --no-splitting",
-    "lint": "biome check ."
+    "build:types": "dts-bundle-generator --config ./dts-bundle-generator.json",
+    "build:pkg": "npm run build:types && tsup src --no-splitting",
+    "lint": "biome check .",
+    "publint": "publint"
   },
   "dependencies": {
-    "@villagekit/part-gridbeam": "workspace:*",
-    "@villagekit/part-gridpanel": "workspace:*",
-    "@villagekit/product-kit": "workspace:*"
+    "@villagekit/part-gridbeam": "*",
+    "@villagekit/part-gridpanel": "*",
+    "@villagekit/product-kit": "*"
   },
   "devDependencies": {
     "dts-bundle-generator": "^9.3.1"

@@ -2,33 +2,28 @@
   "name": "@villagekit/part-gridbeam",
   "version": "0.0.0",
   "private": true,
-  "type": "module",
-  "source": "src/index.ts",
-  "main": "dist/index.cjs",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
-      "require": "./dist/index.cjs"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"
   },
   "sideEffects": ["./src/index.ts", "./dist/index.js"],
   "scripts": {
     "build:pkg": "tsup src",
-    "lint": "biome check ."
+    "lint": "biome check .",
+    "publint": "publint"
   },
   "dependencies": {
-    "@types/react": "^18.2.37",
-    "@types/three": "^0.150.1",
-    "@villagekit/part": "workspace:*",
-    "@villagekit/part-base": "workspace:*",
-    "@villagekit/part-base-grid": "workspace:*",
-    "@villagekit/ui": "workspace:*",
-    "@villagekit/util-math": "workspace:*",
-    "@villagekit/util-units": "workspace:*",
+    "@villagekit/part": "*",
+    "@villagekit/part-base": "*",
+    "@villagekit/part-base-grid": "*",
+    "@villagekit/ui": "*",
+    "@villagekit/util-math": "*",
+    "@villagekit/util-units": "*",
     "zod": "^3.22.4"
   },
   "devDependencies": {

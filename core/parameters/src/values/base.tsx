@@ -1,5 +1,7 @@
-import { JsonParam } from 'serialize-query-params'
+import * as SerializeQueryParams from 'serialize-query-params'
 import { z } from 'zod'
+
+const { JsonParam } = SerializeQueryParams
 
 export const baseParamSchema = z.object({
   label: z.string(),
