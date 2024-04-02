@@ -12,7 +12,8 @@
     "format": "biome check --apply .",
     "format:unsafe": "biome check --apply-unsafe .",
     "publint": "turbo publint",
-    "test": "turbo test"
+    "test": "turbo test",
+    "version": "npm version $npm_package_version --workspaces && biome check --apply $(glob **/package.json) && git add **/package.json"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.6.3",
@@ -26,6 +27,7 @@
     "@villagekit/tsconfig": "*",
     "concurrently": "^8.2.2",
     "esbuild-plugin-file-path-extensions": "^2.0.0",
+    "glob": "^10.3.12",
     "patch-package": "^8.0.0",
     "publint": "^0.2.7",
     "tsup": "^8.0.2",
@@ -36,7 +38,14 @@
     "vite": "^5.0.0",
     "vite-tsconfig-paths": "^4.3.1"
   },
-  "workspaces": ["dev/*", "core/*", "util/*", "parts/*", "products/*", "apps/*"],
+  "workspaces": [
+    "dev/*",
+    "core/*",
+    "util/*",
+    "parts/*",
+    "products/*",
+    "apps/*"
+  ],
   "overrides": {
     "three": "^0.150.1"
   }
