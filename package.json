@@ -38,15 +38,9 @@
     "vite": "^5.0.0",
     "vite-tsconfig-paths": "^4.3.1"
   },
-  "workspaces": [
-    "dev/*",
-    "core/*",
-    "util/*",
-    "parts/*",
-    "products/*",
-    "apps/*"
-  ],
+  "workspaces": ["dev/*", "core/*", "util/*", "parts/*", "products/*", "apps/*"],
   "overrides": {
     "three": "^0.150.1"
-  }
+  },
+  "version": "0.0.1"
 }
