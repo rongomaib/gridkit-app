@@ -15,13 +15,16 @@ const nameSchema = z.string().regex(NAME_RE)
 const tagSchema = z.string().regex(TAG_RE)
 const pathSchema = z.string().regex(PATH_RE)
 
-export const productTypeSchema = z.enum(['kit'])
-
-export const productMetaSchema = z.object({
+const productBaseMetaSchema = z.object({
   name: nameSchema,
   label: z.string().min(1),
   description: z.string(),
-  type: productTypeSchema,
   exports: pathSchema,
   tags: z.array(tagSchema).optional(),
 })
+
+const productKitMetaSchema = productBaseMetaSchema.extend({
+  type: z.literal('kit'),
+})
+
+export const productMetaSchema = z.discriminatedUnion('type', [productKitMetaSchema])

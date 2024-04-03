@@ -28,6 +28,9 @@ import { useRender } from './renders/index'
 import { partsSchema } from './schema'
 import type { Parts, Plugins, ProductKitRender } from './types'
 
+import '@villagekit/part-gridbeam'
+import '@villagekit/part-gridpanel'
+
 type ProductKitState = {
   boundingBox: Box3
   isLoading: boolean

@@ -48,8 +48,6 @@
     "@villagekit/design": "*",
     "@villagekit/parameters": "*",
     "@villagekit/part": "*",
-    "@villagekit/part-gridbeam": "*",
-    "@villagekit/part-gridpanel": "*",
     "@villagekit/product": "*",
     "@villagekit/product-kit": "*",
     "@villagekit/ui": "*",

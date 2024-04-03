@@ -11,7 +11,7 @@
     },
     "./package.json": "./package.json"
   },
-  "sideEffects": ["./src/index.ts", "./dist/index.js"],
+  "sideEffects": ["./dist/index.js", "./dist/index.mjs"],
   "scripts": {
     "build:pkg": "tsup src",
     "lint": "biome check .",

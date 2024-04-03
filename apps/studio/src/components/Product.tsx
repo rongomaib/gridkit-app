@@ -1,6 +1,3 @@
-import '@villagekit/part-gridbeam'
-import '@villagekit/part-gridpanel'
-
 import { ParamControls } from '@villagekit/parameters'
 import {
   ProductErrorDisplay,
