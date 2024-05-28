@@ -8,6 +8,8 @@ Open source software to power [Village Kit](https://villagekit.com/):
 
 To get started with the CAD-as-code modular design app.
 
+![Screenshot of Village Kit Studio app](./apps/studio/screenshot.png)
+
 Download the [latest app release](https://github.com/villagekit/villagekit/releases).
 
 For an example workspace of modular products, see [`villagekit/products`](https://github.com/villagekit/products).
