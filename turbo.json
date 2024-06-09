@@ -1,24 +1,39 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": ["**/.env.*local"],
-  "pipeline": {
+  "globalDependencies": [
+    "**/.env.*local"
+  ],
+  "tasks": {
     "build:pkg": {
-      "dependsOn": ["^build:pkg"],
-      "outputs": ["dist/**", "dist-type-bundles/**"],
-      "outputMode": "errors-only"
+      "dependsOn": [
+        "^build:pkg"
+      ],
+      "outputs": [
+        "dist/**",
+        "dist-type-bundles/**"
+      ],
+      "outputLogs": "errors-only"
     },
     "build:app": {
-      "dependsOn": ["^build:app", "build:pkg"],
-      "outputs": [".next/**", "!.next/cache/**", "storybook-static/**", "out/**"],
-      "outputMode": "new-only"
+      "dependsOn": [
+        "^build:app",
+        "build:pkg"
+      ],
+      "outputs": [
+        ".next/**",
+        "!.next/cache/**",
+        "storybook-static/**",
+        "out/**"
+      ],
+      "outputLogs": "new-only"
     },
     "types": {},
     "test": {},
-    "lint": {},
-    "publint": {},
-    "dev:pkg": {
-      "cache": false,
-      "persistent": true
+    "lint": {
+      "dependsOn": ["^lint"]
+    },
+    "publint": {
+      "dependsOn": ["^publint"]
     },
     "dev:app": {
       "cache": false,
