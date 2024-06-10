@@ -9,10 +9,11 @@ import {
   getBuildDefine,
   pluginHotRestart,
   quietUseClientDirective,
+  workspaceAliases,
 } from './vite.base.config'
 
 // https://vitejs.dev/config
-export default defineConfig((env) => {
+export default defineConfig(async (env) => {
   const forgeEnv = env as ConfigEnv<'build'>
   const { forgeConfigSelf } = forgeEnv
   const define = getBuildDefine(forgeEnv)
@@ -31,8 +32,10 @@ export default defineConfig((env) => {
     plugins: [pluginHotRestart('restart'), viteTsconfigPaths(), (viteRequire as any).default()],
     define,
     resolve: {
-      // Load the Node.js entry.
       mainFields: ['module', 'jsnext:main', 'jsnext'],
+      alias: {
+        ...(await workspaceAliases()),
+      },
     },
   }
 

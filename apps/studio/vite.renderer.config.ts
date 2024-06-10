@@ -3,10 +3,10 @@
 import type { ConfigEnv, UserConfig } from 'vite'
 import { defineConfig } from 'vite'
 import tsconfigPaths from 'vite-tsconfig-paths'
-import { pluginExposeRenderer, quietUseClientDirective } from './vite.base.config'
+import { pluginExposeRenderer, quietUseClientDirective, workspaceAliases } from './vite.base.config'
 
 // https://vitejs.dev/config
-export default defineConfig((env) => {
+export default defineConfig(async (env) => {
   const forgeEnv = env as ConfigEnv<'renderer'>
   const { root, mode, forgeConfigSelf } = forgeEnv
   const name = forgeConfigSelf.name ?? ''
@@ -24,6 +24,9 @@ export default defineConfig((env) => {
     plugins: [tsconfigPaths(), pluginExposeRenderer(name)],
     resolve: {
       preserveSymlinks: true,
+      alias: {
+        ...(await workspaceAliases()),
+      },
     },
     clearScreen: false,
     optimizeDeps: {

@@ -4,14 +4,14 @@
   "private": true,
   "exports": {
     "./kit": {
+      "source": "./src/kit.ts",
       "types": "./dist/kit.d.ts",
       "import": "./dist/kit.mjs",
-      "require": "./dist/kit.js",
       "default": "./dist/kit.mjs"
     },
-    "./type-bundles/*.d.ts": {
-      "import": "./dist-type-bundles/*.d.ts",
-      "require": "./dist-type-bundles/*.d.ts"
+    "./type-bundles/kit.d.ts": {
+      "import": "./dist-type-bundles/kit.d.ts",
+      "require": "./dist-type-bundles/kit.d.ts"
     }
   },
   "sideEffects": false,

@@ -1,5 +1,7 @@
+import { readFile, readdir, realpath } from 'node:fs/promises'
 import { builtinModules } from 'node:module'
 import type { AddressInfo } from 'node:net'
+import { join } from 'node:path'
 import type { BuildOptions, ConfigEnv, Plugin, UserConfig } from 'vite'
 
 export const builtins = ['electron', ...builtinModules.flatMap((m) => [m, `node:${m}`])]
@@ -102,4 +104,26 @@ export const quietUseClientDirective: RollupOnWarn = (warning, warn) => {
     return
   }
   warn(warning)
+}
+
+export async function workspaceAliases() {
+  const aliases: Record<string, string> = {}
+  const workspacePkgs = await readdir(join(__dirname, '../../node_modules/@villagekit'))
+  await Promise.all(
+    workspacePkgs.map(async (pkgName) => {
+      const pkgBase = await realpath(join(__dirname, '../../node_modules/@villagekit', pkgName))
+      const pkgJson = JSON.parse(await readFile(join(pkgBase, 'package.json'), 'utf8'))
+      type ExportMap = string | { source?: string; import: string }
+      if (pkgJson['exports'] == null) return
+      const exportEntries = Object.entries<ExportMap>(pkgJson['exports'])
+      for (const [exportKey, exportMap] of exportEntries) {
+        const aliasKey = join('@villagekit', pkgName, exportKey)
+        const aliasTo =
+          typeof exportMap === 'string' ? exportMap : exportMap.source || exportMap.import
+        const aliasValue = join(pkgBase, aliasTo)
+        aliases[aliasKey] = aliasValue
+      }
+    }),
+  )
+  return aliases
 }

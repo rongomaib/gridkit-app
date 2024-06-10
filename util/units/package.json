@@ -4,9 +4,9 @@
   "private": true,
   "exports": {
     ".": {
+      "source": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
       "default": "./dist/index.mjs"
     },
     "./package.json": "./package.json"

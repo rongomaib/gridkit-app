@@ -7,10 +7,11 @@ import {
   getBuildConfig,
   pluginHotRestart,
   quietUseClientDirective,
+  workspaceAliases,
 } from './vite.base.config'
 
 // https://vitejs.dev/config
-export default defineConfig((env) => {
+export default defineConfig(async (env) => {
   const forgeEnv = env as ConfigEnv<'build'>
   const { forgeConfigSelf } = forgeEnv
   const config: UserConfig = {
@@ -31,6 +32,11 @@ export default defineConfig((env) => {
       },
     },
     plugins: [pluginHotRestart('reload'), tsconfigPaths()],
+    resolve: {
+      alias: {
+        ...(await workspaceAliases()),
+      },
+    },
   }
 
   return mergeConfig(getBuildConfig(forgeEnv), config)
