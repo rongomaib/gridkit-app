@@ -24,14 +24,14 @@
     "@villagekit/ui": "*",
     "@villagekit/util-math": "*",
     "@villagekit/util-units": "*",
-    "zod": "^3.22.4"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@storybook/react": "^7.6.3"
+    "@storybook/react": "^8.1.6"
   },
   "peerDependencies": {
     "@react-three/fiber": "^8.16.8",
-    "react": "18.2.0",
+    "react": "18.3.1",
     "three": "^0.165.0"
   }
 }

@@ -17,33 +17,26 @@
     "version": "npm version $npm_package_version --workspaces && biome check --apply $(glob **/package.json) && git add **/package.json"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.6.3",
+    "@biomejs/biome": "^1.8.0",
     "@optimize-lodash/esbuild-plugin": "^2.0.3",
-    "@tauri-apps/cli": "^1.5.9",
-    "@types/lodash-es": "^4.17.0",
-    "@types/node": "^20.11.30",
-    "@types/react": "^18.2.67",
-    "@types/react-dom": "^18.2.22",
+    "@tauri-apps/cli": "^1.5.14",
+    "@types/lodash-es": "^4.17.12",
+    "@types/node": "^20.14.2",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
     "@types/three": "^0.165.0",
     "@villagekit/tsconfig": "*",
-    "esbuild-plugin-file-path-extensions": "^2.0.0",
-    "glob": "^10.3.12",
+    "esbuild-plugin-file-path-extensions": "^2.1.2",
+    "glob": "^10.4.1",
     "patch-package": "^8.0.0",
-    "publint": "^0.2.7",
-    "tsup": "^8.0.2",
-    "tsx": "^4.7.0",
+    "publint": "^0.2.8",
+    "tsup": "^8.1.0",
+    "tsx": "^4.15.1",
     "turbo": "^2.0.3",
-    "vite": "^5.0.0",
-    "vite-tsconfig-paths": "^4.3.1"
+    "vite": "^5.2.13",
+    "vite-tsconfig-paths": "^4.3.2"
   },
-  "workspaces": [
-    "dev/*",
-    "core/*",
-    "util/*",
-    "parts/*",
-    "products/*",
-    "apps/*"
-  ],
+  "workspaces": ["dev/*", "core/*", "util/*", "parts/*", "products/*", "apps/*"],
   "overrides": {
     "three": "^0.165.0"
   },

@@ -51,7 +51,7 @@ export function PartsSummary(props: PartsSummaryProps<GridPanelSummaryValue>) {
       </Text>
       <VStack role="list" width="full">
         {partQuotas.map((quota) => (
-          <PartSummary quota={quota} {...restProps} />
+          <PartSummary key={quota.key} quota={quota} {...restProps} />
         ))}
       </VStack>
     </VStack>

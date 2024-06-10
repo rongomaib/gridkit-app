@@ -1,5 +1,5 @@
 import { debounce, intersection, isEqual } from 'lodash-es'
-import { parse as parseQueryString } from 'query-string'
+import QueryString from 'query-string'
 import type { DecodedValueMap, EncodedValueMap, QueryParamConfigMap } from 'serialize-query-params'
 import * as SerializeQueryParams from 'serialize-query-params'
 import { assertEvent, assign, fromCallback, sendTo, setup } from 'xstate'
@@ -305,7 +305,7 @@ function getQueryParamsValues<Ps extends Params>(
   params: Ps,
   queryParamDefinitions: QueryParamConfigMap,
 ) {
-  const urlParams = parseQueryString(location.search)
+  const urlParams = QueryString.parse(location.search)
   const queryValues = decodeQueryParams(queryParamDefinitions, urlParams)
 
   const { preset: presetId, ...queryParamValues } = queryValues

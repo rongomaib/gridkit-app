@@ -7,7 +7,7 @@ import { ProductKitView } from './view'
 export { ProductKitContext } from './context'
 export type { Params, Parts, PartsFn, Presets } from './types'
 
-export const ProductKit: ProductModule = {
+export const ProductKitModule: ProductModule = {
   id: 'kit',
   components: {
     ProductProvider: ProductKitProvider,

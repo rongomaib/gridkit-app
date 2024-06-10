@@ -62,6 +62,7 @@ export function CutGridBeamSvg(props: CutGridBeamSvgProps) {
           <title>{label}</title>
 
           {cuts.map((cut, index) => (
+            // biome-ignore lint/correctness/useJsxKeyInIterable:
             <BeamSvg
               sizeInGrids={cut}
               x={(absoluteCuts[index - 1] || 0) * GRID_SPACING}

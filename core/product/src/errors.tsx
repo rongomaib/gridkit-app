@@ -81,7 +81,7 @@ function StackErrorDisplay(props: StackErrorProps) {
         <Box sx={{ fontWeight: 'bold' }}>{message}</Box>
         <List>
           {stack.map((frame) => (
-            <ListItem>
+            <ListItem key={`${frame.line}:${frame.column}`}>
               <ListIcon as={MdChevronRight} />
               at line {frame.line}, column {frame.column}
               {frame.name !== '' && <>, function {frame.name}</>}

@@ -4,7 +4,7 @@ import {
   type ProductMeta,
   type ProductModule,
 } from '@villagekit/product'
-import { ProductKit } from '@villagekit/product-kit'
+import { ProductKitModule } from '@villagekit/product-kit'
 import { type PropsWithChildren, useEffect } from 'react'
 import { useEditorContext } from './editor'
 
@@ -17,7 +17,7 @@ type ProductEntry = null | {
   code: string
 }
 
-const Products: Array<ProductModule> = [ProductKit]
+const Products: Array<ProductModule> = [ProductKitModule]
 
 export function ProductProvider(props: PropsWithChildren<ProductOptions>) {
   const { children, ...options } = props
