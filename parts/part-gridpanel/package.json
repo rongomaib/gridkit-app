@@ -31,8 +31,8 @@
     "@storybook/react": "^7.6.3"
   },
   "peerDependencies": {
-    "@react-three/fiber": "^8.12.0",
+    "@react-three/fiber": "^8.16.8",
     "react": "18.2.0",
-    "three": "^0.150.1"
+    "three": "^0.165.0"
   }
 }

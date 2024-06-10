@@ -8,6 +8,8 @@ import {
   MOUSE,
   MathUtils,
   Matrix4,
+  type OrthographicCamera,
+  type PerspectiveCamera,
   Quaternion,
   Raycaster,
   Sphere,
@@ -155,9 +157,9 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
 
     // TODO: pull request upstream?
     const middleMouseAction = useMemo(() => {
-      return (camera as THREE.PerspectiveCamera).isPerspectiveCamera
+      return (camera as PerspectiveCamera).isPerspectiveCamera
         ? ACTION.DOLLY
-        : (camera as THREE.OrthographicCamera).isOrthographicCamera
+        : (camera as OrthographicCamera).isOrthographicCamera
           ? ACTION.ZOOM
           : ACTION.NONE
     }, [camera])

@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@juggle/resize-observer": "^3.4.0",
-    "@react-three/drei": "^9.57.3",
+    "@react-three/drei": "^9.106.0",
     "@villagekit/product": "*",
     "@villagekit/parameters": "*",
     "@villagekit/ui": "*",
@@ -27,15 +27,15 @@
     "constate": "^3.3.2",
     "dnum": "^2.9.0",
     "lodash-es": "^4.17.21",
-    "r3f-perf": "^7.1.2",
+    "r3f-perf": "^7.2.1",
     "react-icons": "^4.10.1",
     "screenfull": "^6.0.2"
   },
   "peerDependencies": {
-    "@react-three/fiber": "^8.12.0",
+    "@react-three/fiber": "^8.16.8",
     "@xstate/react": "^4.1.0",
     "react": "^18.2.0",
-    "three": "^0.150.1",
+    "three": "^0.165.0",
     "xstate": "^5.9.1"
   },
   "devDependencies": {

@@ -2,13 +2,13 @@ import './globals'
 
 import { ResizeObserver } from '@juggle/resize-observer'
 import { AdaptiveDpr, useContextBridge, useDetectGPU } from '@react-three/drei'
-import { Canvas, type RootState } from '@react-three/fiber'
+import { Canvas } from '@react-three/fiber'
 import type { ProductViewProps } from '@villagekit/product'
 import { Box, useDisclosure } from '@villagekit/ui'
 import { Perf } from 'r3f-perf'
 import type React from 'react'
-import { useCallback, useMemo, useRef } from 'react'
-import { ACESFilmicToneMapping, type Box3, PCFSoftShadowMap, Vector3, sRGBEncoding } from 'three'
+import { useMemo, useRef } from 'react'
+import { type Box3, Vector3 } from 'three'
 import { CameraControls, type CameraControlsRef } from './camera/index'
 import { SandboxControls } from './controls/index'
 import { SceneryGl } from './scenery/index'
@@ -55,11 +55,6 @@ export function Sandbox(props: SandboxProps) {
 
   const ContextBridge = useContextBridge(...bridgeContexts)
 
-  const onCanvasCreated = useCallback((state: RootState) => {
-    state.gl.toneMapping = ACESFilmicToneMapping
-    state.gl.outputEncoding = sRGBEncoding
-  }, [])
-
   const gridLengthInMeters = 0.04
 
   const center: [number, number, number] = useMemo(() => {
@@ -96,13 +91,13 @@ export function Sandbox(props: SandboxProps) {
         performance={{
           max: perfMax,
         }}
-        onCreated={onCanvasCreated}
-        shadows={{ type: PCFSoftShadowMap }}
+        shadows
         orthographic
         camera={{
           near: 0.01,
         }}
         raycaster={{
+          // @ts-ignore
           params: {
             Line: {
               threshold: 0.005,

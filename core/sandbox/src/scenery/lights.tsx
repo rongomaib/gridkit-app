@@ -33,14 +33,14 @@ function Lights(props: LightsProps) {
 
   return (
     <Fragment>
-      <ambientLight intensity={0.1} />
+      <ambientLight intensity={0.5} />
       <hemisphereLight
         color={new Color(0xb1e1ff)}
         groundColor={new Color(0xb97a20)}
-        intensity={0.2}
+        intensity={3}
       />
       <directionalLight
-        intensity={0.5}
+        intensity={3}
         position={[10, 30, 50]}
         {...shadowProps}
         onUpdate={(self) => {

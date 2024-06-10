@@ -65,7 +65,7 @@
     "react-icons": "^5.0.1",
     "react-resplit": "^1.2.0",
     "smol-toml": "^1.1.4",
-    "three": "^0.150.1",
+    "three": "^0.165.0",
     "vite-plugin-require": "^1.1.14",
     "xstate": "^5.9.1",
     "zod": "^3.22.4"

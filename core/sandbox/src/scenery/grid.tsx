@@ -17,9 +17,6 @@ export class VkGridMaterial extends ShaderMaterial {
     super({
       // depthWrite needed for z-fighting with shadow floor
       depthWrite: false,
-      extensions: {
-        derivatives: true,
-      },
       fragmentShader: `
         varying vec3 vPos;
 
