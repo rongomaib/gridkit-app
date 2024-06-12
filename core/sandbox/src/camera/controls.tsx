@@ -97,7 +97,7 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
           paddingTop: 0.4,
         })
 
-        void controls.rotateTo((3 / 8) * ROT, (3 / 16) * ROT, false)
+        void controls.rotateTo((1 / 16) * ROT, (3 / 16) * ROT, false)
       } else {
         const fitSphere = fitBox.getBoundingSphere(new Sphere())
         void controls.fitToSphere(fitSphere, enableFitTransition)
@@ -108,7 +108,7 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
       (enableTransition: boolean) => {
         const { azimuthAngle, polarAngle } = controls
 
-        const nextAzimuthAngle = azimuthAngle - (azimuthAngle % ROT) + (3 / 8) * ROT
+        const nextAzimuthAngle = azimuthAngle - (azimuthAngle % ROT) + (1 / 16) * ROT
         const nextPolarAngle = polarAngle - (polarAngle % ROT) + (3 / 16) * ROT
 
         void controls.rotateTo(nextAzimuthAngle, nextPolarAngle, enableTransition)

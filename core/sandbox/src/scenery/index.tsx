@@ -1,3 +1,4 @@
+import { GizmoHelper, GizmoViewport } from '@react-three/drei'
 import { useThree } from '@react-three/fiber'
 import React, { useMemo } from 'react'
 import type { SandboxMode } from '../'
@@ -9,10 +10,11 @@ interface SceneryGlProps {
   gridLengthInMeters: number
   mode: SandboxMode
   shouldDisplayGrid: boolean
+  shouldDisplayAxes: boolean
 }
 
 export function SceneryGl(props: SceneryGlProps) {
-  const { centerInMeters, gridLengthInMeters, mode, shouldDisplayGrid } = props
+  const { centerInMeters, gridLengthInMeters, mode, shouldDisplayGrid, shouldDisplayAxes } = props
 
   const performance = useThree((state) => state.performance.current)
 
@@ -68,6 +70,11 @@ export function SceneryGl(props: SceneryGlProps) {
         gridLengthInMeters={gridLengthInMeters}
         shouldDisplayGrid={shouldDisplayGrid && mode !== 'screenshot'}
       />
+      {shouldDisplayAxes && mode !== 'screenshot' && (
+        <GizmoHelper alignment="bottom-right" margin={[80, 80]}>
+          <GizmoViewport axisColors={['#9d4b4b', '#2f7f4f', '#3b5b9d']} labelColor="white" />
+        </GizmoHelper>
+      )}
     </React.Fragment>
   )
 }

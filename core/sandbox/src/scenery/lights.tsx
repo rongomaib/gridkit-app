@@ -41,7 +41,7 @@ function Lights(props: LightsProps) {
       />
       <directionalLight
         intensity={3}
-        position={[10, 30, 50]}
+        position={[-10, -30, 50]}
         {...shadowProps}
         onUpdate={(self) => {
           if (self.shadow.map != null) {

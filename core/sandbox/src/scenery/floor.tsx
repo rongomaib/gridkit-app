@@ -7,7 +7,6 @@ export interface FloorProps {
   gridLengthInMeters?: number
   centerInMeters?: ReactThreeFiber.Vector2
   lengthInGridUnits?: number
-  shouldDisplayAxes?: boolean
   shouldDisplayGrid?: boolean
 }
 
@@ -18,7 +17,6 @@ function Floor(props: FloorProps) {
     gridLengthInMeters = 0.04,
     centerInMeters = [0, 0],
     lengthInGridUnits = 50,
-    shouldDisplayAxes = false,
     shouldDisplayGrid = true,
   } = props
 
@@ -41,7 +39,6 @@ function Floor(props: FloorProps) {
 
   return (
     <group name="floor" position={position}>
-      {shouldDisplayAxes && <axesHelper args={[floorLength]} position={[0, 0, 1e-3]} />}
       {shouldDisplayGrid && (
         <Grid
           axisLength={floorLength}

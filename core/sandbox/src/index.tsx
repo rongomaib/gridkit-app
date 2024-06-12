@@ -114,6 +114,7 @@ export function Sandbox(props: SandboxProps) {
             centerInMeters={sceneryCenterInMeters}
             mode={mode}
             shouldDisplayGrid={shouldDisplayGrid}
+            shouldDisplayAxes={true}
           />
           <CameraControls
             ref={cameraControlsRef}
