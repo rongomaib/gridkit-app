@@ -29,11 +29,19 @@ export interface RecursiveArray<T> extends Array<T | RecursiveArray<T>> {}
 
 /* render */
 
-export type ProductKitRender<Ps extends Params = never> = {
-  parameters: Ps extends never ? null : Ps
-  presets: Ps extends never ? null : Presets<Ps>
-  parts: Ps extends never
-    ? () => Promise<Parts>
-    : (parameters: ExtractValuesFromParams<Ps>, partVariants: PartVariantsByType) => Promise<Parts>
-  plugins?: Plugins
-}
+export type ProductKitRender<Ps extends Params = never> =
+  | {
+      type: 'static'
+      parts: Parts
+      plugins?: Plugins
+    }
+  | {
+      type: 'parametric'
+      parameters: Ps
+      presets: Presets<Ps>
+      parts: (
+        parameters: ExtractValuesFromParams<Ps>,
+        partVariants: PartVariantsByType,
+      ) => Promise<Parts>
+      plugins?: Plugins
+    }

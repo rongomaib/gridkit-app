@@ -21,6 +21,9 @@ export type ParamsMachineInput = {
   onLocationUpdate?: OnLocationUpdate
 }
 
+type ClearParamsEvent = {
+  type: 'clearParams'
+}
 type UpdateParamsEvent = {
   type: 'updateParams'
   params: Params
@@ -34,7 +37,11 @@ type UpdateParamsValuesEvent = {
   type: 'updateParamsValues'
   paramsValues: ParamsValues
 }
-type QueryParamsEvent = UpdateParamsEvent | UpdatePresetIdEvent | UpdateParamsValuesEvent
+type QueryParamsEvent =
+  | ClearParamsEvent
+  | UpdateParamsEvent
+  | UpdatePresetIdEvent
+  | UpdateParamsValuesEvent
 const queryParamsActor = fromCallback<QueryParamsEvent, ParamsMachineInput>(
   ({ input, receive, sendBack }) => {
     const { onLocationUpdate } = input
@@ -50,6 +57,9 @@ const queryParamsActor = fromCallback<QueryParamsEvent, ParamsMachineInput>(
 
     receive((event) => {
       switch (event.type) {
+        case 'clearParams': {
+          return clearParams()
+        }
         case 'updateParams': {
           return setupParams(event)
         }
@@ -60,6 +70,10 @@ const queryParamsActor = fromCallback<QueryParamsEvent, ParamsMachineInput>(
     })
 
     return () => {}
+
+    function clearParams() {
+      current = null
+    }
 
     function setupParams(event: UpdateParamsEvent) {
       const { params, presets } = event
@@ -135,6 +149,7 @@ type SetShowControlsEvent = {
 }
 
 export type ParamsMachineEvent =
+  | ClearParamsEvent
   | UpdateParamsEvent
   | UpdatePresetIdEvent
   | UpdateParamsValuesEvent
@@ -173,6 +188,22 @@ export const paramsMachine = setup({
     }
   },
   on: {
+    clearParams: {
+      actions: [
+        assign(({ context }) => {
+          const { onLocationUpdate, showControls } = context
+          return {
+            type: 'unset',
+            onLocationUpdate,
+            showControls,
+            params: null,
+            presets: null,
+            presetId: null,
+            paramsValues: null,
+          }
+        }),
+      ],
+    },
     updateParams: {
       actions: [
         assign(({ context, event }) => {

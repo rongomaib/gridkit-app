@@ -1,4 +1,4 @@
-import { ParamControls } from '@villagekit/parameters'
+import { ParamControls, useHasParams, useParams } from '@villagekit/parameters'
 import {
   ProductErrorDisplay,
   ProductInfo,
@@ -39,6 +39,7 @@ export default function Product() {
 function ProductViewer() {
   const meta = useProductMeta()
   const productError = useProductError()
+  const showParamControls = useHasParams()
 
   if (productError != null) {
     return <ProductErrorDisplay error={productError} />
@@ -51,7 +52,7 @@ function ProductViewer() {
           <VStack sx={{ padding: 3, minWidth: 0 }}>
             <Heading as="h2">{meta.label}</Heading>
             <Box sx={{ flexGrow: 1, minHeight: 0, width: '100%' }}>
-              <ProductView showParamControls />
+              <ProductView showParamControls={showParamControls} />
             </Box>
           </VStack>
         </Resplit.Pane>
@@ -60,7 +61,7 @@ function ProductViewer() {
         </Resplit.Splitter>
         <Resplit.Pane order={2} initialSize="0.2fr" minSize="0.1fr">
           <VStack spacing={8} sx={{ height: '100%', padding: 3, overflowY: 'auto' }}>
-            <ParamControls />
+            {showParamControls && <ParamControls />}
             <ProductInfo />
           </VStack>
         </Resplit.Pane>

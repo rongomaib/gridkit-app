@@ -40,6 +40,10 @@ function useEditor() {
 
     const view = new EditorView({ state, parent: parentEl })
     setView(view)
+    if (codeToLoad != null) {
+      updateCode(view, codeToLoad)
+      resetCodeToLoad()
+    }
 
     return () => {
       view.destroy()
