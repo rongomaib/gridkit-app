@@ -110,6 +110,10 @@ function useParts<Ps extends Params>(options: UsePartsOptions<Ps>): UsePartsValu
       validateThenSet(render.parts)
     } else {
       if (paramsValues == null) return
+
+      // HACK validate paramsValues
+      if (!Object.keys(paramsValues).every((key) => key in render.parameters)) return
+
       render.parts(paramsValues, partVariants).then((parts) => {
         validateThenSet(parts)
       })
