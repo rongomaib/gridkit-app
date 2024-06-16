@@ -82,9 +82,9 @@ export function isStandardAxisVector(vector: ThreeVector3): boolean {
 export type AxisValues = Record<AxisId.X | AxisId.Y | AxisId.Z, number>
 
 export function axisValuesToVector(axisValues: AxisValues): [number, number, number] {
-  const x = axisValues[AxisId.X]
-  const y = axisValues[AxisId.Y]
-  const z = axisValues[AxisId.Z]
+  const x = AxisId.X in axisValues ? axisValues[AxisId.X] : -axisValues[AxisId['-X']]
+  const y = AxisId.Y in axisValues ? axisValues[AxisId.Y] : -axisValues[AxisId['-Y']]
+  const z = AxisId.Z in axisValues ? axisValues[AxisId.Z] : -axisValues[AxisId['-Z']]
   return [x, y, z]
 }
 

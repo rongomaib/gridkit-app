@@ -24,11 +24,15 @@ interface GridPanelXY extends BaseGridPanelOptions {
 function calculateXYState(creator: GridPanelXY): GridPanelState {
   const { id, x, y, z, variant: variantId = getDefaultVariantId(), fit, holes } = creator
 
+  // const mainAxis = x[0] <= x[1] ? AxisId.X : AxisId['-X']
   const mainAxis = AxisId.X
-  const mainStart = Math.min(x[0], x[1])
+  // const mainStart = x[0]
+  const mainStart = x[0] <= x[1] ? x[0] : x[1] + 1
   const mainLength = Math.abs(x[0] - x[1])
+  // const crossAxis = y[0] <= y[1] ? AxisId.Y : AxisId['-Y']
   const crossAxis = AxisId.Y
-  const crossStart = Math.min(y[0], y[1])
+  // const crossStart = y[0]
+  const crossStart = y[0] <= y[1] ? y[0] : y[1] + 1
   const crossLength = Math.abs(y[0] - y[1])
   const thicknessAxis = AxisId.Z
   const thicknessStart = z
@@ -63,11 +67,15 @@ interface GridPanelYZ extends BaseGridPanelOptions {
 function calculateYZState(creator: GridPanelYZ): GridPanelState {
   const { id, x, y, z, variant: variantId = getDefaultVariantId(), fit, holes } = creator
 
+  // const mainAxis = y[0] <= y[1] ? AxisId.Y : AxisId['-Y']
   const mainAxis = AxisId.Y
-  const mainStart = Math.min(y[0], y[1])
+  // const mainStart = y[0]
+  const mainStart = y[0] <= y[1] ? y[0] : y[1] + 1
   const mainLength = Math.abs(y[0] - y[1])
+  // const crossAxis = z[0] <= z[1] ? AxisId.Z : AxisId['-Z']
   const crossAxis = AxisId.Z
-  const crossStart = Math.min(z[0], z[1])
+  // const crossStart = z[0]
+  const crossStart = z[0] <= z[1] ? z[0] : z[1] + 1
   const crossLength = Math.abs(z[0] - z[1])
   const thicknessAxis = AxisId.X
   const thicknessStart = x
@@ -102,11 +110,15 @@ interface GridPanelXZ extends BaseGridPanelOptions {
 function calculateXZState(creator: GridPanelXZ): GridPanelState {
   const { id, x, y, z, variant: variantId = getDefaultVariantId(), fit, holes } = creator
 
+  // const mainAxis = x[0] <= x[1] ? AxisId.X : AxisId['-X']
   const mainAxis = AxisId.X
-  const mainStart = Math.min(x[0], x[1])
+  // const mainStart = x[0]
+  const mainStart = x[0] <= x[1] ? x[0] : x[1] + 1
   const mainLength = Math.abs(x[0] - x[1])
+  // const crossAxis = z[0] <= z[1] ? AxisId.Z : AxisId['-Z']
   const crossAxis = AxisId.Z
-  const crossStart = Math.min(z[0], z[1])
+  // const crossStart = z[0]
+  const crossStart = z[0] <= z[1] ? z[0] : z[1] + 1
   const crossLength = Math.abs(z[0] - z[1])
   const thicknessAxis = AxisId.Y
   const thicknessStart = y

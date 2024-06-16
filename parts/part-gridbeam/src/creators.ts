@@ -22,8 +22,8 @@ interface GridBeamX extends BaseOptions {
 function calculateXState(creator: GridBeamX): GridBeamState {
   const { id, x, y, z, variant: variantId = getDefaultVariantId() } = creator
 
-  const axis = AxisId.X
-  const locationInGrids: Location = [Math.min(x[0], x[1]), y, z]
+  const axis = x[0] <= x[1] ? AxisId.X : AxisId['-X']
+  const locationInGrids: Location = [x[0], y, z]
   const lengthInGrids = Math.abs(x[0] - x[1])
   const variant = gridBeamVariants[variantId]
 
@@ -48,8 +48,8 @@ interface GridBeamY extends BaseOptions {
 function calculateYState(creator: GridBeamY): GridBeamState {
   const { id, x, y, z, variant: variantId = getDefaultVariantId() } = creator
 
-  const axis = AxisId.Y
-  const locationInGrids: Location = [x, Math.min(y[0], y[1]), z]
+  const axis = y[0] <= y[1] ? AxisId.Y : AxisId['-Y']
+  const locationInGrids: Location = [x, y[0], z]
   const lengthInGrids = Math.abs(y[0] - y[1])
   const variant = gridBeamVariants[variantId]
 
@@ -74,8 +74,8 @@ interface GridBeamZ extends BaseOptions {
 function calculateZState(creator: GridBeamZ): GridBeamState {
   const { id, x, y, z, variant: variantId = getDefaultVariantId() } = creator
 
-  const axis = AxisId.Z
-  const locationInGrids: Location = [x, y, Math.min(z[0], z[1])]
+  const axis = z[0] <= z[1] ? AxisId.Z : AxisId['-Z']
+  const locationInGrids: Location = [x, y, z[0]]
   const lengthInGrids = Math.abs(z[0] - z[1])
   const variant = gridBeamVariants[variantId]
 

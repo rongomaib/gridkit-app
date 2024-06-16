@@ -93,6 +93,9 @@ function Beam(props: BeamProps) {
     ]
     const boxGeometry = new BoxGeometry(...boxSize)
 
+    const beamScale = 0.995
+    boxGeometry.scale(beamScale, beamScale, beamScale)
+
     // translate beam so first hole is at (0, 0, 0).
     boxGeometry.translate((gridLengthInMeters * (lengthInGrids - 1)) / 2, 0, 0)
 
