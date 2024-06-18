@@ -19,8 +19,6 @@
   },
   "dependencies": {
     "@villagekit/part": "*",
-    "@villagekit/part-base": "*",
-    "@villagekit/part-base-grid": "*",
     "@villagekit/ui": "*",
     "@villagekit/util-math": "*",
     "@villagekit/util-units": "*",

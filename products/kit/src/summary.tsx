@@ -4,7 +4,7 @@ import {
   PartsSummaryForAll,
   calculateSummaryValueForAll,
 } from '@villagekit/part'
-import { SummaryContextProvider } from '@villagekit/part-base'
+import { SummaryContextProvider } from '@villagekit/part/base'
 import type { ProductSummaryProps } from '@villagekit/product'
 import { debounce } from 'lodash-es'
 import { useEffect, useMemo, useState } from 'react'

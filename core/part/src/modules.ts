@@ -1,4 +1,4 @@
-import type { BasePartSummaryValue } from '@villagekit/part-base'
+import type { BasePartSummaryValue } from './base'
 import type {
   PartCreator,
   PartModule,

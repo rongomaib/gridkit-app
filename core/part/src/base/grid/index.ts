@@ -1,5 +1,6 @@
-import type { BasePartState, PartVariant } from '@villagekit/part-base'
 import type { Length } from '@villagekit/util-units'
+
+import type { BasePartState, PartVariant } from '../'
 
 export * from './svg/index'
 

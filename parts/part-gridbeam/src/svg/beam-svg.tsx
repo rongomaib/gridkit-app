@@ -1,4 +1,4 @@
-import { SizeMarkerX } from '@villagekit/part-base-grid'
+import { SizeMarkerX } from '@villagekit/part/base/grid'
 import { useTheme } from '@villagekit/ui'
 import type React from 'react'
 import { useMemo } from 'react'

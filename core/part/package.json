@@ -9,6 +9,18 @@
       "import": "./dist/index.mjs",
       "default": "./dist/index.mjs"
     },
+    "./base": {
+      "source": "./src/base/index.ts",
+      "types": "./dist/base/index.d.ts",
+      "import": "./dist/base/index.mjs",
+      "default": "./dist/base/index.mjs"
+    },
+    "./base/grid": {
+      "source": "./src/base/grid/index.ts",
+      "types": "./dist/base/grid/index.d.ts",
+      "import": "./dist/base/grid/index.mjs",
+      "default": "./dist/base/grid/index.mjs"
+    },
     "./package.json": "./package.json"
   },
   "sideEffects": false,
@@ -18,13 +30,15 @@
     "publint": "publint"
   },
   "dependencies": {
-    "@villagekit/part-base": "*",
+    "@villagekit/ui": "*",
     "@villagekit/util-math": "*",
+    "constate": "^3.3.2",
     "dnum": "^2.13.1",
     "lodash-es": "^4.17.21",
     "zod": "^3.23.8"
   },
   "peerDependencies": {
+    "@react-three/fiber": "^8.16.8",
     "react": "18.3.1",
     "three": "^0.165.0"
   }

@@ -1,5 +1,5 @@
 import '@react-three/fiber'
-import { type PartMaterial, type PartsGlProps, useTexture } from '@villagekit/part-base'
+import { type PartMaterial, type PartsGlProps, useTexture } from '@villagekit/part/base'
 import {
   type AxisId,
   type AxisValues,

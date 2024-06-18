@@ -1,4 +1,4 @@
-import { SvgContextProvider } from '@villagekit/part-base-grid'
+import { SvgContextProvider } from '@villagekit/part/base/grid'
 import { Box } from '@villagekit/ui'
 import { BeamSvg } from './beam-svg'
 

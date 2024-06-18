@@ -5,7 +5,7 @@ import {
   type PartsSummaryProps,
   partsToPartQuotas,
   useSummaryContext,
-} from '@villagekit/part-base'
+} from '@villagekit/part/base'
 import { HStack, Text, VStack } from '@villagekit/ui'
 import { useMemo } from 'react'
 import type { GridPanelSummaryValue } from './'

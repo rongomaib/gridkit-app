@@ -1,5 +1,5 @@
 import '@react-three/fiber'
-import { type PartMaterial, type PartsGlProps, useTexture } from '@villagekit/part-base'
+import { type PartMaterial, type PartsGlProps, useTexture } from '@villagekit/part/base'
 import type React from 'react'
 import { useMemo } from 'react'
 import {

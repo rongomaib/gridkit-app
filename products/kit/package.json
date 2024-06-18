@@ -23,7 +23,6 @@
     "@swc/wasm-web": "^1.5.26",
     "@villagekit/parameters": "*",
     "@villagekit/part": "*",
-    "@villagekit/part-base": "*",
     "@villagekit/part-gridbeam": "*",
     "@villagekit/part-gridpanel": "*",
     "@villagekit/product": "*",

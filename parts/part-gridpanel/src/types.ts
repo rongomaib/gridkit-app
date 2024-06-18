@@ -1,5 +1,5 @@
-import type { BasePartSummaryValue } from '@villagekit/part-base'
-import type { BaseGridPartState } from '@villagekit/part-base-grid'
+import type { BasePartSummaryValue } from '@villagekit/part/base'
+import type { BaseGridPartState } from '@villagekit/part/base/grid'
 import type { AxisId, Location } from '@villagekit/util-math'
 import type { Length } from '@villagekit/util-units'
 

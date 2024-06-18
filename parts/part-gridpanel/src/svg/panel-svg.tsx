@@ -1,4 +1,4 @@
-import { SizeMarkerX, SizeMarkerY } from '@villagekit/part-base-grid'
+import { SizeMarkerX, SizeMarkerY } from '@villagekit/part/base/grid'
 import { useTheme } from '@villagekit/ui'
 import { getEveryHolePosition } from '../helpers'
 import type { GridPanelHoles } from '../types'

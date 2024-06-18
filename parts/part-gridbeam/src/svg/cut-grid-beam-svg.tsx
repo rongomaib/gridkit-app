@@ -1,4 +1,4 @@
-import { LabelX, SvgContextProvider } from '@villagekit/part-base-grid'
+import { LabelX, SvgContextProvider } from '@villagekit/part/base/grid'
 import { Box, useTheme } from '@villagekit/ui'
 import { useMemo } from 'react'
 
