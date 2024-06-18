@@ -1,8 +1,8 @@
-import { millimeter } from '@villagekit/util-units'
-import type { GridPanelVariant } from './types'
+import { millimeter } from '@villagekit/units'
+import type { GridBeamVariant } from './types'
 
-export const gridPanelVariants: Record<string, GridPanelVariant> = {
-  '40mm:8mm:12mm:douglas-fir': {
+export const gridBeamVariants: Record<string, GridBeamVariant> = {
+  '40mm:8mm:douglas-fir': {
     gridLength: {
       type: 'quantity',
       unit: millimeter,
@@ -13,17 +13,12 @@ export const gridPanelVariants: Record<string, GridPanelVariant> = {
       unit: millimeter,
       value: 8,
     },
-    id: '40mm:8mm:12mm:douglas-fir',
+    id: '40mm:8mm:douglas-fir',
     materials: {
-      panel: {
+      beam: {
         textureUrl:
           'https://res.cloudinary.com/villagekit/image/upload/dpr_auto,f_auto,q_auto:good/v1/textures/douglas-fir_adsycy',
       },
-    },
-    thickness: {
-      type: 'quantity',
-      unit: millimeter,
-      value: 12,
     },
   },
 }

@@ -1,5 +1,5 @@
+import { AxisId, type Location } from '@villagekit/math'
 import type { BasePartCreator } from '@villagekit/part/base'
-import { AxisId, type Location } from '@villagekit/util-math'
 import type { GridBeamState } from './types'
 import { gridBeamVariants } from './variants'
 

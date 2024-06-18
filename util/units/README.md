@@ -1,11 +1,11 @@
-# `@villagekit/util-units`
+# `@villagekit/units`
 
 > TODO: description
 
 ## Usage
 
 ```
-const units = require('@villagekit/util-units');
+const units = require('@villagekit/units');
 
 // TODO: DEMONSTRATE API
 ```

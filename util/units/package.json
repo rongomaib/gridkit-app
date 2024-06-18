@@ -1,5 +1,5 @@
 {
-  "name": "@villagekit/util-units",
+  "name": "@villagekit/units",
   "version": "0.0.2",
   "private": true,
   "exports": {

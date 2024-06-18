@@ -1,4 +1,4 @@
-import type { AxisId, Location } from '@villagekit/util-math'
+import type { AxisId, Location } from '@villagekit/math'
 import type { ReactElement } from 'react'
 import type { Box3 } from 'three'
 import type { ZodDiscriminatedUnionOption } from 'zod'

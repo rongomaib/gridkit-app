@@ -74,9 +74,9 @@ Modular product types
 
 Utility libraries
 
-#### `@villagekit/util-units`
+#### `@villagekit/units`
 
-#### `@villagekit/util-math`
+#### `@villagekit/math`
 
 ### `dev`
 

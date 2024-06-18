@@ -28,7 +28,7 @@
     "@villagekit/product": "*",
     "@villagekit/sandbox": "*",
     "@villagekit/ui": "*",
-    "@villagekit/util-units": "*",
+    "@villagekit/units": "*",
     "comlink": "^4.4.1",
     "dnum": "^2.13.1",
     "errorstacks": "^2.4.1",

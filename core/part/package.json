@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@villagekit/ui": "*",
-    "@villagekit/util-math": "*",
+    "@villagekit/math": "*",
     "constate": "^3.3.2",
     "dnum": "^2.13.1",
     "lodash-es": "^4.17.21",

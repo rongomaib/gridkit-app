@@ -1,11 +1,11 @@
 import '@react-three/fiber'
-import { type PartMaterial, type PartsGlProps, useTexture } from '@villagekit/part/base'
 import {
   type AxisId,
   type AxisValues,
   axisIdToDirection,
   axisValuesToVector,
-} from '@villagekit/util-math'
+} from '@villagekit/math'
+import { type PartMaterial, type PartsGlProps, useTexture } from '@villagekit/part/base'
 import type React from 'react'
 import { useMemo } from 'react'
 import {

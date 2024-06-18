@@ -1,5 +1,5 @@
 {
-  "name": "@villagekit/util-math",
+  "name": "@villagekit/math",
   "version": "0.0.2",
   "private": true,
   "exports": {

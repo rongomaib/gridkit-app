@@ -1,4 +1,4 @@
-import type { Length } from '@villagekit/util-units'
+import type { Length } from '@villagekit/units'
 
 import type { BasePartState, PartVariant } from '../'
 

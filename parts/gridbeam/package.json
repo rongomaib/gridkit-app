@@ -1,5 +1,5 @@
 {
-  "name": "@villagekit/part-gridpanel",
+  "name": "@villagekit/part-gridbeam",
   "version": "0.0.2",
   "private": true,
   "exports": {
@@ -20,9 +20,8 @@
   "dependencies": {
     "@villagekit/part": "*",
     "@villagekit/ui": "*",
-    "@villagekit/util-math": "*",
-    "@villagekit/util-units": "*",
-    "deadbeef": "github:ahdinosaur/deadbeef#fix-typescript-declarations",
+    "@villagekit/math": "*",
+    "@villagekit/units": "*",
     "zod": "^3.23.8"
   },
   "devDependencies": {
