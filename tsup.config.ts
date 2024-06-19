@@ -5,7 +5,12 @@ export default defineConfig({
   bundle: true,
   clean: true,
   dts: true,
-  esbuildPlugins: [esbuildPluginFilePathExtensions()],
+  esbuildPlugins: [
+    esbuildPluginFilePathExtensions({
+      esm: true,
+      esmExtension: 'js',
+    }),
+  ],
   format: ['esm'],
   sourcemap: true,
   splitting: false,
