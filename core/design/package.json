@@ -1,18 +1,15 @@
 {
   "name": "@villagekit/design",
-  "version": "0.0.2",
-  "private": true,
+  "version": "0.0.17",
+  "type": "module",
   "exports": {
     "./kit": {
-      "source": "./src/kit.ts",
       "types": "./dist/kit.d.ts",
-      "import": "./dist/kit.mjs",
-      "default": "./dist/kit.mjs"
+      "source": "./src/kit.ts",
+      "import": "./dist/kit.js",
+      "default": "./dist/kit.js"
     },
-    "./type-bundles/kit.d.ts": {
-      "import": "./dist-type-bundles/kit.d.ts",
-      "require": "./dist-type-bundles/kit.d.ts"
-    }
+    "./type-bundles/kit.d.ts": "./dist-type-bundles/kit.d.ts"
   },
   "sideEffects": false,
   "scripts": {
@@ -21,6 +18,16 @@
     "lint": "biome check .",
     "publint": "publint"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/villagekit/villagekit.git"
+  },
+  "author": "Village Kit <dev@villagekit.com>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/villagekit/villagekit/issues"
+  },
+  "homepage": "https://github.com/villagekit/villagekit/tree/main/core/design#readme",
   "dependencies": {
     "@villagekit/part-gridbeam": "*",
     "@villagekit/part-gridpanel": "*",

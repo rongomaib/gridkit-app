@@ -1,22 +1,32 @@
 {
   "name": "@villagekit/sandbox",
-  "version": "0.0.2",
-  "private": true,
+  "version": "0.0.17",
+  "type": "module",
   "exports": {
     ".": {
-      "source": "./src/index.tsx",
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "default": "./dist/index.mjs"
+      "source": "./src/index.tsx",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./package.json": "./package.json"
   },
-  "sideEffects": ["./dist/globals.js", "./dist/globals.mjs"],
+  "sideEffects": ["./dist/globals.js", "./dist/globals.js"],
   "scripts": {
     "build:pkg": "tsup src",
     "lint": "biome check .",
     "publint": "publint"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/villagekit/villagekit.git"
+  },
+  "author": "Village Kit <dev@villagekit.com>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/villagekit/villagekit/issues"
+  },
+  "homepage": "https://github.com/villagekit/villagekit/tree/main/core/sandbox#readme",
   "dependencies": {
     "@juggle/resize-observer": "^3.4.0",
     "@react-three/drei": "^9.106.0",

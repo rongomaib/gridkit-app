@@ -1,13 +1,13 @@
 {
   "name": "@villagekit/units",
-  "version": "0.0.2",
-  "private": true,
+  "version": "0.0.17",
+  "type": "module",
   "exports": {
     ".": {
-      "source": "./src/index.ts",
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "default": "./dist/index.mjs"
+      "source": "./src/index.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
     },
     "./package.json": "./package.json"
   },
@@ -19,6 +19,16 @@
     "publint": "publint",
     "test": "vitest run"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/villagekit/villagekit.git"
+  },
+  "author": "Village Kit <dev@villagekit.com>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/villagekit/villagekit/issues"
+  },
+  "homepage": "https://github.com/villagekit/villagekit/tree/main/util/units#readme",
   "devDependencies": {
     "vitest": "^1.6.0"
   }

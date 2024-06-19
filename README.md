@@ -143,3 +143,4 @@ npm run format
 ## Code Decisions
 
 - Published JavaScript modules are in Node.js-compatible ESM-only format, due to [dual package hazard](https://nodejs.org/api/packages.html#packages_dual_package_hazard)
+  - See [Pure ESM package](https://gist.github.com/sindresorhus/a39789f98801d908bbc7ff3ecc99d99c)
