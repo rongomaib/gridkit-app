@@ -36,9 +36,11 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
     <Resplit.Root direction="horizontal" asChild>
       <Flex sx={{ flexDirection: 'row', width: '100%' }}>
         <Resplit.Pane order={0} initialSize="0.15fr" asChild>
-          <VStack sx={{ paddingY: 4 }}>
+          <VStack
+            sx={{ alignItems: 'flex-start', maxHeight: '100dvh', overflowY: 'auto', marginY: 2 }}
+          >
             <Tooltip label={activeWorkspace.path}>
-              <Box>
+              <Box sx={{ alignSelf: 'center' }}>
                 <Heading as="h2" sx={{ fontSize: 'lg', fontWeight: 'bold' }}>
                   {activeWorkspaceName}
                 </Heading>
@@ -51,12 +53,12 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
                     key={productIndex.path}
                     sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
                   >
-                    <ListIcon as={FaChevronRight} />
+                    <ListIcon as={FaChevronRight} sx={{ marginInlineEnd: 0 }} />
                     <HStack>
                       <Button
                         variant="toolbar"
                         onClick={() => selectProductId(productIndex.id)}
-                        sx={{ fontSize: 'md' }}
+                        sx={{ fontSize: 'md', paddingInlineStart: 1, paddingInlineEnd: 1 }}
                       >
                         {productIndex.id}
                       </Button>
