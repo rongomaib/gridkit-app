@@ -24,13 +24,12 @@ import pDebounce from 'p-debounce'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import type { Box3 } from 'three'
 import { getPartCreatorsFromKitParts } from './helpers'
-import { generatePartsForPlugins } from './plugins'
+import { generatePartsForPlugins, getPlugin } from './plugins'
 import { useRender } from './renders/index'
 // import { partsSchema } from './schema'
-import type { Parts, Plugins, ProductKitRender } from './types'
+import type { Parts, ProductKitRender } from './types'
 
-import '@villagekit/part-gridbeam'
-import '@villagekit/part-gridpanel'
+import type { Plugin } from './plugin'
 
 type ProductKitState = {
   boundingBox: Box3
@@ -94,8 +93,6 @@ type UsePartsOptions<Ps extends Params> = {
 
 type UsePartsValue = Pick<ProductKitState, 'isLoading' | 'parts'>
 
-const noPlugins: Plugins = []
-
 function useParts<Ps extends Params>(options: UsePartsOptions<Ps>): UsePartsValue {
   const { render, paramsValues } = options
 
@@ -142,7 +139,16 @@ function useParts<Ps extends Params>(options: UsePartsOptions<Ps>): UsePartsValu
   const [partCreators, setPartCreators] = useState<Array<PartCreator>>([])
   const [isLoading, setLoading] = useState(false)
 
-  const { plugins = noPlugins } = render ?? {}
+  const plugins: Array<Plugin> = useMemo(() => {
+    if (render == null) return []
+    const pluginIds = render.plugins ?? []
+    const ps = []
+    for (const pluginId of pluginIds) {
+      const p = getPlugin(pluginId)
+      if (p != null) ps.push(p)
+    }
+    return ps
+  }, [render])
   const generatePluginParts = useMemo(() => {
     return pDebounce((partCreators: Array<PartCreator>) => {
       return generatePartsForPlugins(plugins, partCreators)

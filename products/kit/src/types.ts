@@ -1,6 +1,12 @@
-import type { ExtractValuesFromParams, Params, ParamsValues, Presets } from '@villagekit/parameters'
+import type {
+  ExtractValuesFromParams,
+  Params,
+  ParamsValues,
+  Preset,
+  Presets,
+} from '@villagekit/parameters'
 import type { PartCreator, PartVariantsByType } from '@villagekit/part'
-import type { Plugin } from './plugins'
+import type { Plugin, PluginId } from './plugin'
 
 export type ProductKit<Ps extends Params = never> = {
   parameters: Ps extends never ? null : Ps
@@ -11,14 +17,16 @@ export type ProductKit<Ps extends Params = never> = {
 export type Part = WithOptionalId<PartCreator>
 export type Parts = RecursiveArray<Part | false | undefined | null>
 
-export type { Params, Presets, ParamsValues, PartVariantsByType }
+export type { Params, Preset, Presets, ParamsValues, PartVariantsByType }
 
 export type PartsFn<Ps extends Params> = (
   parameters: ExtractValuesFromParams<Ps>,
   partVariants: PartVariantsByType,
 ) => Parts
 
+export type { Plugin }
 export type Plugins = Array<Plugin>
+export type PluginIds = Array<PluginId>
 
 /* utils */
 
@@ -33,7 +41,7 @@ export type ProductKitRender<Ps extends Params = never> =
   | {
       type: 'static'
       parts: Parts
-      plugins?: Plugins
+      plugins?: Array<string>
     }
   | {
       type: 'parametric'
@@ -43,5 +51,5 @@ export type ProductKitRender<Ps extends Params = never> =
         parameters: ExtractValuesFromParams<Ps>,
         partVariants: PartVariantsByType,
       ) => Promise<Parts>
-      plugins?: Plugins
+      plugins?: Array<string>
     }

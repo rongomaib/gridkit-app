@@ -1,3 +1,8 @@
+import '@villagekit/part-gridbeam'
+import '@villagekit/part-gridpanel'
+import '@villagekit/part-fastener'
+import '@villagekit/plugin-smart-fasteners'
+
 import { client } from '@/client'
 import {
   ProductProvider as CoreProductProvider,

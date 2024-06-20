@@ -12,6 +12,7 @@ type Evaluator = {
     parameters: Params | null
     presets: Presets<any> | null
     parts: Parts | null
+    plugins: Array<string> | undefined
   }>
   evaluateParts: (paramsValues: ParamsValues, partVariants: PartVariantsByType) => Promise<Parts>
 }
@@ -54,7 +55,7 @@ export const javascriptRenderer = fromCallback<RenderEvent, RendererMachineEvent
 
       if (jsModule == null) return
 
-      const { parameters, presets, parts } = jsModule
+      const { parameters, presets, parts, plugins } = jsModule
 
       const event: RendererMachineEvent =
         parameters == null || presets == null
@@ -63,6 +64,7 @@ export const javascriptRenderer = fromCallback<RenderEvent, RendererMachineEvent
               render: {
                 type: 'static',
                 parts: parts != null ? parts : [],
+                plugins,
               },
             }
           : {
@@ -79,6 +81,7 @@ export const javascriptRenderer = fromCallback<RenderEvent, RendererMachineEvent
                     return []
                   }
                 },
+                plugins,
               },
             }
       sendBack(event)
@@ -135,15 +138,12 @@ const createEvaulatorWorkerSrc = () => `
   async function evaluateModule() {
     module = await import(moduleUrl)
 
-    const { parameters, presets, parts } = module
+    const { parameters, presets, parts, plugins } = module
 
     if (typeof parts === 'function') {
-      return {
-        parameters,
-        presets,
-      }
+      return { parameters, presets, plugins }
     } else {
-      return { parts }
+      return { parts, plugins }
     }
   }
 

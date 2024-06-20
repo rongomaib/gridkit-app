@@ -1,5 +1,5 @@
 {
-  "name": "@villagekit/part-gridbeam",
+  "name": "@villagekit/part-fastener",
   "version": "0.1.0",
   "type": "module",
   "exports": {
@@ -26,17 +26,19 @@
   "bugs": {
     "url": "https://github.com/villagekit/villagekit/issues"
   },
-  "homepage": "https://github.com/villagekit/villagekit/tree/main/parts/gridbeam#readme",
+  "homepage": "https://github.com/villagekit/villagekit/tree/main/parts/fastener#readme",
   "dependencies": {
+    "@emotion/weak-memoize": "^0.3.1",
+    "@react-three/drei": "^9.106.0",
     "@villagekit/part": "*",
     "@villagekit/ui": "*",
     "@villagekit/math": "*",
     "@villagekit/units": "*",
+    "lodash-es": "^4.17.21",
+    "three-stdlib": "^2.21.8",
     "zod": "^3.23.8"
   },
-  "devDependencies": {
-    "@storybook/react": "^8.1.6"
-  },
+  "devDependencies": {},
   "peerDependencies": {
     "@react-three/fiber": "^8.16.8",
     "react": "18.3.1",

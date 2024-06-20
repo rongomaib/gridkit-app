@@ -1,25 +1,32 @@
-import { type PartCreator, type PartState, calculateStateForAll } from '@villagekit/part'
+import { type PartCreator, calculateStateForAll } from '@villagekit/part'
 import { flatten } from 'lodash-es'
 
-export interface Plugin<PluginState = unknown> {
-  init?: () => void
-  generateParts: (parts: Array<PartState>) => Promise<Array<PartCreator>>
-  state: PluginState
+import type { Plugin } from './plugin'
+
+type PluginsById = Record<string, Plugin>
+
+const plugins: PluginsById = {}
+
+export function registerPlugin<PluginState>(plugin: Plugin<PluginState>) {
+  plugins[plugin.id] = plugin
 }
 
-export function generatePartsForPlugins(
+export function getPlugin(pluginId: string): Plugin | undefined {
+  return plugins[pluginId]
+}
+
+export async function generatePartsForPlugins(
   plugins: Array<Plugin>,
   partCreators: Array<PartCreator>,
 ): Promise<Array<PartCreator>> {
   const partStates = calculateStateForAll(partCreators)
-  return Promise.all(
+  const pluginParts = await Promise.all(
     plugins.map((plugin) => {
       // NOTE: plugin functions must be called as methods,
       // not standalone functions, in order to maintain 'this'.
       if (plugin.init != null) plugin.init()
       return plugin.generateParts(partStates)
     }),
-  ).then((pluginParts) => {
-    return flatten(pluginParts)
-  })
+  )
+  return flatten(pluginParts)
 }

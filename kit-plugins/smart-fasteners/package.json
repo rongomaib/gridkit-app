@@ -1,5 +1,5 @@
 {
-  "name": "@villagekit/part-gridbeam",
+  "name": "@villagekit/plugin-smart-fasteners",
   "version": "0.1.0",
   "type": "module",
   "exports": {
@@ -26,20 +26,19 @@
   "bugs": {
     "url": "https://github.com/villagekit/villagekit/issues"
   },
-  "homepage": "https://github.com/villagekit/villagekit/tree/main/parts/gridbeam#readme",
+  "homepage": "https://github.com/villagekit/villagekit/tree/main/kit-plugins/smart-fasteners#readme",
   "dependencies": {
     "@villagekit/part": "*",
-    "@villagekit/ui": "*",
-    "@villagekit/math": "*",
-    "@villagekit/units": "*",
-    "zod": "^3.23.8"
+    "@villagekit/part-gridbeam": "*",
+    "@villagekit/part-gridpanel": "*",
+    "@villagekit/part-fastener": "*",
+    "@villagekit/product-kit": "*",
+    "@villagekit/math": "",
+    "lodash-es": "^4.17.21",
+    "p-defer": "^4.0.0"
   },
-  "devDependencies": {
-    "@storybook/react": "^8.1.6"
-  },
+  "devDependencies": {},
   "peerDependencies": {
-    "@react-three/fiber": "^8.16.8",
-    "react": "18.3.1",
     "three": "^0.165.0"
   }
 }

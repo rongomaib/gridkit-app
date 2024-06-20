@@ -6,7 +6,6 @@ import type { ZodDiscriminatedUnionOption } from 'zod'
 import type { BasePartSummaryValue, PartsGlProps, PartsSummaryProps } from './base'
 
 declare global {
-  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace VK {
     export interface EveryPartTypeId {
       noop: 'noop'
