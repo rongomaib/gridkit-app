@@ -34,6 +34,9 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Builds workspace packages
+        run: npm run build:pkg
+
       - name: Publish to npm
         # TODO: enable --provenance when repo becomes public.
         run: npm publish --workspaces --access public
