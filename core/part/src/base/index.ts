@@ -78,6 +78,7 @@ export function useTexture(
   useEffect(() => {
     texture.wrapS = RepeatWrapping
     texture.wrapT = RepeatWrapping
+    texture.needsUpdate = true
     texture.magFilter = NearestFilter
     texture.anisotropy = 16
 
