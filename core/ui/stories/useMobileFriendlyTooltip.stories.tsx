@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react'
-import { FaIceCream } from 'react-icons/fa/index.js'
+import { FaIceCream } from 'react-icons/fa'
 
 import { useMobileFriendlyTooltip } from '../src/hooks/useMobileFriendlyTooltip.js'
 import { Box, Icon, Tooltip } from '../src/index.js'

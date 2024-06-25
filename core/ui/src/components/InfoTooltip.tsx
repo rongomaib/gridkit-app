@@ -1,6 +1,6 @@
 'use client'
 
-import { FaInfoCircle } from 'react-icons/fa/index.js'
+import { FaInfoCircle } from 'react-icons/fa'
 import { Box, Icon, Tooltip, useMobileFriendlyTooltip } from '../index'
 import type { TooltipProps } from './Tooltip'
 
