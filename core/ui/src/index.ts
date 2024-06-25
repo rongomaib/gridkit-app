@@ -240,3 +240,5 @@ export * from './utility'
 export { ChakraProvider } from '@chakra-ui/react'
 
 export * from './hooks/index'
+
+export { extendTheme } from '@chakra-ui/react'

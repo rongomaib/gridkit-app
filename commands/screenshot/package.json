@@ -1,0 +1,49 @@
+{
+  "name": "@villagekit/screenshot",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": "./src/bin.ts",
+  "exports": {
+    "./package.json": "./package.json"
+  },
+  "sideEffects": false,
+  "scripts": {
+    "build:pkg": "vite build",
+    "lint": "biome check .",
+    "publint": "publint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/villagekit/villagekit.git"
+  },
+  "author": "Village Kit <dev@villagekit.com>",
+  "license": "UNLICENSED",
+  "bugs": {
+    "url": "https://github.com/villagekit/villagekit/issues"
+  },
+  "homepage": "https://github.com/villagekit/villagekit/tree/main/util/math#readme",
+  "dependencies": {
+    "@types/serve-handler": "^6.1.4",
+    "@villagekit/part-fastener": "*",
+    "@villagekit/part-gridbeam": "*",
+    "@villagekit/part-gridpanel": "*",
+    "@villagekit/plugin-smart-fasteners": "*",
+    "@villagekit/product": "*",
+    "@villagekit/product-kit": "*",
+    "@villagekit/sandbox": "*",
+    "@villagekit/ui": "*",
+    "@vitejs/plugin-react": "^4.3.1",
+    "argsclopts": "^1.0.4",
+    "mkdirp": "^1.0.4",
+    "puppeteer": "^22.11.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "run-series": "^1.1.9",
+    "serve-handler": "^6.1.5",
+    "smol-toml": "^1.2.1",
+    "tsx": "^4.15.6"
+  },
+  "peerDependencies": {
+    "three": "^0.165.0"
+  }
+}

@@ -109,11 +109,14 @@ function FastenersWithGeometry(props: FastenersWithGeometryProps) {
     fastenerGeometry,
   } = props
 
+  // TODO (mw): use mesh uvs instead of texture.repeat
+  // https://discourse.threejs.org/t/use-the-same-texture-with-different-offsets-on-different-materials/19270/11
   const texture = useTexture(materials.fastener, { repeat: [0.2, 0.2] })
 
   const material = useMemo(() => {
     return new MeshPhongMaterial({ map: texture })
   }, [texture])
+  material.needsUpdate = true
 
   const geometry = useMemo(() => {
     const fullLengthInMeters = fastenedLengthInMeters + extrusionLengthInMeters

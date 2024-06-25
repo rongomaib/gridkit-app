@@ -1,5 +1,5 @@
 import { useLoader } from '@react-three/fiber'
-import { useEffect } from 'react'
+import { useLayoutEffect } from 'react'
 import { NearestFilter, RepeatWrapping, type Texture, TextureLoader } from 'three'
 
 export * from './context/index'
@@ -75,13 +75,15 @@ export function useTexture(
 ): Texture {
   const texture = useLoader(TextureLoader, partMaterial.textureUrl)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     texture.wrapS = RepeatWrapping
     texture.wrapT = RepeatWrapping
     texture.needsUpdate = true
     texture.magFilter = NearestFilter
     texture.anisotropy = 16
 
+    // TODO (mw): use mesh uvs instead of this
+    // https://discourse.threejs.org/t/use-the-same-texture-with-different-offsets-on-different-materials/19270/11
     texture.repeat.set(...options.repeat)
   }, [texture, options])
 
