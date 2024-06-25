@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/screenshot",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "type": "module",
   "bin": "./src/bin.ts",
   "exports": {
