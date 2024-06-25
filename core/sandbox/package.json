@@ -11,6 +11,7 @@
     },
     "./package.json": "./package.json"
   },
+  "files": ["./src", "./dist"],
   "sideEffects": ["./src/globals.ts", "./dist/globals.js"],
   "scripts": {
     "build:pkg": "tsup src",

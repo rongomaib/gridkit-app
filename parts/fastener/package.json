@@ -11,6 +11,7 @@
     },
     "./package.json": "./package.json"
   },
+  "files": ["./src", "./dist"],
   "sideEffects": ["./src/index.ts", "./dist/index.js"],
   "scripts": {
     "build:pkg": "tsup src",

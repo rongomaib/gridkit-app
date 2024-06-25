@@ -11,6 +11,7 @@
     },
     "./type-bundles/kit.d.ts": "./dist-type-bundles/kit.d.ts"
   },
+  "files": ["./src", "./dist", "./dist-type-bundles"],
   "sideEffects": false,
   "scripts": {
     "build:types": "dts-bundle-generator --config ./dts-bundle-generator.json",
