@@ -99,14 +99,34 @@ export {
 } from '@chakra-ui/react'
 
 // @chakra-ui/hooks
+export type {} from '@chakra-ui/react'
+export {} from '@chakra-ui/react'
+
 export type {
   UseDisclosureProps,
   UseDisclosureReturn,
+  UseBreakpointOptions,
+  UseClipboardOptions,
+  UseControllableStateProps,
+  UseMediaQueryOptions,
+  UseOutsideClickProps,
 } from '@chakra-ui/react'
 export {
+  useBoolean,
+  useBreakpointValue,
+  useBreakpoint,
+  useClipboard,
+  useConst,
+  useControllableProp,
+  useControllableState,
   useDisclosure,
-  useCallbackRef,
+  useMediaQuery,
   useMergeRefs,
+  useOutsideClick,
+  usePrefersReducedMotion,
+  useTheme,
+  useToken,
+  useCallbackRef,
   useSafeLayoutEffect,
   useColorMode,
   useColorModeValue,
@@ -142,7 +162,9 @@ export type {
   BoxProps,
   FlexProps,
   StackProps,
+  StackDirection,
   GridProps,
+  SimpleGridProps,
   ContainerProps,
   WrapProps,
   AspectRatioProps,
@@ -158,6 +180,7 @@ export {
   VStack,
   HStack,
   Grid,
+  SimpleGrid,
   Container,
   Wrap,
   AspectRatio,
@@ -221,9 +244,21 @@ export { NavLink } from './components/NavLink'
 // @chakra-ui/number-input
 export type { NumberInputProps } from './components/NumberInput'
 export { NumberInput } from './components/NumberInput'
+export type {
+  NumberInputFieldProps,
+  NumberInputStepperProps,
+  NumberIncrementStepperProps,
+  NumberDecrementStepperProps,
+} from '@chakra-ui/react'
+export {
+  NumberInputField,
+  NumberInputStepper,
+  NumberIncrementStepper,
+  NumberDecrementStepper,
+} from '@chakra-ui/react'
 
 // @chakra-ui/pin-input
-export type {} from '@chakra-ui/react'
+export type { PinInputProps, PinInputFieldProps } from '@chakra-ui/react'
 export { PinInput, PinInputField } from '@chakra-ui/react'
 
 // @chakra-ui/popover
