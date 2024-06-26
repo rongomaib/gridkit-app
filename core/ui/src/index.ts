@@ -156,9 +156,27 @@ export { InfoTooltip } from './components/InfoTooltip'
 // @chakra-ui/input
 export type { InputProps } from './components/Input'
 export { Input } from './components/Input'
+export type {
+  InputGroupProps,
+  InputAddonProps,
+  InputLeftAddonProps,
+  InputRightAddonProps,
+  InputElementProps,
+  InputLeftElementProps,
+  InputRightElementProps,
+} from '@chakra-ui/react'
+export {
+  InputGroup,
+  InputAddon,
+  InputLeftAddon,
+  InputRightAddon,
+  InputLeftElement,
+  InputRightElement,
+} from '@chakra-ui/react'
 
 // @chakra-ui/layout
 export type {
+  BadgeProps,
   BoxProps,
   FlexProps,
   StackProps,
@@ -174,6 +192,7 @@ export type {
   ListItemProps,
 } from '@chakra-ui/react'
 export {
+  Badge,
   Box,
   Flex,
   Stack,
