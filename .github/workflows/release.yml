@@ -1,10 +1,10 @@
 name: Release
 
 on:
-  push:
-    tags: ['*']
-
-    # branches: ["test-release"]
+  # push:
+  #   tags: ['*']
+  #
+  #   branches: ["test-release"]
 
   workflow_dispatch:
 
