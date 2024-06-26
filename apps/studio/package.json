@@ -1,7 +1,7 @@
 {
   "name": "@villagekit/studio",
   "productName": "Village Kit Studio",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "private": true,
   "description": "Design modular products with Village Kit",
   "author": "Village Kit",

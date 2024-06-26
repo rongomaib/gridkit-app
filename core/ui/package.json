@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/ui",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "type": "module",
   "exports": {
     ".": {
@@ -11,10 +11,7 @@
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "./src",
-    "./dist"
-  ],
+  "files": ["./src", "./dist"],
   "sideEffects": false,
   "scripts": {
     "deps": "depcheck",
