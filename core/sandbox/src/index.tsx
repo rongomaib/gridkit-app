@@ -27,7 +27,7 @@ export type SandboxProps = {
   alwaysShowFullscreenControls?: boolean
   shouldDisplayAxes?: boolean
   bridgeContexts?: Array<React.Context<any>>
-  InfoComponent: FunctionComponent<SandboxInfoProps>
+  InfoComponent?: FunctionComponent<SandboxInfoProps>
 }
 
 export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
@@ -40,6 +40,7 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
     alwaysShowFullscreenControls = false,
     shouldDisplayAxes = false,
     bridgeContexts = [],
+    InfoComponent,
     children,
   } = props
 
@@ -144,6 +145,7 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
           containerRef={containerRef}
           showParamControls={showParamControls}
           alwaysShowFullscreenControls={alwaysShowFullscreenControls}
+          InfoComponent={InfoComponent}
           // NOTE(mw): before, assembly could be null and this was false.
           //             does this still happen?
           // shouldRenderAssemblyInfo={assembly == null}
