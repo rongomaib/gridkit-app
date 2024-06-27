@@ -1,7 +1,6 @@
 import '../globals'
 
 import { ParamControls } from '@villagekit/parameters'
-import { ProductInfo } from '@villagekit/product'
 import {
   Box,
   HStack,
@@ -13,7 +12,7 @@ import {
   useMobileFriendlyTooltip,
 } from '@villagekit/ui'
 import type React from 'react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { type FunctionComponent, useCallback, useEffect, useMemo, useState } from 'react'
 import {
   FaBorderAll,
   FaCompressAlt,
@@ -25,6 +24,7 @@ import {
   FaUndoAlt,
 } from 'react-icons/fa'
 import screenfull from 'screenfull'
+import type { SandboxInfoProps } from '..'
 import type { CameraControlsRef } from '../camera'
 import { ControlsContextProvider } from './context'
 import { Control } from './control'
@@ -38,7 +38,7 @@ export interface SandboxControlsProps {
   containerRef: React.RefObject<HTMLDivElement>
   showParamControls?: boolean
   alwaysShowFullscreenControls?: boolean
-  shouldRenderProductInfo?: boolean
+  InfoComponent?: FunctionComponent<SandboxInfoProps>
 }
 
 export function SandboxControls(props: SandboxControlsProps) {
@@ -51,7 +51,7 @@ export function SandboxControls(props: SandboxControlsProps) {
     containerRef,
     showParamControls = false,
     alwaysShowFullscreenControls = false,
-    shouldRenderProductInfo = true,
+    InfoComponent,
   } = props
 
   const handleZoomIn = useCallback(() => {
@@ -188,9 +188,9 @@ export function SandboxControls(props: SandboxControlsProps) {
         </HStack>
       </Control>
 
-      {shouldShowFullscreenControls && canShowFullscreenControls && shouldRenderProductInfo && (
+      {shouldShowFullscreenControls && canShowFullscreenControls && InfoComponent != null && (
         <Control bottom sx={{ minWidth: 'md' }}>
-          <ProductInfo containerRef={containerRef} />
+          <InfoComponent containerRef={containerRef} />
         </Control>
       )}
 

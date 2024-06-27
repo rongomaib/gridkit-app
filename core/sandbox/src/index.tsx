@@ -6,7 +6,7 @@ import { Canvas } from '@react-three/fiber'
 import { Box, useDisclosure } from '@villagekit/ui'
 import { Perf } from 'r3f-perf'
 import type React from 'react'
-import { useMemo, useRef } from 'react'
+import { type FunctionComponent, useMemo, useRef } from 'react'
 import { type Box3, Vector3 } from 'three'
 import { CameraControls, type CameraControlsRef } from './camera/index'
 import { SandboxControls } from './controls/index'
@@ -14,6 +14,9 @@ import { SceneryGl } from './scenery/index'
 import { useDefaultSandboxControlSettings, useSaveSandboxControlSettings } from './settings'
 
 export type SandboxMode = 'default' | 'screenshot'
+export type SandboxInfoProps = {
+  containerRef?: React.RefObject<HTMLDivElement>
+}
 
 export type SandboxProps = {
   mode?: SandboxMode
@@ -24,6 +27,7 @@ export type SandboxProps = {
   alwaysShowFullscreenControls?: boolean
   shouldDisplayAxes?: boolean
   bridgeContexts?: Array<React.Context<any>>
+  InfoComponent: FunctionComponent<SandboxInfoProps>
 }
 
 export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {

@@ -11,7 +11,10 @@ export type ProductData = {
 }
 
 export type ProductTypeProviderProps = PropsWithChildren<{}>
-export type ProductViewProps = Omit<SandboxProps, 'label' | 'boundingBox' | 'bridgeContexts'> & {}
+export type ProductViewProps = Omit<
+  SandboxProps,
+  'label' | 'boundingBox' | 'bridgeContexts' | 'InfoComponent'
+> & {}
 export type ProductSummaryProps = {
   displayUnit: 'gu' | 'mm'
   groupParts: boolean
