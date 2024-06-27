@@ -3,10 +3,17 @@ import type { EditorState } from '@codemirror/state'
 import { EditorView, type EditorViewConfig } from '@codemirror/view'
 import { useColorModeValue } from '@villagekit/ui'
 import type { Variant } from 'codemirror-theme-catppuccin'
-import constate from 'constate'
-import { useCallback, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 
-function useEditor() {
+type EditorContextValue = {
+  setParentEl: React.Dispatch<HTMLDivElement>
+  code: string
+  setCodeToLoad: React.Dispatch<string>
+  resetCodeToLoad: React.Dispatch<void>
+  setLanguageExtensions: React.Dispatch<NonNullable<EditorViewConfig['extensions']>>
+}
+
+function useEditor(): EditorContextValue {
   const [parentEl, setParentEl] = useState<HTMLDivElement | null>(null)
 
   const [view, setView] = useState<EditorView | null>(null)
@@ -80,4 +87,17 @@ function useEditor() {
   }
 }
 
-export const [EditorProvider, useEditorContext] = constate(useEditor)
+const EditorContext = createContext<EditorContextValue | null>(null)
+
+export function EditorContextProvider(props: React.PropsWithChildren<void>) {
+  const { children } = props
+  return <EditorContext.Provider value={useEditor()}>{children}</EditorContext.Provider>
+}
+
+export function useEditorContext(): EditorContextValue {
+  const context = useContext(EditorContext)
+  if (context == null) {
+    throw new Error('useEditorContext() must be wrapped with EditorContextProvider')
+  }
+  return context
+}

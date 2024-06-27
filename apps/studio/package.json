@@ -60,7 +60,6 @@
     "codemirror": "^6.0.1",
     "codemirror-theme-catppuccin": "^0.3.0",
     "comlink": "^4.4.1",
-    "constate": "^3.3.2",
     "electron-squirrel-startup": "^1.0.1",
     "electron-trpc": "^0.6.1",
     "lodash-es": "^4.17.21",

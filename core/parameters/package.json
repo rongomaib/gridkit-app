@@ -31,7 +31,6 @@
   "dependencies": {
     "@villagekit/ui": "*",
     "@xstate/react": "^4.1.1",
-    "constate": "^3.3.2",
     "lodash-es": "^4.17.21",
     "query-string": "^9.0.0",
     "serialize-query-params": "^2.0.2",

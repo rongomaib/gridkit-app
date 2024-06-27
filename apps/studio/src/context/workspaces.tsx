@@ -1,6 +1,5 @@
 import { client } from '@/client'
-import constate from 'constate'
-import { useCallback, useMemo, useState } from 'react'
+import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 
 export interface Workspace {
   path: string
@@ -73,4 +72,18 @@ function useWorkspaces(): WorkspacesState {
   }
 }
 
-export const [WorkspacesProvider, useWorkspacesContext] = constate(useWorkspaces)
+const WorkspacesContext = createContext<WorkspacesState | null>(null)
+
+export function WorkspacesContextProvider(props: React.PropsWithChildren<void>) {
+  const { children } = props
+  const value = useWorkspaces()
+  return <WorkspacesContext.Provider value={value}>{children}</WorkspacesContext.Provider>
+}
+
+export function useWorkspacesContext(): WorkspacesState {
+  const context = useContext(WorkspacesContext)
+  if (context == null) {
+    throw new Error('useWorkspacesContext() must be wrapped with WorkspacesContextProvider')
+  }
+  return context
+}
