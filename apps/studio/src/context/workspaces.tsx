@@ -74,7 +74,7 @@ function useWorkspaces(): WorkspacesState {
 
 const WorkspacesContext = createContext<WorkspacesState | null>(null)
 
-export function WorkspacesContextProvider(props: React.PropsWithChildren<void>) {
+export function WorkspacesProvider(props: React.PropsWithChildren<{}>) {
   const { children } = props
   const value = useWorkspaces()
   return <WorkspacesContext.Provider value={value}>{children}</WorkspacesContext.Provider>
@@ -83,7 +83,7 @@ export function WorkspacesContextProvider(props: React.PropsWithChildren<void>) 
 export function useWorkspacesContext(): WorkspacesState {
   const context = useContext(WorkspacesContext)
   if (context == null) {
-    throw new Error('useWorkspacesContext() must be wrapped with WorkspacesContextProvider')
+    throw new Error('useWorkspacesContext() must be wrapped with WorkspacesProvider')
   }
   return context
 }

@@ -89,7 +89,7 @@ function useEditor(): EditorContextValue {
 
 const EditorContext = createContext<EditorContextValue | null>(null)
 
-export function EditorContextProvider(props: React.PropsWithChildren<void>) {
+export function EditorProvider(props: React.PropsWithChildren<{}>) {
   const { children } = props
   return <EditorContext.Provider value={useEditor()}>{children}</EditorContext.Provider>
 }
@@ -97,7 +97,7 @@ export function EditorContextProvider(props: React.PropsWithChildren<void>) {
 export function useEditorContext(): EditorContextValue {
   const context = useContext(EditorContext)
   if (context == null) {
-    throw new Error('useEditorContext() must be wrapped with EditorContextProvider')
+    throw new Error('useEditorContext() must be wrapped with EditorProvider')
   }
   return context
 }
