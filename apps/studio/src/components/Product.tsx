@@ -1,4 +1,4 @@
-import { ParamControls, useHasParams, useParams } from '@villagekit/parameters'
+import { ParamControls, useHasParams } from '@villagekit/parameters'
 import {
   ProductErrorDisplay,
   ProductInfo,
@@ -52,7 +52,7 @@ function ProductViewer() {
           <VStack sx={{ padding: 3, minWidth: 0 }}>
             <Heading as="h2">{meta.label}</Heading>
             <Box sx={{ flexGrow: 1, minHeight: 0, width: '100%' }}>
-              <ProductView showParamControls={showParamControls} />
+              <ProductView showParamControls={showParamControls} shouldDisplayAxes />
             </Box>
           </VStack>
         </Resplit.Pane>

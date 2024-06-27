@@ -1,3 +1,4 @@
+import type { SandboxProps } from '@villagekit/sandbox'
 import type { FunctionComponent, PropsWithChildren } from 'react'
 import type { z } from 'zod'
 import type { productMetaSchema } from './schema'
@@ -10,14 +11,7 @@ export type ProductData = {
 }
 
 export type ProductTypeProviderProps = PropsWithChildren<{}>
-export type ProductViewMode = 'default' | 'screenshot'
-export type ProductViewProps = {
-  mode?: ProductViewMode
-  isDebug?: boolean
-  showParamControls?: boolean
-  alwaysShowFullscreenControls?: boolean
-  shouldRenderProductInfo?: boolean
-}
+export type ProductViewProps = Omit<SandboxProps, 'label' | 'boundingBox' | 'bridgeContexts'> & {}
 export type ProductSummaryProps = {
   displayUnit: 'gu' | 'mm'
   groupParts: boolean

@@ -15,10 +15,10 @@ export function ProductKitView(props: ProductViewProps) {
   return (
     <Suspense fallback={<Loading />}>
       <Sandbox
+        {...sandboxProps}
         label={meta.label}
         boundingBox={boundingBox}
         bridgeContexts={[ProductKitContext]}
-        {...sandboxProps}
       >
         <PartsGlForAll partGlValues={partGlValues} />
       </Sandbox>

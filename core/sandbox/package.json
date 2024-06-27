@@ -31,7 +31,6 @@
   "dependencies": {
     "@juggle/resize-observer": "^3.4.0",
     "@react-three/drei": "^9.106.0",
-    "@villagekit/product": "*",
     "@villagekit/parameters": "*",
     "@villagekit/ui": "*",
     "camera-controls": "^1.38.2",
