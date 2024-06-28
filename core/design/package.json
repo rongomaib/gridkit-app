@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/design",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "exports": {
     "./kit": {
@@ -30,12 +30,11 @@
   },
   "homepage": "https://github.com/villagekit/villagekit/tree/main/core/design#readme",
   "dependencies": {
-    "@villagekit/part-gridbeam": "*",
-    "@villagekit/part-gridpanel": "*",
-    "@villagekit/product-kit": "*"
+    "@villagekit/part-gridbeam": "^0.3.1",
+    "@villagekit/part-gridpanel": "^0.3.1",
+    "@villagekit/product-kit": "^0.3.1"
   },
   "devDependencies": {
     "dts-bundle-generator": "^9.5.1"
-  },
-  "peerDependencies": {}
+  }
 }

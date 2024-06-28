@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/parameters",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "type": "module",
   "exports": {
     ".": {
@@ -29,7 +29,7 @@
   },
   "homepage": "https://github.com/villagekit/villagekit/tree/main/core/parameters#readme",
   "dependencies": {
-    "@villagekit/ui": "*",
+    "@villagekit/ui": "^0.3.1",
     "@xstate/react": "^4.1.1",
     "lodash-es": "^4.17.21",
     "query-string": "^9.0.0",
@@ -40,8 +40,8 @@
   },
   "devDependencies": {
     "@storybook/react": "^8.1.6",
-    "@villagekit/part-gridbeam": "*",
-    "@villagekit/part-gridpanel": "*"
+    "@villagekit/part-gridbeam": "^0.3.1",
+    "@villagekit/part-gridpanel": "^0.3.1"
   },
   "peerDependencies": {
     "react": "^18.3.1"
