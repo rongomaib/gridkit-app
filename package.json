@@ -14,10 +14,13 @@
     "format:unsafe": "biome check --apply-unsafe .",
     "publint": "turbo publint",
     "test": "turbo test",
-    "version": "npm version $npm_package_version --workspaces && biome check --apply $(glob **/package.json) && git add **/package.json"
+    "version": "biome check --apply $(glob **/package.json) && git add **/package.json",
+    "version:bump": "lerna version --sync-workspace-lock"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.0",
+    "@lerna-lite/cli": "^3.6.0",
+    "@lerna-lite/publish": "^3.6.0",
     "@optimize-lodash/esbuild-plugin": "^2.0.3",
     "@tauri-apps/cli": "^1.5.14",
     "@types/lodash-es": "^4.17.12",

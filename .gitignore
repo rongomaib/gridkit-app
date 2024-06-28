@@ -40,3 +40,5 @@ yarn-error.log*
 *.pem
 
 storybook-static
+
+lerna-debug.log
