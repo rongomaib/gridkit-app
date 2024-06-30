@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/design",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "type": "module",
   "exports": {
     "./kit": {
@@ -32,7 +32,7 @@
   "dependencies": {
     "@villagekit/part-gridbeam": "^0.3.1",
     "@villagekit/part-gridpanel": "^0.3.1",
-    "@villagekit/product-kit": "^0.3.1"
+    "@villagekit/product-kit": "^0.3.2"
   },
   "devDependencies": {
     "dts-bundle-generator": "^9.5.1"
