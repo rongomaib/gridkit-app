@@ -1,4 +1,4 @@
-import initSwc, { type Output as TransformOutput, transformSync } from '@swc/wasm-web'
+import type { InitOutput, Output as TransformOutput } from '@swc/wasm-web'
 import { type ActorRefFrom, fromCallback } from 'xstate'
 import type { RenderEvent, RendererMachineEvent } from './'
 import type { javascriptRenderer } from './javascript'
@@ -9,7 +9,8 @@ export const typescriptRenderer = fromCallback<
 >(({ input, sendBack, receive }) => {
   const { javascriptRenderer } = input
 
-  const swcInitialized = initSwc()
+  let swc: typeof import('@swc/wasm-web') | null = null
+  let swcInitialized: Promise<InitOutput> | null = null
 
   receive((event) => {
     handleCode(event.code)
@@ -18,11 +19,17 @@ export const typescriptRenderer = fromCallback<
   return () => {}
 
   async function handleCode(tsCode: string) {
+    if (swc == null) {
+      swc = await import('@swc/wasm-web')
+      const { default: initSwc } = swc
+      swcInitialized = initSwc()
+    }
+
     await swcInitialized
 
     let tsTransformOutput: TransformOutput
     try {
-      tsTransformOutput = transformSync(tsCode, {
+      tsTransformOutput = swc.transformSync(tsCode, {
         jsc: {
           parser: {
             syntax: 'typescript',
