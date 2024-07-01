@@ -267,7 +267,7 @@ export const paramsMachine = setup({
       ],
     },
     reloadQueryParams: {
-      actions: sendTo('reloadQueryParams', ({ event }) => event),
+      actions: sendTo('queryParams', ({ event }) => event),
     },
     setShowControls: {
       actions: assign({
