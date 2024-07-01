@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/plugin-smart-fasteners",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "type": "module",
   "exports": {
     ".": {
@@ -33,7 +33,7 @@
     "@villagekit/part-fastener": "^0.4.0",
     "@villagekit/part-gridbeam": "^0.4.0",
     "@villagekit/part-gridpanel": "^0.4.0",
-    "@villagekit/product-kit": "^0.4.1",
+    "@villagekit/product-kit": "^0.4.2",
     "lodash-es": "^4.17.21",
     "p-defer": "^4.0.0"
   },

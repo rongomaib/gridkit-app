@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/sandbox",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "type": "module",
   "exports": {
     ".": {
@@ -31,7 +31,7 @@
   "dependencies": {
     "@juggle/resize-observer": "^3.4.0",
     "@react-three/drei": "^9.106.0",
-    "@villagekit/parameters": "^0.4.1",
+    "@villagekit/parameters": "^0.4.2",
     "@villagekit/ui": "^0.4.0",
     "camera-controls": "^1.38.2",
     "dnum": "^2.13.1",
