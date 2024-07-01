@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/part-gridbeam",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "type": "module",
   "exports": {
     ".": {
@@ -29,10 +29,10 @@
   },
   "homepage": "https://github.com/villagekit/villagekit/tree/main/parts/gridbeam#readme",
   "dependencies": {
-    "@villagekit/math": "^0.3.1",
-    "@villagekit/part": "^0.3.1",
-    "@villagekit/ui": "^0.3.1",
-    "@villagekit/units": "^0.3.1",
+    "@villagekit/math": "^0.4.0",
+    "@villagekit/part": "^0.4.0",
+    "@villagekit/ui": "^0.4.0",
+    "@villagekit/units": "^0.4.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {

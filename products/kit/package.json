@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/product-kit",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "type": "module",
   "exports": {
     ".": {
@@ -32,14 +32,14 @@
   "dependencies": {
     "@jridgewell/trace-mapping": "^0.3.25",
     "@swc/wasm-web": "^1.5.26",
-    "@villagekit/parameters": "^0.3.1",
-    "@villagekit/part": "^0.3.1",
-    "@villagekit/part-gridbeam": "^0.3.1",
-    "@villagekit/part-gridpanel": "^0.3.1",
-    "@villagekit/product": "^0.3.1",
-    "@villagekit/sandbox": "^0.3.1",
-    "@villagekit/ui": "^0.3.1",
-    "@villagekit/units": "^0.3.1",
+    "@villagekit/parameters": "^0.4.0",
+    "@villagekit/part": "^0.4.0",
+    "@villagekit/part-gridbeam": "^0.4.0",
+    "@villagekit/part-gridpanel": "^0.4.0",
+    "@villagekit/product": "^0.4.0",
+    "@villagekit/sandbox": "^0.4.0",
+    "@villagekit/ui": "^0.4.0",
+    "@villagekit/units": "^0.4.0",
     "comlink": "^4.4.1",
     "dnum": "^2.13.1",
     "errorstacks": "^2.4.1",
