@@ -14,5 +14,5 @@ export default defineConfig({
   format: ['esm'],
   sourcemap: true,
   splitting: false,
-  target: 'es2019',
+  target: 'es2022',
 })
