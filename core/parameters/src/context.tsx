@@ -80,6 +80,11 @@ export function useUpdateParamsValues() {
   )
 }
 
+export function useReloadQueryParams() {
+  const actorRef = useParamsActor()
+  return useCallback(() => actorRef.send({ type: 'reloadQueryParams' }), [actorRef])
+}
+
 export function useSetShowControls() {
   const actorRef = useParamsActor()
   return useCallback(

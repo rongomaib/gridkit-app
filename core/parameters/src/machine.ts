@@ -37,11 +37,15 @@ type UpdateParamsValuesEvent = {
   type: 'updateParamsValues'
   paramsValues: ParamsValues
 }
+type ReloadQueryParamsEvent = {
+  type: 'reloadQueryParams'
+}
 type QueryParamsEvent =
   | ClearParamsEvent
   | UpdateParamsEvent
   | UpdatePresetIdEvent
   | UpdateParamsValuesEvent
+  | ReloadQueryParamsEvent
 const queryParamsActor = fromCallback<QueryParamsEvent, ParamsMachineInput>(
   ({ input, receive, sendBack }) => {
     const { onLocationUpdate } = input
@@ -66,6 +70,13 @@ const queryParamsActor = fromCallback<QueryParamsEvent, ParamsMachineInput>(
         case 'updatePresetId':
         case 'updateParamsValues':
           return handleUpdateDebounced(event)
+        case 'reloadQueryParams':
+          if (current == null) {
+            throw new Error(
+              '@villagekit/parameters: reloadQueryParams event with no current parameters and presets definitions',
+            )
+          }
+          return loadQueryParams(current)
       }
     })
 
@@ -153,6 +164,7 @@ export type ParamsMachineEvent =
   | UpdateParamsEvent
   | UpdatePresetIdEvent
   | UpdateParamsValuesEvent
+  | ReloadQueryParamsEvent
   | SetShowControlsEvent
 
 export const paramsMachine = setup({
@@ -253,6 +265,9 @@ export const paramsMachine = setup({
         }),
         sendTo('queryParams', ({ event }) => event),
       ],
+    },
+    reloadQueryParams: {
+      actions: sendTo('reloadQueryParams', ({ event }) => event),
     },
     setShowControls: {
       actions: assign({
