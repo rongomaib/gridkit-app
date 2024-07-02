@@ -3,7 +3,7 @@ import QueryString from 'query-string'
 import type { DecodedValueMap, EncodedValueMap, QueryParamConfigMap } from 'serialize-query-params'
 import * as SerializeQueryParams from 'serialize-query-params'
 import { assertEvent, assign, fromCallback, sendTo, setup } from 'xstate'
-import type { Preset, Presets } from './presets'
+import type { Presets } from './presets'
 import type { ExtractValuesFromParams, Param, Params, ParamsValues } from './values'
 
 const {
@@ -13,7 +13,6 @@ const {
   decodeQueryParams,
   encodeQueryParams,
   updateLocation,
-  withDefault,
 } = SerializeQueryParams
 
 export type OnLocationUpdate = (location: Location) => void
@@ -92,8 +91,7 @@ const queryParamsActor = fromCallback<QueryParamsEvent, ParamsMachineInput>(
       assertPresets(params, presets)
       current = { params, presets }
 
-      const defaultPreset = presets[0]
-      queryParamDefinitions = calculateQueryParamDefinitions(params, defaultPreset)
+      queryParamDefinitions = calculateQueryParamDefinitions(params)
 
       loadQueryParams(current)
     }
@@ -101,7 +99,7 @@ const queryParamsActor = fromCallback<QueryParamsEvent, ParamsMachineInput>(
     function handleUpdateState(event: UpdatePresetIdEvent | UpdateParamsValuesEvent) {
       if (current == null) return
 
-      const { presetId: currentQueryPresetId, values: currentQueryParamsValues } =
+      const { presetId: currentQueryPresetId, paramsValues: currentQueryParamsValues } =
         getQueryParamsValues(current.params, queryParamDefinitions)
 
       let urlParams: Partial<EncodedValueMap<QueryParamConfigMap>>
@@ -109,7 +107,9 @@ const queryParamsActor = fromCallback<QueryParamsEvent, ParamsMachineInput>(
         case 'updatePresetId': {
           const { presetId } = event
           if (presetId === currentQueryPresetId) return
-          urlParams = encodeQueryParams(queryParamDefinitions, { preset: presetId })
+          urlParams = encodeQueryParams(queryParamDefinitions, {
+            preset: presetId,
+          })
           break
         }
         case 'updateParamsValues': {
@@ -130,16 +130,23 @@ const queryParamsActor = fromCallback<QueryParamsEvent, ParamsMachineInput>(
     }
 
     function loadQueryParams(current: NonNullable<Current>) {
-      const { presetId, values } = getQueryParamsValues(current.params, queryParamDefinitions)
+      const { presetId, paramsValues } = getQueryParamsValues(current.params, queryParamDefinitions)
       if (presetId != null) {
         sendBack({
           type: 'updatePresetId',
           presetId,
         })
-      } else if (Object.keys(values).length > 0) {
+      } else if (
+        Object.keys(paramsValues).length > 0 &&
+        Object.values(paramsValues).every((v) => v != null)
+      ) {
         sendBack({
           type: 'updateParamsValues',
-          paramsValues: values,
+          paramsValues,
+        })
+      } else {
+        sendBack({
+          type: 'resetToDefaultPreset',
         })
       }
     }
@@ -154,6 +161,9 @@ type ParamsMachineContext = ParamsMachineInput & {
   showControls: boolean
 }
 
+type ResetToDefaultPresetEvent = {
+  type: 'resetToDefaultPreset'
+}
 type SetShowControlsEvent = {
   type: 'setShowControls'
   showControls: boolean
@@ -165,6 +175,7 @@ export type ParamsMachineEvent =
   | UpdatePresetIdEvent
   | UpdateParamsValuesEvent
   | ReloadQueryParamsEvent
+  | ResetToDefaultPresetEvent
   | SetShowControlsEvent
 
 export const paramsMachine = setup({
@@ -190,7 +201,6 @@ export const paramsMachine = setup({
   context: ({ input }) => {
     const { onLocationUpdate } = input
     return {
-      type: 'unset',
       onLocationUpdate,
       showControls: false,
       params: null,
@@ -205,7 +215,6 @@ export const paramsMachine = setup({
         assign(({ context }) => {
           const { onLocationUpdate, showControls } = context
           return {
-            type: 'unset',
             onLocationUpdate,
             showControls,
             params: null,
@@ -219,17 +228,12 @@ export const paramsMachine = setup({
     updateParams: {
       actions: [
         assign(({ context, event }) => {
-          const { onLocationUpdate, showControls, presetId, paramsValues } = context
           const { params, presets } = event
           assertPresets(params, presets)
-          const defaultPreset = presets[0]
           return {
-            onLocationUpdate,
-            showControls,
+            ...context,
             params,
             presets,
-            presetId: presetId ?? defaultPreset.id,
-            values: paramsValues ?? defaultPreset.values,
           }
         }),
 
@@ -250,6 +254,7 @@ export const paramsMachine = setup({
           }
           return { ...context, presetId, paramsValues: preset.values }
         }),
+
         sendTo('queryParams', ({ event }) => event),
       ],
     },
@@ -263,8 +268,23 @@ export const paramsMachine = setup({
           const { paramsValues } = event
           return { ...context, presetId: null, paramsValues }
         }),
+
         sendTo('queryParams', ({ event }) => event),
       ],
+    },
+    resetToDefaultPreset: {
+      actions: assign(({ context }) => {
+        const { presets } = context
+        if (presets == null) {
+          throw new Error('Unexpected context: presets are not set')
+        }
+        const defaultPreset = presets[0]
+        return {
+          ...context,
+          presetId: defaultPreset.id,
+          paramsValues: defaultPreset.values,
+        }
+      }),
     },
     reloadQueryParams: {
       actions: sendTo('queryParams', ({ event }) => event),
@@ -296,29 +316,26 @@ function assertPresets<Ps extends Params>(
   }
 }
 
-function calculateQueryParamDefinitions<Ps extends Params>(
-  params: Ps,
-  defaultPreset: Preset<Ps>,
-): QueryParamConfigMap {
+function calculateQueryParamDefinitions<Ps extends Params>(params: Ps): QueryParamConfigMap {
   const configMap: QueryParamConfigMap = {
-    preset: withDefault(StringParam, defaultPreset.id),
+    preset: StringParam,
   }
 
   for (const paramKey in params) {
     const param = params[paramKey]!
-    configMap[param.shortId ?? paramKey] = queryParamConfigForParam(paramKey, param)
+    configMap[param.shortId ?? paramKey] = queryParamConfigForParam(param)
   }
 
   return configMap
 
-  function queryParamConfigForParam(paramKey: string, param: Param) {
+  function queryParamConfigForParam(param: Param) {
     switch (param.type) {
       case 'boolean':
-        return withDefault(BooleanParam, defaultPreset.values[paramKey] as boolean)
+        return BooleanParam
       case 'choice':
-        return withDefault(StringParam, defaultPreset.values[paramKey] as string)
+        return StringParam
       case 'number':
-        return withDefault(NumberParam, defaultPreset.values[paramKey] as number)
+        return NumberParam
     }
   }
 }
@@ -356,5 +373,8 @@ function getQueryParamsValues<Ps extends Params>(
 
   const { preset: presetId, ...queryParamValues } = queryValues
 
-  return { presetId, values: mapQueryValueMapToValues(params, queryParamValues) }
+  return {
+    presetId,
+    paramsValues: mapQueryValueMapToValues(params, queryParamValues),
+  }
 }
