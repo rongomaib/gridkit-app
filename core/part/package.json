@@ -15,6 +15,12 @@
       "import": "./dist/base/index.js",
       "default": "./dist/base/index.js"
     },
+    "./creator": {
+      "types": "./dist/creator.d.ts",
+      "source": "./src/creator.ts",
+      "import": "./dist/creator.js",
+      "default": "./dist/creator.js"
+    },
     "./base/grid": {
       "types": "./dist/base/grid/index.d.ts",
       "source": "./src/base/grid/index.ts",

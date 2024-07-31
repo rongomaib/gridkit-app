@@ -9,28 +9,27 @@ import {
 import { HStack, Text, VStack } from '@villagekit/ui'
 import { memo, useMemo } from 'react'
 
+import type { Fastener } from './creator'
 import { calculateSummaryKey } from './methods'
 import { SummaryFastenerSvg } from './summary-fastener-svg'
-import type { FastenerSummaryValue } from './types'
+import { fastenerVariants } from './variants'
 
-export function PartsSummary(props: PartsSummaryProps<FastenerSummaryValue>) {
+export function PartsSummary(props: PartsSummaryProps<Fastener>) {
   const { parts, ...restProps } = props
 
   const { groupParts } = useSummaryContext()
 
   const partQuotas = useMemo(() => {
     const partEntries = parts.map(
-      (part: FastenerSummaryValue): PartSummaryEntry<FastenerSummaryValue> => [
-        calculateSummaryKey(part),
-        part,
-      ],
+      (part: Fastener): PartSummaryEntry<Fastener> => [calculateSummaryKey(part), part],
     )
     const partQuotaType = groupParts ? 'grouped' : 'single'
     const partQuotas = partsToPartQuotas(partQuotaType, partEntries)
 
     return partQuotas.sort(
       ({ part: partA }, { part: partB }) =>
-        partB.variant.fastenedLength.value - partA.variant.fastenedLength.value,
+        fastenerVariants[partB.variantId]!.fastenedLength.value -
+        fastenerVariants[partA.variantId]!.fastenedLength.value,
     )
   }, [parts, groupParts])
 
@@ -55,14 +54,15 @@ export function PartsSummary(props: PartsSummaryProps<FastenerSummaryValue>) {
   )
 }
 
-type PartSummaryProps = Omit<PartsSummaryProps<FastenerSummaryValue>, 'parts'> & {
-  quota: PartSummaryQuota<FastenerSummaryValue>
+type PartSummaryProps = Omit<PartsSummaryProps<Fastener>, 'parts'> & {
+  quota: PartSummaryQuota<Fastener>
 }
 
 const PartSummary = memo(function PartSummary(props: PartSummaryProps) {
   const { quota } = props
   const { part } = quota
-  const { variant } = part
+  const { variantId } = part
+  const variant = fastenerVariants[variantId]!
   const {
     boltDiameter,
     boltLabel,

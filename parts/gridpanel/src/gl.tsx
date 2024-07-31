@@ -1,10 +1,4 @@
 import '@react-three/fiber'
-import {
-  type AxisId,
-  type AxisValues,
-  axisIdToDirection,
-  axisValuesToVector,
-} from '@villagekit/math'
 import { type PartMaterial, type PartsGlProps, useTexture } from '@villagekit/part/base'
 import type React from 'react'
 import { useMemo } from 'react'
@@ -19,7 +13,7 @@ import {
   Vector3,
 } from 'three'
 import { getEveryHolePosition } from './helpers'
-import type { GridPanelGlValue } from './types'
+import type { GridPanelGlValue, GridPanelHoles } from './types'
 
 export function PartsGl(props: PartsGlProps<GridPanelGlValue>) {
   const { parts, ...restProps } = props
@@ -38,23 +32,20 @@ type PartGlProps = Omit<PartsGlProps<GridPanelGlValue>, 'parts'> & {
 }
 
 export function PartGl(props: PartGlProps) {
+  const { part } = props
   const {
-    part: {
-      id,
-      gridLengthInMeters,
-      holeDiameterInMeters,
-      thicknessInMeters,
-      mainAxis,
-      mainLength,
-      crossAxis,
-      crossLength,
-      thicknessAxis,
-      locationInMeters,
-      sizeInMeters,
-      holes = true,
-      variant: { id: variantId, materials },
-    },
-  } = props
+    id,
+    variant,
+    sizeInGrids,
+    holes,
+    gridLengthInMeters,
+    holeDiameterInMeters,
+    thicknessInMeters,
+    position,
+    quaternion,
+    scale,
+  } = part
+  const { id: variantId, materials } = variant
 
   const panelMaterial = materials.panel
   if (panelMaterial === undefined) {
@@ -62,18 +53,20 @@ export function PartGl(props: PartGlProps) {
   }
 
   return (
-    <group
-      name={`gridpanel-container-${id}`}
-      position={locationInMeters as [number, number, number]}
-    >
-      <Panel id={id} sizeInMeters={sizeInMeters} material={panelMaterial}>
+    <group name={`gridpanel-container-${id}`}>
+      <Panel
+        id={id}
+        sizeInGrids={sizeInGrids}
+        gridLengthInMeters={gridLengthInMeters}
+        thicknessInMeters={thicknessInMeters}
+        material={panelMaterial}
+        position={position}
+        quaternion={quaternion}
+        scale={scale}
+      >
         {holes && (
           <Holes
-            mainAxis={mainAxis}
-            mainLength={mainLength}
-            crossAxis={crossAxis}
-            crossLength={crossLength}
-            thicknessAxis={thicknessAxis}
+            sizeInGrids={sizeInGrids}
             gridLengthInMeters={gridLengthInMeters}
             holeDiameterInMeters={holeDiameterInMeters}
             thicknessInMeters={thicknessInMeters}
@@ -87,8 +80,13 @@ export function PartGl(props: PartGlProps) {
 
 interface PanelProps {
   id: string
-  sizeInMeters: [number, number, number]
+  sizeInGrids: [number, number]
+  gridLengthInMeters: number
+  thicknessInMeters: number
   material: PartMaterial
+  position: Vector3
+  quaternion: Quaternion
+  scale: Vector3
   children: React.ReactNode | Array<React.ReactNode>
 }
 
@@ -96,30 +94,49 @@ interface PanelProps {
 const TEXTURE_SIZE = 0.4
 
 function Panel(props: PanelProps) {
-  const { id, sizeInMeters, material, children } = props
+  const {
+    id,
+    sizeInGrids,
+    gridLengthInMeters,
+    thicknessInMeters,
+    material,
+    position,
+    quaternion,
+    scale,
+    children,
+  } = props
 
   const uniqueNumericId = useMemo(() => {
     return [...id].reduce((sofar, _, i) => sofar + id.charCodeAt(i), 0)
   }, [id])
 
   const geometry = useMemo(() => {
-    const geometry = new BoxGeometry(sizeInMeters[0], sizeInMeters[1], sizeInMeters[2])
+    const boxSize: [number, number, number] = [
+      sizeInGrids[0] * gridLengthInMeters,
+      sizeInGrids[1] * gridLengthInMeters,
+      thicknessInMeters,
+    ]
+    const boxGeometry = new BoxGeometry(...boxSize)
 
-    const panelScale = 0.995
-    geometry.scale(panelScale, panelScale, panelScale)
+    const beamScale = 0.995
+    boxGeometry.scale(beamScale, beamScale, beamScale)
 
-    // translate geometry so position starts at (0, 0, 0)
-    geometry.translate(sizeInMeters[0] / 2, sizeInMeters[1] / 2, sizeInMeters[2] / 2)
+    // translate beam so first hole is at (0, 0, 0).
+    boxGeometry.translate(
+      0.5 * (gridLengthInMeters * (sizeInGrids[0] - 1)),
+      0.5 * (gridLengthInMeters * (sizeInGrids[1] - 1)),
+      0,
+    )
 
     // set uvs such that texture maps to world units
 
-    const s1 = sizeInMeters[0] / TEXTURE_SIZE
-    const s2 = sizeInMeters[1] / TEXTURE_SIZE
-    const s3 = sizeInMeters[2] / TEXTURE_SIZE
+    const s1 = boxSize[0] / TEXTURE_SIZE
+    const s2 = boxSize[1] / TEXTURE_SIZE
+    const s3 = boxSize[2] / TEXTURE_SIZE
 
-    const index = geometry.getIndex()
+    const index = boxGeometry.getIndex()
     if (index == null) throw new Error('unexpected')
-    const uvs = geometry.getAttribute('uv') as BufferAttribute
+    const uvs = boxGeometry.getAttribute('uv') as BufferAttribute
 
     const uvOffsetX = Math.sin(uniqueNumericId) * 10
     const uvOffsetY = Math.cos(uniqueNumericId) * 10
@@ -172,50 +189,39 @@ function Panel(props: PanelProps) {
     uvs.setXY(index.getX(34), s1 + uvOffsetX, uvOffsetY)
     uvs.setXY(index.getX(35), s1 + uvOffsetX, s2 + uvOffsetY)
 
-    return geometry
-  }, [sizeInMeters, uniqueNumericId])
+    return boxGeometry
+  }, [sizeInGrids, gridLengthInMeters, thicknessInMeters, uniqueNumericId])
 
   const texture = useTexture(material)
   if (texture == null) return null
 
   return (
-    <group name={`gridpanel-${id}`}>
-      <group name="gridpanel-panel">
-        <mesh name="gridpanel-panel-texture" geometry={geometry} castShadow receiveShadow>
-          <meshLambertMaterial map={texture} />
-        </mesh>
-      </group>
+    <group name={`gridpanel-${id}`} position={position} quaternion={quaternion} scale={scale}>
+      <mesh name="gridpanel-panel" geometry={geometry} castShadow receiveShadow>
+        <meshLambertMaterial map={texture} />
+      </mesh>
       {children}
     </group>
   )
 }
 
 const HOLE_SEGMENTS = 8
+const IDENTITY_QUATERNION = new Quaternion()
+const FLIP_Z_QUATERNION = new Quaternion().setFromUnitVectors(
+  new Vector3(0, 0, 1),
+  new Vector3(0, 0, -1),
+)
 
 interface HolesProps {
-  mainAxis: AxisId
-  mainLength: number
-  crossAxis: AxisId
-  crossLength: number
-  thicknessAxis: AxisId
+  sizeInGrids: [number, number]
   gridLengthInMeters: number
   holeDiameterInMeters: number
   thicknessInMeters: number
-  holes: true | Array<[number, number]>
+  holes: Exclude<GridPanelHoles, false>
 }
 
 function Holes(props: HolesProps) {
-  const {
-    mainAxis,
-    mainLength,
-    crossAxis,
-    crossLength,
-    thicknessAxis,
-    gridLengthInMeters,
-    holeDiameterInMeters,
-    thicknessInMeters,
-    holes,
-  } = props
+  const { sizeInGrids, gridLengthInMeters, holeDiameterInMeters, thicknessInMeters, holes } = props
   const holeRadius = holeDiameterInMeters / 2
 
   const material = useMemo(() => {
@@ -226,22 +232,8 @@ function Holes(props: HolesProps) {
     return new CircleGeometry(holeRadius, HOLE_SEGMENTS)
   }, [holeRadius])
 
-  const upQuaternion = useMemo(() => {
-    const upDirection = axisIdToDirection(thicknessAxis)
-    const upVector = new Vector3(...upDirection)
-    const Z_AXIS = new Vector3(0, 0, 1)
-    return new Quaternion().setFromUnitVectors(Z_AXIS, upVector)
-  }, [thicknessAxis])
-
-  const downQuaternion = useMemo(() => {
-    const upDirection = axisIdToDirection(thicknessAxis)
-    const upVector = new Vector3(...upDirection)
-    const NEGATIVE_Z_AXIS = new Vector3(0, 0, -1)
-    return new Quaternion().setFromUnitVectors(NEGATIVE_Z_AXIS, upVector)
-  }, [thicknessAxis])
-
   const mesh = useMemo(() => {
-    const holePositions = holes === true ? getEveryHolePosition([mainLength, crossLength]) : holes
+    const holePositions = holes === true ? getEveryHolePosition(sizeInGrids) : holes
 
     const m = new InstancedMesh(geometry, material, 2 * holePositions.length)
     const dummy = new Object3D()
@@ -253,45 +245,28 @@ function Holes(props: HolesProps) {
       const mIndex = 2 * holePositionIndex
 
       // up
-      dummy.setRotationFromQuaternion(upQuaternion)
+      dummy.setRotationFromQuaternion(IDENTITY_QUATERNION)
       dummy.position.set(
-        ...axisValuesToVector({
-          [crossAxis]: (1 / 2 + crossIndex) * gridLengthInMeters,
-          [mainAxis]: (1 / 2 + mainIndex) * gridLengthInMeters,
-          [thicknessAxis]: 1e-4 + thicknessInMeters,
-        } as AxisValues),
+        mainIndex * gridLengthInMeters,
+        crossIndex * gridLengthInMeters,
+        1e-4 + 0.5 * thicknessInMeters,
       )
       dummy.updateMatrix()
       m.setMatrixAt(mIndex, dummy.matrix)
 
       // down
-      dummy.setRotationFromQuaternion(downQuaternion)
+      dummy.setRotationFromQuaternion(FLIP_Z_QUATERNION)
       dummy.position.set(
-        ...axisValuesToVector({
-          [crossAxis]: (1 / 2 + crossIndex) * gridLengthInMeters,
-          [mainAxis]: (1 / 2 + mainIndex) * gridLengthInMeters,
-          [thicknessAxis]: -1e-4,
-        } as AxisValues),
+        mainIndex * gridLengthInMeters,
+        crossIndex * gridLengthInMeters,
+        -1e-4 - 0.5 * thicknessInMeters,
       )
       dummy.updateMatrix()
       m.setMatrixAt(mIndex + 1, dummy.matrix)
     }
 
     return m
-  }, [
-    mainAxis,
-    mainLength,
-    crossAxis,
-    crossLength,
-    thicknessAxis,
-    thicknessInMeters,
-    gridLengthInMeters,
-    geometry,
-    material,
-    upQuaternion,
-    downQuaternion,
-    holes,
-  ])
+  }, [holes, sizeInGrids, thicknessInMeters, gridLengthInMeters, geometry, material])
 
   return <primitive name="gridpanel-holes" object={mesh} />
 }

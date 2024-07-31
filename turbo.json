@@ -4,7 +4,7 @@
   "tasks": {
     "build:pkg": {
       "dependsOn": ["^build:pkg"],
-      "outputs": ["dist/**", "dist-type-bundles/**"],
+      "outputs": ["dist/**", "dist-bundles/**", "dist-type-bundles/**"],
       "outputLogs": "errors-only"
     },
     "build:app": {

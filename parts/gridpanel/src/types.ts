@@ -1,7 +1,5 @@
-import type { AxisId, Location } from '@villagekit/math'
-import type { BasePartSummaryValue } from '@villagekit/part/base'
-import type { BaseGridPartState } from '@villagekit/part/base/grid'
 import type { Length } from '@villagekit/units'
+import type { Quaternion, Vector3 } from 'three'
 
 export type GridPanelType = 'gridpanel'
 
@@ -20,33 +18,18 @@ export interface GridPanelVariant {
 export type GridPanelFit = 'top' | 'bottom'
 export type GridPanelHoles = boolean | Array<[number, number]>
 
-export interface GridPanelState extends BaseGridPartState {
+export type GridPanelGlValue = {
   type: GridPanelType
+  id: string
   variant: GridPanelVariant
-  mainAxis: AxisId
-  mainStart: number
-  mainLength: number
-  crossAxis: AxisId
-  crossStart: number
-  crossLength: number
-  thicknessAxis: AxisId
-  thicknessStart: number
-  fit?: GridPanelFit
-  holes?: GridPanelHoles
-}
-
-export interface GridPanelGlValue extends GridPanelState {
+  sizeInGrids: [number, number]
+  holes: GridPanelHoles
+  // variant
   gridLengthInMeters: number
   holeDiameterInMeters: number
   thicknessInMeters: number
-  locationInGrids: Location
-  locationInMeters: Location
-  sizeInMeters: [number, number, number]
-}
-
-export interface GridPanelSummaryValue extends BasePartSummaryValue {
-  type: GridPanelType
-  variant: GridPanelVariant
-  sizeInGrids: [number, number]
-  holes?: GridPanelHoles
+  // transform
+  position: Vector3
+  quaternion: Quaternion
+  scale: Vector3
 }

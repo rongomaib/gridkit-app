@@ -30,6 +30,8 @@
     "@types/three": "^0.165.0",
     "@villagekit/tsconfig": "*",
     "esbuild-plugin-file-path-extensions": "^2.1.2",
+    "esbuild-plugin-raw": "^0.1.8",
+    "dts-bundle-generator": "^9.5.1",
     "glob": "^10.4.1",
     "patch-package": "^8.0.0",
     "publint": "^0.2.8",

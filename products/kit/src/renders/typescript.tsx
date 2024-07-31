@@ -1,7 +1,10 @@
 import type { InitOutput, Output as TransformOutput } from '@swc/wasm-web'
+import PromiseLimit from 'p-limit'
 import { type ActorRefFrom, fromCallback } from 'xstate'
 import type { RenderEvent, RendererMachineEvent } from './'
 import type { javascriptRenderer } from './javascript'
+
+const promiseLimit = PromiseLimit(1)
 
 export const typescriptRenderer = fromCallback<
   RenderEvent,
@@ -13,7 +16,7 @@ export const typescriptRenderer = fromCallback<
   let swcInitialized: Promise<InitOutput> | null = null
 
   receive((event) => {
-    handleCode(event.code)
+    promiseLimit(() => handleCode(event.code))
   })
 
   return () => {}

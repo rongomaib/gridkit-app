@@ -8,10 +8,9 @@ import {
 import {
   type PartCreator,
   type PartGlValue,
-  type PartState,
+  type WithRequiredId,
   calculateBoundingBoxForAll,
   calculateGlValueForAll,
-  calculateStateForAll,
   getPartVariants,
 } from '@villagekit/part'
 import type {
@@ -35,7 +34,7 @@ type ProductKitState = {
   boundingBox: Box3
   isLoading: boolean
   partValues: Array<PartGlValue>
-  parts: Array<PartState>
+  parts: Array<WithRequiredId<PartCreator>>
 }
 
 function useProductKit(): ProductKitState {
@@ -59,7 +58,7 @@ function useProductKit(): ProductKitState {
   const { isLoading, parts } = useParts({ render, paramsValues })
 
   const partValues = usePartValues(parts)
-  const boundingBox = useBoundingBox(partValues)
+  const boundingBox = useBoundingBox(parts)
 
   return {
     boundingBox,
@@ -176,36 +175,32 @@ function useParts<Ps extends Params>(options: UsePartsOptions<Ps>): UsePartsValu
     }
   }, [kitParts, generatePluginParts])
 
-  const partStates = useMemo(() => {
-    return calculateStateForAll(partCreators)
-  }, [partCreators])
-
   useEffect(() => {
     if (process.env.NODE_ENV !== 'production') {
       // Ensure all parts have unique ids
       const duplicatePartIds = uniq(
-        map(partStates, 'id').filter((partId, i, a) => a.indexOf(partId) !== i),
+        map(partCreators, 'id').filter((partId, i, a) => a.indexOf(partId) !== i),
       )
 
       if (duplicatePartIds.length > 0) {
         throw new Error(`Parts with duplicate ids found: ${duplicatePartIds.join(', ')}`)
       }
     }
-  }, [partStates])
+  }, [partCreators])
 
-  return { isLoading, parts: partStates }
+  return { isLoading, parts: partCreators }
 }
 
-function usePartValues(partStates: Array<PartState>): Array<PartGlValue> {
+function usePartValues(partCreators: Array<WithRequiredId<PartCreator>>): Array<PartGlValue> {
   return useMemo(() => {
-    return calculateGlValueForAll(partStates)
-  }, [partStates])
+    return calculateGlValueForAll(partCreators)
+  }, [partCreators])
 }
 
-function useBoundingBox(partGlValues: Array<PartGlValue>): Box3 {
+function useBoundingBox(partCreators: Array<PartCreator>): Box3 {
   return useMemo(() => {
-    return calculateBoundingBoxForAll(partGlValues)
-  }, [partGlValues])
+    return calculateBoundingBoxForAll(partCreators)
+  }, [partCreators])
 }
 
 /*

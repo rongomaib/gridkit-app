@@ -1,76 +1,64 @@
-import weakMemoize from '@emotion/weak-memoize'
-import type { FasteningPoint } from '@villagekit/part'
+import type { FasteningPoint, WithRequiredId } from '@villagekit/part'
 import { convert, meter } from '@villagekit/units'
-import { Box3, Quaternion, Vector3 } from 'three'
+import { Box3, Matrix4, Quaternion, Vector3 } from 'three'
 
-import type { FastenerGlValue, FastenerState, FastenerSummaryValue } from './types'
+import weakMemoize from '@emotion/weak-memoize'
+import type { Fastener } from './creator'
+import type { FastenerGlValue, FastenerVariant } from './types'
+import { fastenerVariants } from './variants'
 
-const X_AXIS = new Vector3(1, 0, 0)
+const getExtrusionLength = weakMemoize(
+  (variant: FastenerVariant) => convert(variant.extrusionLength, meter).value,
+)
 
-const getGridLengthInMeters = weakMemoize((state: FastenerState): number => {
-  const {
-    variant: { gridLength },
-  } = state
+const getFastenedLength = weakMemoize(
+  (variant: FastenerVariant) => convert(variant.fastenedLength, meter).value,
+)
 
-  return convert(gridLength, meter).value
-})
+export function calculateGlValue(creator: WithRequiredId<Fastener>): FastenerGlValue {
+  const { type, id, variantId, transform } = creator
 
-export function calculateGlValue(state: FastenerState): FastenerGlValue {
-  const {
-    start,
-    end,
-    direction,
-    variant: { extrusionLength, fastenedLength },
-  } = state
+  const variant = fastenerVariants[variantId]
+  if (variant == null) {
+    throw new Error(`Unknown gridbeam variant: ${variantId}`)
+  }
 
-  const extrusionLengthInMeters = convert(extrusionLength, meter).value
-  const fastenedLengthInMeters = convert(fastenedLength, meter).value
-  const gridLengthInMeters = getGridLengthInMeters(state)
+  const extrusionLengthInMeters = getExtrusionLength(variant)
+  const fastenedLengthInMeters = getFastenedLength(variant)
 
-  const position: FastenerGlValue['position'] = [
-    ((start[0] + end[0]) * 0.5 + 0.5) * gridLengthInMeters,
-    ((start[1] + end[1]) * 0.5 + 0.5) * gridLengthInMeters,
-    ((start[2] + end[2]) * 0.5 + 0.5) * gridLengthInMeters,
-  ]
-
-  const quarternion: FastenerGlValue['quarternion'] = new Quaternion().setFromUnitVectors(
-    X_AXIS,
-    new Vector3(...direction),
-  )
+  const matrix = new Matrix4().fromArray(transform)
+  const position = new Vector3()
+  const quaternion = new Quaternion()
+  const scale = new Vector3()
+  matrix.decompose(position, quaternion, scale)
 
   return {
-    ...state,
+    type,
+    id,
+    variant,
+    position,
+    quaternion,
     extrusionLengthInMeters,
     fastenedLengthInMeters,
-    position,
-    quarternion,
   }
 }
 
-export function calculateBoundingBox(_value: FastenerGlValue): Box3 {
+export function calculateBoundingBox(_creator: Fastener): Box3 {
   return new Box3() // Does not apply to fastener part
 }
 
-export function calculateSummaryValue(state: FastenerState): FastenerSummaryValue {
-  const { type, variant } = state
+export function calculateSummaryKey(creator: Fastener): string {
+  const { type, variantId } = creator
 
-  return { type, variant }
+  return `${type}::${variantId}`
 }
 
-export function calculateSummaryKey(summary: FastenerSummaryValue): string {
-  const { type, variant } = summary
-
-  return `${type}::${variant.id}`
-}
-
-export function calculateEstimatedPrice(_state: FastenerState): number {
-  return 100
-}
-
-export function calculateFasteningPoints(_state: FastenerState): Array<FasteningPoint> {
+export function calculateFasteningPoints(
+  _creator: WithRequiredId<Fastener>,
+): Array<FasteningPoint> {
   return [] // Does not apply to fastener part
 }
 
-export function calculateNumFastenersToFasten(_state: FastenerState): number {
+export function calculateNumFastenersToFasten(_creator: Fastener): number {
   return 0
 }

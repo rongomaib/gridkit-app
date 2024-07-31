@@ -1,22 +1,20 @@
 import { registerPartModule } from '@villagekit/part'
-import { type GridBeamCreator, calculateState } from './creators'
+import type { GridBeam } from './creator'
 import { PartsGl } from './gl'
 import {
   calculateBoundingBox,
   calculateFasteningPoints,
   calculateGlValue,
   calculateNumFastenersToFasten,
-  calculateSummaryKey,
-  calculateSummaryValue,
 } from './methods'
 import { gridBeamSchemas } from './schemas'
 import { PartsSummary } from './summary'
-import type { GridBeamGlValue, GridBeamState, GridBeamSummaryValue, GridBeamType } from './types'
+import type { GridBeamGlValue, GridBeamType } from './types'
 import { gridBeamVariants } from './variants'
 
 export * from './svg/index'
 export * from './types'
-export * from './variants'
+export { gridBeamVariants }
 
 /* eslint-disable @typescript-eslint/no-namespace */
 declare global {
@@ -25,19 +23,13 @@ declare global {
       gridbeam: GridBeamType
     }
     interface EveryPartCreator {
-      gridbeam: GridBeamCreator
-    }
-    interface EveryPartState {
-      gridbeam: GridBeamState
+      gridbeam: GridBeam
     }
     interface EveryPartVariants {
       gridbeam: typeof gridBeamVariants
     }
     interface EveryPartGlValue {
       gridbeam: GridBeamGlValue
-    }
-    interface EveryPartSummaryValue {
-      gridbeam: GridBeamSummaryValue
     }
   }
 }
@@ -53,9 +45,6 @@ registerPartModule({
     calculateFasteningPoints,
     calculateGlValue,
     calculateNumFastenersToFasten,
-    calculateState,
-    calculateSummaryKey,
-    calculateSummaryValue,
   },
   variants: gridBeamVariants,
   schemas: gridBeamSchemas,

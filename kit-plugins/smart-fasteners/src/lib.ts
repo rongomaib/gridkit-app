@@ -1,24 +1,32 @@
-import { type AxisId, type Location, axisIdToDirection, flipAxisId } from '@villagekit/math'
+import {
+  type AxisId,
+  type Point3,
+  axisIdToDirection,
+  flipAxisId,
+  pointEquals,
+} from '@villagekit/math'
 import {
   type FasteningPoint,
   type PartCreator,
-  type PartState,
+  type WithRequiredId,
   calculateFasteningPointsForAll,
   calculateNumFastenersToFasten,
 } from '@villagekit/part'
 import { fastenerVariants } from '@villagekit/part-fastener'
+import { Fastener } from '@villagekit/part-fastener/creator'
 import {
   forEach,
   groupBy,
-  intersection,
+  intersectionWith,
   map,
   mapValues,
   maxBy,
   reduce,
+  round,
   sortBy,
   sumBy,
   uniq,
-  uniqBy,
+  uniqWith,
 } from 'lodash-es'
 import { Line3, Vector3 } from 'three'
 
@@ -29,8 +37,10 @@ export type PossibleFastener = {
   endPoint: FasteningPoint
 }
 
-export function generateFastenerParts(partStates: Array<PartState>): Array<PartCreator> {
-  const fasteningPoints = calculateFasteningPointsForAll(partStates)
+export function generateFastenerParts(
+  partCreators: Array<WithRequiredId<PartCreator>>,
+): Array<WithRequiredId<PartCreator>> {
+  const fasteningPoints = calculateFasteningPointsForAll(partCreators)
   const fasteningMap = buildFasteningMap(fasteningPoints)
   const possibleFasteners = generatePossibleFasteners(fasteningMap)
   const chosenFasteners = generateFastenersByWeighting(possibleFasteners)
@@ -41,7 +51,7 @@ export function generateFastenerParts(partStates: Array<PartState>): Array<PartC
 
 type FasteningMap = Record<string, FasteningCell>
 type FasteningCell = {
-  cellPosition: Location
+  cellPosition: Point3
   fasteningPoints: FasteningPointByAxis
 }
 type FasteningPointByAxis = { [key in AxisId]?: FasteningPoint }
@@ -50,7 +60,7 @@ function buildFasteningMap(fasteningPoints: Array<FasteningPoint>) {
   return reduce<FasteningPoint, FasteningMap>(
     fasteningPoints,
     (sofar, fasteningPoint) => {
-      const cellKey = fasteningPoint.cellPosition.join(',')
+      const cellKey = fasteningPoint.cellPosition.map(Math.round).join(',')
 
       if (!(cellKey in sofar)) {
         sofar[cellKey] = {
@@ -90,7 +100,7 @@ function generatePossibleFasteners(fasteningMap: FasteningMap): Array<PossibleFa
           ...expandedPointsFromEnd,
         ]
 
-        if (JSON.stringify(startPoint.cellPosition) !== JSON.stringify(endPoint.cellPosition)) {
+        if (!pointEquals(startPoint.cellPosition, endPoint.cellPosition)) {
           sofar.push({
             axis,
             endPoint,
@@ -105,7 +115,34 @@ function generatePossibleFasteners(fasteningMap: FasteningMap): Array<PossibleFa
     [],
   )
 
-  return uniqBy(possibleFasteners, JSON.stringify)
+  return uniqWith(possibleFasteners, possibleFastenerEquals)
+}
+
+function possibleFastenerEquals(a: PossibleFastener, b: PossibleFastener) {
+  return (
+    arrayEqualsWith(a.fasteningPoints, b.fasteningPoints, fasteningPointEquals) &&
+    a.axis === b.axis &&
+    fasteningPointEquals(a.startPoint, b.startPoint) &&
+    fasteningPointEquals(a.endPoint, b.endPoint)
+  )
+}
+
+function arrayEqualsWith<T>(a: Array<T>, b: Array<T>, comparator: (a: T, b: T) => boolean) {
+  if (a.length !== b.length) return false
+  for (let i = 0; i < a.length; i++) {
+    if (!comparator(a[i]!, b[i]!)) return false
+  }
+  return true
+}
+
+function fasteningPointEquals(a: FasteningPoint, b: FasteningPoint) {
+  return (
+    pointEquals(a.cellPosition, b.cellPosition) &&
+    pointEquals(a.facePosition, b.facePosition) &&
+    a.axis === b.axis &&
+    a.part === b.part &&
+    a.gradient === b.gradient
+  )
 }
 
 function expandCells(
@@ -127,7 +164,7 @@ function expandCells(
       currentPoint.cellPosition[1] + neighbourOffset[1],
       currentPoint.cellPosition[2] + neighbourOffset[2],
     ] as [number, number, number]
-    const neighbourKey = neighbourCellPosition.join(',')
+    const neighbourKey = neighbourCellPosition.map(Math.round).join(',')
 
     if (Object.prototype.hasOwnProperty.call(fasteningMap, neighbourKey)) {
       const neighbourCell = fasteningMap[neighbourKey]!
@@ -161,7 +198,7 @@ interface PartAdjacencyMap {
 }
 type PartPairPriorityOrder = Array<string>
 interface PartPairById {
-  [partPairId: string]: [PartState, PartState]
+  [partPairId: string]: [PartCreator, PartCreator]
 }
 
 function derivePartAdjacencies(possibleFasteners: Array<PossibleFastener>): {
@@ -200,13 +237,16 @@ function derivePartAdjacencies(possibleFasteners: Array<PossibleFastener>): {
   return { partAdjacencyMap, partPairPriorityOrder, partPairsById }
 }
 
-function getPartPairId(partA: PartState, partB: PartState): string {
+function getPartPairId(
+  partA: WithRequiredId<PartCreator>,
+  partB: WithRequiredId<PartCreator>,
+): string {
   return `${partA.id}__${partB.id}`
 }
 
 function getPartPairsFromFastener(
   possibleFastener: PossibleFastener,
-): Array<[PartState, PartState]> {
+): Array<[WithRequiredId<PartCreator>, WithRequiredId<PartCreator>]> {
   const parts = uniq(map(possibleFastener.fasteningPoints, 'part'))
   return pairwise(parts)
 }
@@ -219,7 +259,10 @@ function pairwise<T>(array: Array<T>): Array<[T, T]> {
   return result
 }
 
-function sortPartPairs(partA: PartState, partB: PartState): [PartState, PartState] {
+function sortPartPairs(
+  partA: WithRequiredId<PartCreator>,
+  partB: WithRequiredId<PartCreator>,
+): [WithRequiredId<PartCreator>, WithRequiredId<PartCreator>] {
   if (partA.id.localeCompare(partB.id) <= 0) {
     return [partA, partB]
   }
@@ -323,9 +366,10 @@ function generateFastenersByWeighting(
           return // Possible fastener has already been collided with
         }
 
-        const sharedFasteningPoints = intersection(
+        const sharedFasteningPoints = intersectionWith(
           map(possibleFastener.fasteningPoints, 'cellPosition'),
           map(chosenFastener.fasteningPoints, 'cellPosition'),
+          pointEquals,
         )
 
         if (sharedFasteningPoints.length > 0) {
@@ -382,27 +426,40 @@ function calculateProximityAvoidanceWeight(
   })
 }
 
-function buildFastenerParts(chosenFasteners: Array<PossibleFastener>): Array<PartCreator> {
+function buildFastenerParts(
+  chosenFasteners: Array<PossibleFastener>,
+): Array<WithRequiredId<PartCreator>> {
   const groupedFasteners = groupBy(chosenFasteners, ({ startPoint, endPoint }) => {
-    const fastenedLengthInGrids =
-      Math.round(
-        new Line3(
-          new Vector3(...startPoint.facePosition),
-          new Vector3(...endPoint.facePosition),
-        ).distance() * 10,
-      ) / 10
+    const fastenedLengthInGrids = round(
+      new Line3(
+        new Vector3(...startPoint.facePosition),
+        new Vector3(...endPoint.facePosition),
+      ).distance(),
+      1,
+    )
 
     return fastenedLengthInGrids * 40
   })
 
-  const fastenerParts: Array<PartCreator> = []
+  const fastenerParts: Array<WithRequiredId<PartCreator>> = []
 
   forEach(groupedFasteners, (chosenFastenersForLength, fastenedLengthInMillimeters) => {
-    const fasteners = map(chosenFastenersForLength, ({ axis, endPoint, startPoint }) => ({
-      direction: axisIdToDirection(axis),
-      end: endPoint.facePosition,
-      start: startPoint.facePosition,
-    }))
+    const fasteners = map(chosenFastenersForLength, ({ axis, startPoint, endPoint }) => {
+      // NOTE (mw): I'm not sure why fasteners are offset by 0.5 in the direction.
+      const direction = axisIdToDirection(axis)
+      const offset = [0.5 * direction[0], 0.5 * direction[1], 0.5 * direction[2]] as const
+      const start: [number, number, number] = [
+        offset[0] + startPoint.facePosition[0],
+        offset[1] + startPoint.facePosition[1],
+        offset[2] + startPoint.facePosition[2],
+      ]
+      const end: [number, number, number] = [
+        offset[0] + endPoint.facePosition[0],
+        offset[1] + endPoint.facePosition[1],
+        offset[2] + endPoint.facePosition[2],
+      ]
+      return { start, end }
+    })
 
     const variant = Object.values(fastenerVariants).find(
       (variant) => variant.fastenedLength.value === Number.parseFloat(fastenedLengthInMillimeters),
@@ -416,12 +473,13 @@ function buildFastenerParts(chosenFasteners: Array<PossibleFastener>): Array<Par
 
     for (let fastenerIndex = 0; fastenerIndex < fasteners.length; fastenerIndex++) {
       const fastener = fasteners[fastenerIndex]!
-      fastenerParts.push({
-        ...fastener,
-        id: `fasteners-${fastenedLengthInMillimeters}-${fastenerIndex}`,
-        type: 'fastener',
-        variant,
-      })
+      fastenerParts.push(
+        Fastener.Grid({
+          ...fastener,
+          id: `fasteners-${fastenedLengthInMillimeters}-${fastenerIndex}`,
+          variantId: variant.id,
+        }),
+      )
     }
   })
 

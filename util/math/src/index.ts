@@ -1,13 +1,27 @@
-import { Vector3 as ThreeVector3 } from 'three'
+import { Matrix4, Vector3 } from 'three'
 
-export type Vector2<_Number = number> = Readonly<[number, number]>
-export type Vector3<_Number = number> = Readonly<[number, number, number]>
+export type Point2 = readonly [number, number]
+export type Point3 = readonly [number, number, number]
 
-export type Location = Vector3
-export type Direction = Vector3
-export type ScaleX = number
-export type ScaleXY = Vector2
-export type ScaleXYZ = Vector3
+// column-major 4x4 transformation matrix
+export type TransformMatrix = readonly [
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+  number,
+]
 
 export enum AxisId {
   X = 'X',
@@ -18,7 +32,7 @@ export enum AxisId {
   '-Z' = '-Z',
 }
 
-const directionByAxisId: Record<AxisId, Direction> = {
+const directionByAxisId: Record<AxisId, Point3> = {
   [AxisId.X]: [1, 0, 0],
   [AxisId['-X']]: [-1, 0, 0],
   [AxisId.Y]: [0, 1, 0],
@@ -27,13 +41,13 @@ const directionByAxisId: Record<AxisId, Direction> = {
   [AxisId['-Z']]: [0, 0, -1],
 } as const
 
-const directionVectorByAxisId: Record<AxisId, ThreeVector3> = {
-  [AxisId.X]: new ThreeVector3(1, 0, 0),
-  [AxisId['-X']]: new ThreeVector3(-1, 0, 0),
-  [AxisId.Y]: new ThreeVector3(0, 1, 0),
-  [AxisId['-Y']]: new ThreeVector3(0, -1, 0),
-  [AxisId.Z]: new ThreeVector3(0, 0, 1),
-  [AxisId['-Z']]: new ThreeVector3(0, 0, -1),
+const directionVectorByAxisId: Record<AxisId, Vector3> = {
+  [AxisId.X]: new Vector3(1, 0, 0),
+  [AxisId['-X']]: new Vector3(-1, 0, 0),
+  [AxisId.Y]: new Vector3(0, 1, 0),
+  [AxisId['-Y']]: new Vector3(0, -1, 0),
+  [AxisId.Z]: new Vector3(0, 0, 1),
+  [AxisId['-Z']]: new Vector3(0, 0, -1),
 } as const
 
 const flippedAxisIdByAxisId = {
@@ -51,7 +65,7 @@ export function axisIdToDirection(axisId: AxisId) {
   return directionByAxisId[axisId]
 }
 
-export function axisIdToDirectionVector(axisId: AxisId): ThreeVector3 {
+export function axisIdToDirectionVector(axisId: AxisId): Vector3 {
   return directionVectorByAxisId[axisId]
 }
 
@@ -59,22 +73,30 @@ export function flipAxisId(axisId: AxisId) {
   return flippedAxisIdByAxisId[axisId]
 }
 
-export function directionToAxisId(direction: Direction): AxisId | undefined {
+export function directionToAxisId(direction: Point3): AxisId | undefined {
   return axisIds.find((axisId) => {
     const axisDirection = directionByAxisId[axisId]
-    return (
-      direction[0] === axisDirection[0] &&
-      direction[1] === axisDirection[1] &&
-      direction[2] === axisDirection[2]
-    )
+    return pointEquals(direction, axisDirection)
   })
 }
 
-export function isStandardDirection(direction: Direction): boolean {
-  return isStandardAxisVector(new ThreeVector3(...direction))
+export function floatEquals(a: number, b: number, epsilon = Number.EPSILON * 100): boolean {
+  return Math.abs(a - b) < epsilon
 }
 
-export function isStandardAxisVector(vector: ThreeVector3): boolean {
+export function pointEquals(a: Point3, b: Point3, epsilon = Number.EPSILON * 100): boolean {
+  return (
+    floatEquals(a[0], b[0], epsilon) &&
+    floatEquals(a[1], b[1], epsilon) &&
+    floatEquals(a[2], b[2], epsilon)
+  )
+}
+
+export function isStandardDirection(direction: Point3): boolean {
+  return isStandardAxisVector(new Vector3(...direction))
+}
+
+export function isStandardAxisVector(vector: Vector3): boolean {
   if (vector.length() !== 1) return false
   return Math.abs(vector.x) === 1 || Math.abs(vector.y) === 1 || Math.abs(vector.z) === 1
 }
@@ -90,4 +112,43 @@ export function axisValuesToVector(axisValues: AxisValues): [number, number, num
 
 export function mapRange(value: number, x1: number, y1: number, x2: number, y2: number): number {
   return ((value - x1) * (y2 - x2)) / (y1 - x1) + x2
+}
+
+const DEG2RAD = Math.PI / 180
+const RAD2DEG = 180 / Math.PI
+
+export function degToRad(degrees: number) {
+  return degrees * DEG2RAD
+}
+
+export function radToDeg(radians: number) {
+  return radians * RAD2DEG
+}
+
+// https://math.stackexchange.com/a/628075
+export type Basis = readonly [Point3, Point3, Point3]
+export function changeOfBasisTransform(a: Basis, b: Basis): TransformMatrix {
+  const A = new Matrix4().makeBasis(
+    new Vector3(...a[0]),
+    new Vector3(...a[1]),
+    new Vector3(...a[2]),
+  )
+  const B = new Matrix4().makeBasis(
+    new Vector3(...b[0]),
+    new Vector3(...b[1]),
+    new Vector3(...b[2]),
+  )
+  const AB = new Matrix4().multiplyMatrices(A.invert(), B)
+  return AB.toArray()
+}
+
+export function mirrorTransform(axis: 'x' | 'y' | 'z'): TransformMatrix {
+  switch (axis) {
+    case 'x':
+      return new Matrix4().makeScale(-1, 1, 1).toArray()
+    case 'y':
+      return new Matrix4().makeScale(1, -1, 1).toArray()
+    case 'z':
+      return new Matrix4().makeScale(1, 1, -1).toArray()
+  }
 }

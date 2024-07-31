@@ -1,9 +1,4 @@
-import {
-  type PartState,
-  type PartSummaryValue,
-  PartsSummaryForAll,
-  calculateSummaryValueForAll,
-} from '@villagekit/part'
+import { type PartCreator, PartsSummaryForAll } from '@villagekit/part'
 import { SummaryContextProvider } from '@villagekit/part/base'
 import type { ProductSummaryProps } from '@villagekit/product'
 import { debounce } from 'lodash-es'
@@ -19,7 +14,7 @@ export function ProductKitSummary(props: ProductSummaryProps) {
 
   const setPartsDebounced = useMemo(
     () =>
-      debounce((latestParts: Array<PartState>) => setLocalParts(latestParts), 500, {
+      debounce((latestParts: Array<PartCreator>) => setLocalParts(latestParts), 500, {
         leading: false,
       }),
     [],
@@ -29,13 +24,9 @@ export function ProductKitSummary(props: ProductSummaryProps) {
     setPartsDebounced(parts)
   }, [setPartsDebounced, parts])
 
-  const partSummaryValues: Array<PartSummaryValue> = useMemo(() => {
-    return calculateSummaryValueForAll(localParts)
-  }, [localParts])
-
   return (
     <SummaryContextProvider displayUnit={displayUnit} groupParts={groupParts}>
-      <PartsSummaryForAll partSummaryValues={partSummaryValues} />
+      <PartsSummaryForAll parts={localParts} />
     </SummaryContextProvider>
   )
 }

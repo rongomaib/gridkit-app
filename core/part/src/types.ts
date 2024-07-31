@@ -1,9 +1,9 @@
-import type { AxisId, Location } from '@villagekit/math'
+import type { AxisId, Point3 } from '@villagekit/math'
 import type { ReactElement } from 'react'
 import type { Box3 } from 'three'
 import type { ZodDiscriminatedUnionOption } from 'zod'
 
-import type { BasePartSummaryValue, PartsGlProps, PartsSummaryProps } from './base'
+import type { PartsGlProps, PartsSummaryProps } from './base'
 
 declare global {
   namespace VK {
@@ -16,13 +16,7 @@ declare global {
     export interface EveryPartVariants {
       noop: { noop: null }
     }
-    export interface EveryPartState {
-      noop: { type: 'noop'; id: string }
-    }
     export interface EveryPartGlValue {
-      noop: { type: 'noop' }
-    }
-    export interface EveryPartSummaryValue {
       noop: { type: 'noop' }
     }
   }
@@ -33,62 +27,47 @@ type $Values<T extends object> = T[keyof T]
 
 export type PartTypeId = $Values<VK.EveryPartTypeId>
 export type PartCreator = $Values<VK.EveryPartCreator>
-export type PartState = $Values<VK.EveryPartState>
 export type PartGlValue = $Values<VK.EveryPartGlValue>
-export type PartSummaryValue = $Values<VK.EveryPartSummaryValue>
 export type PartGlValuesByType = {
   [Key in keyof VK.EveryPartGlValue]: Array<VK.EveryPartGlValue[Key]>
 }
-export type PartSummaryValueByType = {
-  [Key in keyof VK.EveryPartSummaryValue]: VK.EveryPartSummaryValue[Key]
-}
-export type PartSummaryValuesByType = {
-  [Key in keyof VK.EveryPartSummaryValue]: Array<VK.EveryPartSummaryValue[Key]>
-}
 
 export type FasteningPoint = {
-  cellPosition: Location
-  facePosition: Location
+  cellPosition: Point3
+  facePosition: Point3
   axis: AxisId
-  part: PartState
+  part: WithRequiredId<PartCreator>
   gradient: number
 }
 
-export type CalculatePartState<Creator, State> = (creator: Creator) => State
-export type CalculatePartGlValue<State, GlValue> = (state: State) => GlValue
-export type CalculatePartBoundingBox<Value> = (value: Value) => Box3
-export type CalculatePartSummaryValue<State, SummaryValue> = (state: State) => SummaryValue
-export type CalculatePartSummaryKey<SummaryValue> = (state: SummaryValue) => string
-export type CalculatePartFasteningPoints<State> = (state: State) => Array<FasteningPoint>
-export type CalculateNumFastenersToFasten<State> = (state: State) => number
+export type CalculatePartGlValue<Creator extends { id?: string }, GlValue> = (
+  creator: WithRequiredId<Creator>,
+) => GlValue
+export type CalculatePartBoundingBox<Creator> = (creator: Creator) => Box3
+export type CalculatePartFasteningPoints<Creator extends { id?: string }> = (
+  creator: WithRequiredId<Creator>,
+) => Array<FasteningPoint>
+export type CalculateNumFastenersToFasten<Creator> = (creator: Creator) => number
+
+export type WithRequiredId<T extends { id?: string }> = { id: string } & {
+  [Key in keyof T as Exclude<Key, 'id'>]: T[Key]
+}
 
 export type PartsGl<GlValue> = (props: PartsGlProps<GlValue>) => ReactElement | null
-export type PartsSummary<SummaryValue extends BasePartSummaryValue> = (
-  props: PartsSummaryProps<SummaryValue>,
-) => ReactElement | null
+export type PartsSummary<Creator> = (props: PartsSummaryProps<Creator>) => ReactElement | null
 
-export interface PartModule<
-  Id extends PartTypeId,
-  Creator extends PartCreator,
-  State extends PartState,
-  GlValue,
-  SummaryValue extends BasePartSummaryValue,
-  Variants,
-> {
+export interface PartModule<Id extends PartTypeId, Creator extends PartCreator, GlValue, Variants> {
   id: Id
   variants: Variants
   components: {
-    PartsSummary: PartsSummary<SummaryValue>
+    PartsSummary: PartsSummary<Creator>
     PartsGl: PartsGl<GlValue>
   }
   methods: {
-    calculateState: CalculatePartState<Creator, State>
-    calculateGlValue: CalculatePartGlValue<State, GlValue>
-    calculateBoundingBox: CalculatePartBoundingBox<GlValue>
-    calculateSummaryValue: CalculatePartSummaryValue<State, SummaryValue>
-    calculateSummaryKey: CalculatePartSummaryKey<SummaryValue>
-    calculateFasteningPoints: CalculatePartFasteningPoints<State>
-    calculateNumFastenersToFasten: CalculateNumFastenersToFasten<State>
+    calculateGlValue: CalculatePartGlValue<Creator, GlValue>
+    calculateBoundingBox: CalculatePartBoundingBox<Creator>
+    calculateFasteningPoints: CalculatePartFasteningPoints<Creator>
+    calculateNumFastenersToFasten: CalculateNumFastenersToFasten<Creator>
   }
   schemas: Array<ZodDiscriminatedUnionOption<'type'>>
 }
@@ -97,9 +76,7 @@ export type PartModulesByType = {
   [PT in PartTypeId]: PartModule<
     PT,
     VK.EveryPartCreator[PT],
-    VK.EveryPartState[PT],
     VK.EveryPartGlValue[PT],
-    VK.EveryPartSummaryValue[PT],
     VK.EveryPartVariants[PT]
   >
 }

@@ -12,9 +12,12 @@ export default defineConfig({
       ...(await workspaceAliases()),
     },
   },
+  worker: {
+    format: 'es',
+  },
 })
 
-export async function workspaceAliases() {
+async function workspaceAliases() {
   const aliases: Record<string, string> = {}
   const workspacePkgsDir = join(__dirname, '../../node_modules/@villagekit')
   const workspacePkgs = await readdir(workspacePkgsDir)

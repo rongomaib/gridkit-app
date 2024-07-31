@@ -26,6 +26,7 @@ coverage
 out/
 build
 dist
+dist-bundles
 dist-type-bundles
 .vite
 vite.config.*.timestamp-*

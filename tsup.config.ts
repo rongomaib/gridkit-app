@@ -1,4 +1,5 @@
 import { esbuildPluginFilePathExtensions } from 'esbuild-plugin-file-path-extensions'
+import esbuildRawPlugin from 'esbuild-plugin-raw'
 import { defineConfig } from 'tsup'
 
 export default defineConfig({
@@ -6,6 +7,7 @@ export default defineConfig({
   clean: true,
   dts: true,
   esbuildPlugins: [
+    esbuildRawPlugin(),
     esbuildPluginFilePathExtensions({
       esm: true,
       esmExtension: 'js',

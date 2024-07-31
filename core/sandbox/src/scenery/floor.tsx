@@ -34,8 +34,12 @@ function Floor(props: FloorProps) {
   }, [gridLengthInMeters, centerInMeters])
 
   const position = useMemo(() => {
-    return new Vector3(center.x, center.y, 0)
-  }, [center])
+    return new Vector3(
+      center.x - 0.5 * gridLengthInMeters,
+      center.y - 0.5 * gridLengthInMeters,
+      -0.5 * gridLengthInMeters,
+    )
+  }, [center, gridLengthInMeters])
 
   return (
     <group name="floor" position={position}>

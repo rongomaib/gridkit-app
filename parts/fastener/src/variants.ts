@@ -1,4 +1,4 @@
-import { useGLTF } from '@react-three/drei'
+// import { useGLTF } from '@react-three/drei'
 import { millimeter } from '@villagekit/units'
 
 import type { FastenerVariant } from './types'
@@ -44,7 +44,6 @@ const baseVariant: Omit<FastenerVariant, 'id' | 'boltLength' | 'fastenedLength' 
   },
 }
 
-/* eslint-disable sort-keys-fix/sort-keys-fix */
 const boltLengths = {
   '35mm': {
     type: 'quantity',
@@ -204,8 +203,8 @@ export const fastenerVariants: Record<string, FastenerVariant> = {
     nutLength: nutLengths['25mm'],
   },
 }
-/* eslint-enable sort-keys-fix/sort-keys-fix */
 
+/*
 export function preload() {
   // preload gltf models
   for (const variantId in fastenerVariants) {
@@ -214,3 +213,4 @@ export function preload() {
     useGLTF.preload(fastenerModel.modelUrl)
   }
 }
+*/

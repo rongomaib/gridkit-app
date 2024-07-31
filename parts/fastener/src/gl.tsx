@@ -1,5 +1,4 @@
 import { useGLTF } from '@react-three/drei'
-import type { Location } from '@villagekit/math'
 import { type PartsGlProps, useTexture } from '@villagekit/part/base'
 import { map } from 'lodash-es'
 import { memo, useMemo } from 'react'
@@ -10,10 +9,11 @@ import {
   MeshPhongMaterial,
   Object3D,
   type Quaternion,
+  type Vector3,
 } from 'three'
 import { mergeBufferGeometries } from 'three-stdlib'
 
-import type { FastenerGlValue, FastenerState } from './types'
+import type { FastenerGlValue, FastenerVariant } from './types'
 
 export function PartsGl(props: PartsGlProps<FastenerGlValue>) {
   const { parts } = props
@@ -40,7 +40,7 @@ export function PartsGl(props: PartsGlProps<FastenerGlValue>) {
 
       const { positions, quarternions } = result[id]!
       positions.push(part.position)
-      quarternions.push(part.quarternion)
+      quarternions.push(part.quaternion)
     }
     return result
   }, [parts])
@@ -58,9 +58,9 @@ interface FastenersProps {
   id: string
   extrusionLengthInMeters: number
   fastenedLengthInMeters: number
-  positions: Array<Location>
+  positions: Array<Vector3>
   quarternions: Array<Quaternion>
-  variant: FastenerState['variant']
+  variant: FastenerVariant
 }
 
 export const Fasteners = memo(function Fasteners(props: FastenersProps) {
@@ -105,9 +105,10 @@ function FastenersWithGeometry(props: FastenersWithGeometryProps) {
     fastenedLengthInMeters,
     positions,
     quarternions,
-    variant: { materials },
+    variant,
     fastenerGeometry,
   } = props
+  const { materials } = variant
 
   // TODO (mw): use mesh uvs instead of texture.repeat
   // https://discourse.threejs.org/t/use-the-same-texture-with-different-offsets-on-different-materials/19270/11
@@ -119,14 +120,12 @@ function FastenersWithGeometry(props: FastenersWithGeometryProps) {
   material.needsUpdate = true
 
   const geometry = useMemo(() => {
-    const fullLengthInMeters = fastenedLengthInMeters + extrusionLengthInMeters
-
     const sideA = fastenerGeometry.clone()
     const sideB = fastenerGeometry.clone()
 
     sideA.rotateZ(Math.PI)
-    sideA.translate(fullLengthInMeters * 0.5, 0, 0)
-    sideB.translate(-fullLengthInMeters * 0.5, 0, 0)
+    sideA.translate(fastenedLengthInMeters + 0.5 * extrusionLengthInMeters, 0, 0)
+    sideB.translate(-0.5 * extrusionLengthInMeters, 0, 0)
 
     return mergeBufferGeometries([sideA, sideB])
   }, [fastenedLengthInMeters, extrusionLengthInMeters, fastenerGeometry])
@@ -138,7 +137,7 @@ function FastenersWithGeometry(props: FastenersWithGeometryProps) {
 
     positions.forEach((position, index) => {
       dummy.quaternion.fromArray(quarternions[index]!.toArray())
-      dummy.position.fromArray(position)
+      dummy.position.copy(position)
       dummy.updateMatrix()
       m.setMatrixAt(index, dummy.matrix)
     })
