@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/part-fastener",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "type": "module",
   "exports": {
     ".": {
@@ -42,10 +42,10 @@
   "dependencies": {
     "@emotion/weak-memoize": "^0.3.1",
     "@react-three/drei": "^9.106.0",
-    "@villagekit/math": "^0.4.0",
-    "@villagekit/part": "^0.4.0",
-    "@villagekit/ui": "^0.4.0",
-    "@villagekit/units": "^0.4.0",
+    "@villagekit/math": "^0.5.0",
+    "@villagekit/part": "^0.5.0",
+    "@villagekit/ui": "^0.5.0",
+    "@villagekit/units": "^0.5.0",
     "lodash-es": "^4.17.21",
     "three-stdlib": "^2.21.8",
     "zod": "^3.23.8"
