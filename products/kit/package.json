@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/product-kit",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "type": "module",
   "exports": {
     ".": {
@@ -33,9 +33,9 @@
     "@swc/wasm-web": "^1.5.26",
     "@villagekit/parameters": "^0.6.0",
     "@villagekit/part": "^0.6.0",
+    "@villagekit/part-fastener": "^0.6.0",
     "@villagekit/part-gridbeam": "^0.6.0",
     "@villagekit/part-gridpanel": "^0.6.0",
-    "@villagekit/part-fastener": "^0.6.0",
     "@villagekit/product": "^0.6.0",
     "@villagekit/sandbox": "^0.6.0",
     "@villagekit/ui": "^0.6.0",
