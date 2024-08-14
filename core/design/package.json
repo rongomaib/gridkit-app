@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/design",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "type": "module",
   "exports": {
     "./kit": {
@@ -30,8 +30,8 @@
   },
   "homepage": "https://github.com/villagekit/villagekit/tree/main/core/design#readme",
   "dependencies": {
-    "@villagekit/part-gridbeam": "^0.5.0",
-    "@villagekit/part-gridpanel": "^0.5.0",
-    "@villagekit/product-kit": "^0.5.0"
+    "@villagekit/part-gridbeam": "^0.6.0",
+    "@villagekit/part-gridpanel": "^0.6.0",
+    "@villagekit/product-kit": "^0.6.0"
   }
 }
