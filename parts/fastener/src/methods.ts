@@ -3,7 +3,7 @@ import { convert, meter } from '@villagekit/units'
 import { Box3, Matrix4, Quaternion, Vector3 } from 'three'
 
 import weakMemoize from '@emotion/weak-memoize'
-import type { Fastener } from './creator'
+import type { Fastener, FastenerSpec } from './creator'
 import type { FastenerGlValue, FastenerVariant } from './types'
 import { fastenerVariants } from './variants'
 
@@ -16,7 +16,8 @@ const getFastenedLength = weakMemoize(
 )
 
 export function calculateGlValue(creator: WithRequiredId<Fastener>): FastenerGlValue {
-  const { type, id, variantId, transform } = creator
+  const { id, spec, transform } = creator
+  const { type, variantId } = spec
 
   const variant = fastenerVariants[variantId]
   if (variant == null) {
@@ -47,8 +48,8 @@ export function calculateBoundingBox(_creator: Fastener): Box3 {
   return new Box3() // Does not apply to fastener part
 }
 
-export function calculateSummaryKey(creator: Fastener): string {
-  const { type, variantId } = creator
+export function calculateSummaryKey(spec: FastenerSpec): string {
+  const { type, variantId } = spec
 
   return `${type}::${variantId}`
 }

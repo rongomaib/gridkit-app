@@ -1,5 +1,5 @@
 import { registerPartModule } from '@villagekit/part'
-import type { Fastener } from './creator'
+import type { Fastener, FastenerSpec } from './creator'
 import { PartsGl } from './gl'
 import {
   calculateBoundingBox,
@@ -19,6 +19,9 @@ declare global {
   namespace VK {
     interface EveryPartTypeId {
       gridbeam: FastenerType
+    }
+    interface EveryPartSpec {
+      fastener: FastenerSpec
     }
     interface EveryPartCreator {
       fastener: Fastener

@@ -135,7 +135,7 @@ function useParts<Ps extends Params>(options: UsePartsOptions<Ps>): UsePartsValu
     }
   }, [render, paramsValues, partVariants /*, updateProductError */])
 
-  const [partCreators, setPartCreators] = useState<Array<PartCreator>>([])
+  const [partCreators, setPartCreators] = useState<Array<WithRequiredId<PartCreator>>>([])
   const [isLoading, setLoading] = useState(false)
 
   const plugins: Array<Plugin> = useMemo(() => {
@@ -149,7 +149,7 @@ function useParts<Ps extends Params>(options: UsePartsOptions<Ps>): UsePartsValu
     return ps
   }, [render])
   const generatePluginParts = useMemo(() => {
-    return pDebounce((partCreators: Array<PartCreator>) => {
+    return pDebounce((partCreators: Array<WithRequiredId<PartCreator>>) => {
       return generatePartsForPlugins(plugins, partCreators)
     }, 500)
   }, [plugins])

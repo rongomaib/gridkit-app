@@ -10,7 +10,7 @@ import type { FasteningPoint, WithRequiredId } from '@villagekit/part'
 import { convert, meter } from '@villagekit/units'
 import generateKey, { sorted as generateKeySorted } from 'deadbeef'
 import { Box3, Matrix4, Quaternion, Vector3 } from 'three'
-import type { GridPanel } from './creator'
+import type { GridPanel, GridPanelSpec } from './creator'
 import type { GridPanelGlValue } from './types'
 import { gridPanelVariants } from './variants'
 
@@ -19,7 +19,12 @@ const Y_AXIS = axisIdToDirectionVector(AxisId.Y)
 const Z_AXIS = axisIdToDirectionVector(AxisId.Z)
 
 export function calculateGlValue(creator: WithRequiredId<GridPanel>): GridPanelGlValue {
-  const { type, id, variantId, sizeInGrids, transform, holes } = creator
+  const {
+    type,
+    id,
+    spec: { variantId, sizeInGrids, holes },
+    transform,
+  } = creator
 
   const variant = gridPanelVariants[variantId]
   if (variant == null) {
@@ -52,7 +57,10 @@ export function calculateGlValue(creator: WithRequiredId<GridPanel>): GridPanelG
 }
 
 export function calculateBoundingBox(creator: GridPanel): Box3 {
-  const { variantId, sizeInGrids, transform } = creator
+  const {
+    spec: { variantId, sizeInGrids },
+    transform,
+  } = creator
 
   const variant = gridPanelVariants[variantId]
   if (variant == null) {
@@ -75,7 +83,7 @@ export function calculateBoundingBox(creator: GridPanel): Box3 {
   return box
 }
 
-export function calculateSummaryKey(part: GridPanel): string {
+export function calculateSummaryKey(part: GridPanelSpec): string {
   const { type, sizeInGrids, variantId } = part
   let { holes } = part
 
@@ -97,7 +105,10 @@ export function calculateSummaryKey(part: GridPanel): string {
 export function calculateFasteningPoints(
   creator: WithRequiredId<GridPanel>,
 ): Array<FasteningPoint> {
-  const { variantId, sizeInGrids, holes, transform } = creator
+  const {
+    spec: { variantId, sizeInGrids, holes },
+    transform,
+  } = creator
 
   if (holes === false) return []
 

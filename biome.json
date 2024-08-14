@@ -25,7 +25,9 @@
     "rules": {
       "complexity": {
         "useLiteralKeys": "off",
-        "noBannedTypes": "off"
+        "noBannedTypes": "off",
+        "noStaticOnlyClass": "off",
+        "noThisInStatic": "off"
       },
       "style": {
         "noNonNullAssertion": "off"

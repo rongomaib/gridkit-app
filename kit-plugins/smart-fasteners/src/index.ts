@@ -1,4 +1,9 @@
+import '@villagekit/part-gridpanel/creator'
+import '@villagekit/part-gridbeam/creator'
+import '@villagekit/part-fastener/creator'
+
 import type { PartCreator, WithRequiredId } from '@villagekit/part'
+import { deserializeCreator, serializeCreator } from '@villagekit/part/creator'
 import { type Plugin, registerPlugin } from '@villagekit/product-kit'
 import Deferred, { type DeferredPromise } from 'p-defer'
 import type { WorkerRequestData, WorkerResponseData } from './worker'
@@ -35,7 +40,8 @@ export const SmartFastenerPlugin: Plugin<SmartFastenerPluginState> = {
     const deferred = Deferred<Array<WithRequiredId<PartCreator>>>()
     deferredsByRequest[requestId] = deferred
 
-    const request: WorkerRequestData = { partCreators, requestId }
+    const partObjects = partCreators.map(serializeCreator)
+    const request: WorkerRequestData = { partObjects, requestId }
     worker.postMessage(request)
 
     return deferred.promise
@@ -54,7 +60,11 @@ export const SmartFastenerPlugin: Plugin<SmartFastenerPluginState> = {
 
     worker.addEventListener('message', (ev) => {
       const response = ev.data as WorkerResponseData
-      const { requestId, newPartCreators } = response
+      const { requestId, newPartObjects } = response
+
+      const newPartCreators = newPartObjects.map(deserializeCreator) as Array<
+        WithRequiredId<PartCreator>
+      >
 
       const deferred = deferredsByRequest[requestId]!
       delete deferredsByRequest[requestId]

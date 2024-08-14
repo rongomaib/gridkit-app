@@ -1,20 +1,38 @@
 import { AxisId, type Point3, axisIdToDirectionVector } from '@villagekit/math'
-import { BasePartCreator } from '@villagekit/part/creator'
+import { BasePartCreator, type Typed, registerSerializer } from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
 import { Matrix4, Quaternion, Vector3 } from 'three'
+import type { FastenerType } from './types'
 import { fastenerVariants } from './variants'
 
-export class Fastener extends BasePartCreator<'fastener'> {
+export class FastenerSpec implements Typed<FastenerType> {
+  type: FastenerType
   variantId: keyof typeof fastenerVariants
 
-  constructor(options: FastenerOptions) {
-    const { id, variantId } = options
-    super('fastener', id)
+  constructor(variantId: keyof typeof fastenerVariants) {
+    this.type = 'fastener'
     this.variantId = variantId
   }
+}
 
+export type FastenerSpecSerialized = {
+  type: FastenerType
+  variantId: keyof typeof fastenerVariants
+}
+function serializeSpec(instance: FastenerSpec): FastenerSpecSerialized {
+  const { variantId } = instance
+  return { type: 'fastener', variantId }
+}
+function deserializeSpec(object: FastenerSpecSerialized): FastenerSpec {
+  const { variantId } = object
+  return new FastenerSpec(variantId)
+}
+
+export class Fastener extends BasePartCreator<FastenerSpec> {
   static create(options: FastenerOptions) {
-    return new Fastener(options)
+    const { variantId, id } = options
+    const spec = new FastenerSpec(variantId)
+    return new Fastener(spec, id)
   }
 
   static Grid(options: FastenerLineOptions) {
@@ -35,7 +53,7 @@ export class Fastener extends BasePartCreator<'fastener'> {
       .multiplyScalar(0.5 * gridUnit)
       .toArray()
 
-    return new Fastener({
+    return Fastener.create({
       id,
       variantId,
     })
@@ -45,14 +63,22 @@ export class Fastener extends BasePartCreator<'fastener'> {
   }
 }
 
-interface BaseOptions {
+interface BaseCreatorOptions {
   id?: string
   variantId: keyof typeof fastenerVariants
 }
 
-interface FastenerOptions extends BaseOptions {}
+interface FastenerOptions extends BaseCreatorOptions {}
 
-interface FastenerLineOptions extends BaseOptions {
+interface FastenerLineOptions extends BaseCreatorOptions {
   start: Point3
   end: Point3
 }
+
+registerSerializer({
+  type: 'fastener',
+  Spec: FastenerSpec,
+  serializeSpec,
+  deserializeSpec,
+  Creator: Fastener,
+})

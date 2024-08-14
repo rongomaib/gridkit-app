@@ -1,5 +1,5 @@
 import { registerPartModule } from '@villagekit/part'
-import type { GridBeam } from './creator'
+import type { GridBeam, GridBeamSpec } from './creator'
 import { PartsGl } from './gl'
 import {
   calculateBoundingBox,
@@ -21,6 +21,9 @@ declare global {
   namespace VK {
     interface EveryPartTypeId {
       gridbeam: GridBeamType
+    }
+    interface EveryPartSpec {
+      gridbeam: GridBeamSpec
     }
     interface EveryPartCreator {
       gridbeam: GridBeam

@@ -8,18 +8,18 @@ import {
 } from '@villagekit/part/base'
 import { HStack, Text, VStack } from '@villagekit/ui'
 import { useMemo } from 'react'
-import type { GridBeam } from './creator'
+import type { GridBeamSpec } from './creator'
 import { calculateSummaryKey } from './methods'
 import { SummaryGridBeamSvg } from './svg/summary-grid-beam-svg'
 
-export function PartsSummary(props: PartsSummaryProps<GridBeam>) {
+export function PartsSummary(props: PartsSummaryProps<GridBeamSpec>) {
   const { parts, ...restProps } = props
 
   const { groupParts } = useSummaryContext()
 
   const partQuotas = useMemo(() => {
     const partEntries = parts.map(
-      (part: GridBeam): PartSummaryEntry<GridBeam> => [calculateSummaryKey(part), part],
+      (part: GridBeamSpec): PartSummaryEntry<GridBeamSpec> => [calculateSummaryKey(part), part],
     )
     const partQuotaType = groupParts ? 'grouped' : 'single'
     const partQuotas = partsToPartQuotas(partQuotaType, partEntries)
@@ -49,8 +49,8 @@ export function PartsSummary(props: PartsSummaryProps<GridBeam>) {
   )
 }
 
-type PartSummaryProps = Omit<PartsSummaryProps<GridBeam>, 'parts'> & {
-  quota: PartSummaryQuota<GridBeam>
+type PartSummaryProps = Omit<PartsSummaryProps<GridBeamSpec>, 'parts'> & {
+  quota: PartSummaryQuota<GridBeamSpec>
 }
 
 function PartSummary(props: PartSummaryProps) {

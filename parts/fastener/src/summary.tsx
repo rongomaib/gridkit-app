@@ -9,19 +9,19 @@ import {
 import { HStack, Text, VStack } from '@villagekit/ui'
 import { memo, useMemo } from 'react'
 
-import type { Fastener } from './creator'
+import type { FastenerSpec } from './creator'
 import { calculateSummaryKey } from './methods'
 import { SummaryFastenerSvg } from './summary-fastener-svg'
 import { fastenerVariants } from './variants'
 
-export function PartsSummary(props: PartsSummaryProps<Fastener>) {
+export function PartsSummary(props: PartsSummaryProps<FastenerSpec>) {
   const { parts, ...restProps } = props
 
   const { groupParts } = useSummaryContext()
 
   const partQuotas = useMemo(() => {
     const partEntries = parts.map(
-      (part: Fastener): PartSummaryEntry<Fastener> => [calculateSummaryKey(part), part],
+      (part: FastenerSpec): PartSummaryEntry<FastenerSpec> => [calculateSummaryKey(part), part],
     )
     const partQuotaType = groupParts ? 'grouped' : 'single'
     const partQuotas = partsToPartQuotas(partQuotaType, partEntries)
@@ -54,8 +54,8 @@ export function PartsSummary(props: PartsSummaryProps<Fastener>) {
   )
 }
 
-type PartSummaryProps = Omit<PartsSummaryProps<Fastener>, 'parts'> & {
-  quota: PartSummaryQuota<Fastener>
+type PartSummaryProps = Omit<PartsSummaryProps<FastenerSpec>, 'parts'> & {
+  quota: PartSummaryQuota<FastenerSpec>
 }
 
 const PartSummary = memo(function PartSummary(props: PartSummaryProps) {

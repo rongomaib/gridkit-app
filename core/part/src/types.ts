@@ -10,8 +10,11 @@ declare global {
     export interface EveryPartTypeId {
       noop: 'noop'
     }
+    export interface EveryPartSpec {
+      noop: { type: 'noop' }
+    }
     export interface EveryPartCreator {
-      noop: { type: 'noop'; id: string }
+      noop: { spec: { type: 'noop' }; id?: string }
     }
     export interface EveryPartVariants {
       noop: { noop: null }
@@ -26,6 +29,7 @@ declare global {
 type $Values<T extends object> = T[keyof T]
 
 export type PartTypeId = $Values<VK.EveryPartTypeId>
+export type PartSpec = $Values<VK.EveryPartSpec>
 export type PartCreator = $Values<VK.EveryPartCreator>
 export type PartGlValue = $Values<VK.EveryPartGlValue>
 export type PartGlValuesByType = {
@@ -54,13 +58,19 @@ export type WithRequiredId<T extends { id?: string }> = { id: string } & {
 }
 
 export type PartsGl<GlValue> = (props: PartsGlProps<GlValue>) => ReactElement | null
-export type PartsSummary<Creator> = (props: PartsSummaryProps<Creator>) => ReactElement | null
+export type PartsSummary<Spec> = (props: PartsSummaryProps<Spec>) => ReactElement | null
 
-export interface PartModule<Id extends PartTypeId, Creator extends PartCreator, GlValue, Variants> {
+export interface PartModule<
+  Id extends PartTypeId,
+  Spec extends PartSpec,
+  Creator extends PartCreator,
+  GlValue,
+  Variants,
+> {
   id: Id
   variants: Variants
   components: {
-    PartsSummary: PartsSummary<Creator>
+    PartsSummary: PartsSummary<Spec>
     PartsGl: PartsGl<GlValue>
   }
   methods: {
@@ -75,6 +85,7 @@ export interface PartModule<Id extends PartTypeId, Creator extends PartCreator, 
 export type PartModulesByType = {
   [PT in PartTypeId]: PartModule<
     PT,
+    VK.EveryPartSpec[PT],
     VK.EveryPartCreator[PT],
     VK.EveryPartGlValue[PT],
     VK.EveryPartVariants[PT]

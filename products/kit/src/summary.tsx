@@ -10,13 +10,18 @@ export function ProductKitSummary(props: ProductSummaryProps) {
 
   const { parts } = useProductKitContext()
 
-  const [localParts, setLocalParts] = useState(parts)
+  const [localPartSpecs, setLocalPartSpecs] = useState(() => parts.map((part) => part.spec))
 
   const setPartsDebounced = useMemo(
     () =>
-      debounce((latestParts: Array<PartCreator>) => setLocalParts(latestParts), 500, {
-        leading: false,
-      }),
+      debounce(
+        (latestParts: Array<PartCreator>) =>
+          setLocalPartSpecs(latestParts.map((part) => part.spec)),
+        500,
+        {
+          leading: false,
+        },
+      ),
     [],
   )
 
@@ -26,7 +31,7 @@ export function ProductKitSummary(props: ProductSummaryProps) {
 
   return (
     <SummaryContextProvider displayUnit={displayUnit} groupParts={groupParts}>
-      <PartsSummaryForAll parts={localParts} />
+      <PartsSummaryForAll parts={localPartSpecs} />
     </SummaryContextProvider>
   )
 }

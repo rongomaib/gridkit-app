@@ -1,4 +1,4 @@
-import type { PartCreator } from '@villagekit/part'
+import type { PartCreator, WithRequiredId } from '@villagekit/part'
 import { flatten } from 'lodash-es'
 
 import type { Plugin } from './plugin'
@@ -17,8 +17,8 @@ export function getPlugin(pluginId: string): Plugin | undefined {
 
 export async function generatePartsForPlugins(
   plugins: Array<Plugin>,
-  partCreators: Array<PartCreator>,
-): Promise<Array<PartCreator>> {
+  partCreators: Array<WithRequiredId<PartCreator>>,
+): Promise<Array<WithRequiredId<PartCreator>>> {
   const pluginParts = await Promise.all(
     plugins.map((plugin) => {
       // NOTE: plugin functions must be called as methods,

@@ -20,7 +20,7 @@
     "./package.json": "./package.json"
   },
   "files": ["./src", "./dist", "./dist-bundles", "./dist-type-bundles"],
-  "sideEffects": ["./src/index.ts", "./dist/index.js"],
+  "sideEffects": ["./src/index.ts", "./dist/index.js", "./src/creator.ts", "./dist/creator.js"],
   "scripts": {
     "build:dist": "tsup src",
     "build:dist-bundles": "rollup dist/creator.js --file ./dist-bundles/creator.js --format esm",

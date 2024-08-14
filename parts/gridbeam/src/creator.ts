@@ -1,6 +1,7 @@
 import { changeOfBasisTransform, mirrorTransform } from '@villagekit/math'
-import { BasePartCreator } from '@villagekit/part/creator'
+import { BasePartCreator, type Typed, registerSerializer } from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
+import type { GridBeamType } from './types'
 import { gridBeamVariants } from './variants'
 
 const getDefaultVariantId = () => '40mm:8mm:douglas-fir'
@@ -16,19 +17,37 @@ const mirrorXTransform = mirrorTransform('x')
 const mirrorYTransform = mirrorTransform('y')
 const mirrorZTransform = mirrorTransform('z')
 
-export class GridBeam extends BasePartCreator<'gridbeam'> {
+export class GridBeamSpec implements Typed<GridBeamType> {
+  type: GridBeamType
   variantId: keyof typeof gridBeamVariants
   lengthInGrids: number
 
-  constructor(options: GridBeamOptions) {
-    const { id, variantId, lengthInGrids } = options
-    super('gridbeam', id)
+  constructor(lengthInGrids: number, variantId?: keyof typeof gridBeamVariants) {
+    this.type = 'gridbeam'
     this.variantId = variantId ?? getDefaultVariantId()
     this.lengthInGrids = lengthInGrids
   }
+}
 
+export type GridBeamSpecSerialized = {
+  type: GridBeamType
+  variantId: keyof typeof gridBeamVariants
+  lengthInGrids: number
+}
+function serializeSpec(instance: GridBeamSpec): GridBeamSpecSerialized {
+  const { variantId, lengthInGrids } = instance
+  return { type: 'gridbeam', variantId, lengthInGrids }
+}
+function deserializeSpec(object: GridBeamSpecSerialized): GridBeamSpec {
+  const { variantId, lengthInGrids } = object
+  return new GridBeamSpec(lengthInGrids, variantId)
+}
+
+export class GridBeam extends BasePartCreator<GridBeamSpec> {
   static create(options: GridBeamOptions) {
-    return new GridBeam(options)
+    const { variantId, lengthInGrids, id } = options
+    const spec = new GridBeamSpec(lengthInGrids, variantId)
+    return new GridBeam(spec, id)
   }
 
   static X(options: GridBeamXOptions) {
@@ -36,7 +55,7 @@ export class GridBeam extends BasePartCreator<'gridbeam'> {
 
     const gridUnit = getGridLengthInMeters(variantId)
 
-    let beam = new GridBeam({
+    let beam = GridBeam.create({
       id,
       variantId,
       lengthInGrids: Math.abs(x[0] - x[1]),
@@ -54,7 +73,7 @@ export class GridBeam extends BasePartCreator<'gridbeam'> {
 
     const gridUnit = getGridLengthInMeters(variantId)
 
-    let beam = new GridBeam({
+    let beam = GridBeam.create({
       id,
       variantId,
       lengthInGrids: Math.abs(y[0] - y[1]),
@@ -72,7 +91,7 @@ export class GridBeam extends BasePartCreator<'gridbeam'> {
 
     const gridUnit = getGridLengthInMeters(variantId)
 
-    let beam = new GridBeam({
+    let beam = GridBeam.create({
       id,
       variantId,
       lengthInGrids: Math.abs(z[0] - z[1]),
@@ -86,30 +105,32 @@ export class GridBeam extends BasePartCreator<'gridbeam'> {
   }
 }
 
-interface BaseOptions {
-  id?: string
-}
-
-interface GridBeamOptions extends BaseOptions {
+interface GridBeamSpecOptions {
   variantId: keyof typeof gridBeamVariants
   lengthInGrids: number
 }
 
-interface GridBeamXOptions extends BaseOptions {
+interface BaseCreatorOptions {
+  id?: string
+}
+
+interface GridBeamOptions extends BaseCreatorOptions, GridBeamSpecOptions {}
+
+interface GridBeamXOptions extends BaseCreatorOptions {
   variantId?: keyof typeof gridBeamVariants
   x: [number, number]
   y: number
   z: number
 }
 
-interface GridBeamYOptions extends BaseOptions {
+interface GridBeamYOptions extends BaseCreatorOptions {
   variantId?: keyof typeof gridBeamVariants
   x: number
   y: [number, number]
   z: number
 }
 
-interface GridBeamZOptions extends BaseOptions {
+interface GridBeamZOptions extends BaseCreatorOptions {
   variantId?: keyof typeof gridBeamVariants
   x: number
   y: number
@@ -124,3 +145,11 @@ function getGridLengthInMeters(variantId: string): number {
   const { gridLength } = variant
   return convert(gridLength, meter).value
 }
+
+registerSerializer({
+  type: 'gridbeam',
+  Spec: GridBeamSpec,
+  serializeSpec,
+  deserializeSpec,
+  Creator: GridBeam,
+})

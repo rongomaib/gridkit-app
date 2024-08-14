@@ -14,7 +14,7 @@ export type ProductKit<Ps extends Params = never> = {
   parts: Ps extends never ? Parts : PartsFn<Ps>
 }
 
-export type Part = WithOptionalId<PartCreator>
+export type Part = PartCreator
 export type Parts = RecursiveArray<Part | false | undefined | null>
 
 export type { Params, Preset, Presets, ParamsValues, PartVariantsByType }
@@ -30,9 +30,11 @@ export type PluginIds = Array<PluginId>
 
 /* utils */
 
+/*
 export type WithOptionalId<T extends { id: string }> = { id?: string } & {
   [Key in keyof T as Exclude<Key, 'id'>]: T[Key]
 }
+*/
 export interface RecursiveArray<T> extends Array<T | RecursiveArray<T>> {}
 
 /* render */

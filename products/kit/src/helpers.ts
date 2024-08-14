@@ -1,8 +1,34 @@
-import type { PartCreator } from '@villagekit/part'
+import type { PartCreator, WithRequiredId } from '@villagekit/part'
+import { deserializeCreator, serializeCreator } from '@villagekit/part/creator'
 import type { Parts, RecursiveArray } from './types'
 
-export function getPartCreatorsFromKitParts(parts: Parts): Array<PartCreator> {
-  const results: Array<PartCreator> = []
+export function serializeRecursiveParts(parts: Parts): Array<any> {
+  return parts.map((part) => {
+    if (part == null || typeof part === 'boolean') {
+      return part
+    }
+    if (Array.isArray(part)) {
+      return serializeRecursiveParts(part)
+    }
+    return serializeCreator(part)
+  })
+}
+
+export function deserializeRecursiveParts(parts: Array<any>): Parts {
+  return parts.map((part) => {
+    if (part == null || typeof part === 'boolean') {
+      return part
+    }
+    if (Array.isArray(part)) {
+      return deserializeRecursiveParts(part)
+    }
+    return deserializeCreator(part)
+  })
+}
+
+// TODO: Need to re-think where and how this happens.
+export function getPartCreatorsFromKitParts(parts: Parts): Array<WithRequiredId<PartCreator>> {
+  const results: Array<WithRequiredId<PartCreator>> = []
   deepForEach(parts, (value, indices) => {
     if (value === false || value === undefined || value === null) {
       return
@@ -13,8 +39,11 @@ export function getPartCreatorsFromKitParts(parts: Parts): Array<PartCreator> {
         : indices.length === 1
           ? value.id
           : `${indices.slice(0, -1).join('__')}__${value.id}`
-    const result: PartCreator = { ...value, id }
-    results.push(result)
+
+    // @ts-ignore
+    const result: PartCreator = value.clone()
+    result.id = id
+    results.push(result as WithRequiredId<PartCreator>)
   })
   return results
 }

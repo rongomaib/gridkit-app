@@ -9,14 +9,19 @@ import {
 import type { FasteningPoint, WithRequiredId } from '@villagekit/part'
 import { convert, meter } from '@villagekit/units'
 import { Box3, Matrix4, Quaternion, Vector3 } from 'three'
-import type { GridBeam } from './creator'
+import type { GridBeam, GridBeamSpec } from './creator'
 import type { GridBeamGlValue } from './types'
 import { gridBeamVariants } from './variants'
 
 const X_AXIS = axisIdToDirectionVector(AxisId.X)
 
 export function calculateGlValue(creator: WithRequiredId<GridBeam>): GridBeamGlValue {
-  const { type, id, variantId, lengthInGrids, transform } = creator
+  const {
+    type,
+    id,
+    spec: { variantId, lengthInGrids },
+    transform,
+  } = creator
 
   const variant = gridBeamVariants[variantId]
   if (variant == null) {
@@ -48,7 +53,10 @@ export function calculateGlValue(creator: WithRequiredId<GridBeam>): GridBeamGlV
 }
 
 export function calculateBoundingBox(creator: GridBeam): Box3 {
-  const { variantId, lengthInGrids, transform } = creator
+  const {
+    spec: { variantId, lengthInGrids },
+    transform,
+  } = creator
 
   const variant = gridBeamVariants[variantId]
   if (variant == null) {
@@ -67,7 +75,7 @@ export function calculateBoundingBox(creator: GridBeam): Box3 {
   return box
 }
 
-export function calculateSummaryKey(creator: GridBeam): string {
+export function calculateSummaryKey(creator: GridBeamSpec): string {
   const { type, variantId, lengthInGrids } = creator
 
   return `${type}::${variantId}::${lengthInGrids}`
@@ -83,7 +91,10 @@ const fasteningAxesByAxisId: Record<AxisId, Array<AxisId>> = {
 }
 
 export function calculateFasteningPoints(creator: WithRequiredId<GridBeam>): Array<FasteningPoint> {
-  const { variantId, lengthInGrids, transform } = creator
+  const {
+    spec: { variantId, lengthInGrids },
+    transform,
+  } = creator
 
   const variant = gridBeamVariants[variantId]
   if (variant == null) {

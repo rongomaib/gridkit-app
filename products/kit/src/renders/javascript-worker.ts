@@ -1,3 +1,8 @@
+import '@villagekit/part-gridpanel/creator'
+import '@villagekit/part-gridbeam/creator'
+import '@villagekit/part-fastener/creator'
+import './javascript-comlink'
+
 import * as Comlink from 'comlink'
 import { init as initModuleLexer, parse as parseModule } from 'es-module-lexer'
 
@@ -71,43 +76,50 @@ async function loadImports(): Promise<ImportMap> {
 
 const loadedImportMap = loadImports()
 
-let moduleUrl: string | null = null
-let module: any = null
+let modUrl: string | null = null
+let mod: any = null
 
 async function loadModule(code: string) {
-  if (moduleUrl != null) {
-    URL.revokeObjectURL(moduleUrl)
+  if (modUrl != null) {
+    URL.revokeObjectURL(modUrl)
   }
 
   const nextCode = replaceImport(code, await loadedImportMap)
-  moduleUrl = URL.createObjectURL(new Blob([nextCode], { type: 'text/javascript' }))
+  modUrl = URL.createObjectURL(new Blob([nextCode], { type: 'text/javascript' }))
 
-  return moduleUrl
+  return modUrl
 }
 
 async function evaluateModule() {
-  if (moduleUrl == null) {
+  if (modUrl == null) {
     throw new Error('Unexpected: Module not loaded')
   }
 
-  module = await import(moduleUrl)
+  /* @vite-ignore */
+  mod = await import(modUrl)
 
-  const { parameters, presets, parts, plugins } = module
+  // wrap part function return values in type marker
+  const parts =
+    typeof mod.parts === 'function'
+      ? (...args: Parameters<typeof mod.parts>) => {
+          const value = mod.parts(...args)
+          value.isParts = true
+          return value
+        }
+      : mod.parts
 
-  if (typeof parts === 'function') {
-    return { parameters, presets, plugins }
+  return {
+    isModule: true,
+    parameters: mod.parameters,
+    presets: mod.presets,
+    parts,
+    plugins: mod.plugins,
   }
-  return { parts, plugins }
-}
-
-function evaluateParts(parameters: any, partVariants: any) {
-  return module.parts(parameters, partVariants)
 }
 
 const exports = {
   loadModule,
   evaluateModule,
-  evaluateParts,
 }
 
 Comlink.expose(exports)

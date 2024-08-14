@@ -1,7 +1,7 @@
 import { changeOfBasisTransform, mirrorTransform } from '@villagekit/math'
-import { BasePartCreator } from '@villagekit/part/creator'
+import { BasePartCreator, type Typed, registerSerializer } from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
-import type { GridPanelFit, GridPanelHoles, GridPanelVariant } from './types'
+import type { GridPanelFit, GridPanelHoles, GridPanelType, GridPanelVariant } from './types'
 import { gridPanelVariants } from './variants'
 
 const getDefaultVariantId = (): keyof typeof gridPanelVariants => '40mm:8mm:12mm:douglas-fir'
@@ -17,21 +17,44 @@ const mirrorXTransform = mirrorTransform('x')
 const mirrorYTransform = mirrorTransform('y')
 const mirrorZTransform = mirrorTransform('z')
 
-export class GridPanel extends BasePartCreator<'gridpanel'> {
+export class GridPanelSpec implements Typed<GridPanelType> {
+  type: GridPanelType
   variantId: keyof typeof gridPanelVariants
   sizeInGrids: [number, number]
   holes: GridPanelHoles
 
-  constructor(options: GridPanelOptions) {
-    const { id, variantId = getDefaultVariantId(), sizeInGrids, holes = true } = options
-    super('gridpanel', id)
-    this.variantId = variantId
+  constructor(
+    sizeInGrids: [number, number],
+    variantId?: keyof typeof gridPanelVariants,
+    holes: GridPanelHoles = true,
+  ) {
+    this.type = 'gridpanel'
+    this.variantId = variantId ?? getDefaultVariantId()
     this.sizeInGrids = sizeInGrids
     this.holes = holes
   }
+}
 
+export type GridPanelSpecSerialized = {
+  type: GridPanelType
+  variantId: keyof typeof gridPanelVariants
+  sizeInGrids: [number, number]
+  holes: GridPanelHoles
+}
+function serializeSpec(instance: GridPanelSpec): GridPanelSpecSerialized {
+  const { variantId, sizeInGrids, holes } = instance
+  return { type: 'gridpanel', variantId, sizeInGrids, holes }
+}
+function deserializeSpec(object: GridPanelSpecSerialized): GridPanelSpec {
+  const { variantId, sizeInGrids, holes } = object
+  return new GridPanelSpec(sizeInGrids, variantId, holes)
+}
+
+export class GridPanel extends BasePartCreator<GridPanelSpec> {
   static create(options: GridPanelOptions) {
-    return new GridPanel(options)
+    const { id, variantId, sizeInGrids, holes } = options
+    const spec = new GridPanelSpec(sizeInGrids, variantId, holes)
+    return new GridPanel(spec, id)
   }
 
   static XY(options: GridPanelXYOptions) {
@@ -41,7 +64,7 @@ export class GridPanel extends BasePartCreator<'gridpanel'> {
     const gridUnit = getGridLength(variant)
     const thickness = getThickness(variant)
 
-    let panel = new GridPanel({
+    let panel = GridPanel.create({
       id,
       variantId,
       sizeInGrids: [Math.abs(x[0] - x[1]), Math.abs(y[0] - y[1])],
@@ -76,7 +99,7 @@ export class GridPanel extends BasePartCreator<'gridpanel'> {
     const gridUnit = getGridLength(variant)
     const thickness = getThickness(variant)
 
-    let panel = new GridPanel({
+    let panel = GridPanel.create({
       id,
       variantId,
       sizeInGrids: [Math.abs(y[0] - y[1]), Math.abs(z[0] - z[1])],
@@ -113,7 +136,7 @@ export class GridPanel extends BasePartCreator<'gridpanel'> {
 
     const sizeInGrids: [number, number] = [Math.abs(x[0] - x[1]), Math.abs(z[0] - z[1])]
 
-    let panel = new GridPanel({
+    let panel = GridPanel.create({
       id,
       variantId,
       sizeInGrids,
@@ -193,3 +216,11 @@ function getThickness(variant: GridPanelVariant): number {
   const { thickness } = variant
   return convert(thickness, meter).value
 }
+
+registerSerializer({
+  type: 'gridpanel',
+  Spec: GridPanelSpec,
+  serializeSpec,
+  deserializeSpec,
+  Creator: GridPanel,
+})

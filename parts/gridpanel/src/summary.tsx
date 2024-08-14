@@ -8,18 +8,18 @@ import {
 } from '@villagekit/part/base'
 import { HStack, Text, VStack } from '@villagekit/ui'
 import { useMemo } from 'react'
-import type { GridPanel } from './creator'
+import type { GridPanelSpec } from './creator'
 import { calculateSummaryKey } from './methods'
 import { SummaryGridPanelSvg } from './svg/summary-grid-panel-svg'
 
-export function PartsSummary(props: PartsSummaryProps<GridPanel>) {
+export function PartsSummary(props: PartsSummaryProps<GridPanelSpec>) {
   const { parts, ...restProps } = props
 
   const { groupParts } = useSummaryContext()
 
   const partQuotas = useMemo(() => {
     const partEntries = parts.map(
-      (part: GridPanel): PartSummaryEntry<GridPanel> => [calculateSummaryKey(part), part],
+      (part: GridPanelSpec): PartSummaryEntry<GridPanelSpec> => [calculateSummaryKey(part), part],
     )
     const partQuotaType = groupParts ? 'grouped' : 'single'
     const partQuotas = partsToPartQuotas(partQuotaType, partEntries)
@@ -55,8 +55,8 @@ export function PartsSummary(props: PartsSummaryProps<GridPanel>) {
   )
 }
 
-type PartSummaryProps = Omit<PartsSummaryProps<GridPanel>, 'parts'> & {
-  quota: PartSummaryQuota<GridPanel>
+type PartSummaryProps = Omit<PartsSummaryProps<GridPanelSpec>, 'parts'> & {
+  quota: PartSummaryQuota<GridPanelSpec>
 }
 
 function PartSummary(props: PartSummaryProps) {

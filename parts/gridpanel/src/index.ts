@@ -1,5 +1,5 @@
 import { registerPartModule } from '@villagekit/part'
-import type { GridPanel } from './creator'
+import type { GridPanel, GridPanelSpec } from './creator'
 import { PartsGl } from './gl'
 import {
   calculateBoundingBox,
@@ -21,6 +21,9 @@ declare global {
   namespace VK {
     interface EveryPartTypeId {
       gridpanel: GridPanelType
+    }
+    interface EveryPartSpec {
+      gridpanel: GridPanelSpec
     }
     interface EveryPartCreator {
       gridpanel: GridPanel
