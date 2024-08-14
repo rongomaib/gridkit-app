@@ -35,6 +35,7 @@
     "@villagekit/part": "^0.6.0",
     "@villagekit/part-gridbeam": "^0.6.0",
     "@villagekit/part-gridpanel": "^0.6.0",
+    "@villagekit/part-fastener": "^0.6.0",
     "@villagekit/product": "^0.6.0",
     "@villagekit/sandbox": "^0.6.0",
     "@villagekit/ui": "^0.6.0",
