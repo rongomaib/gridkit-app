@@ -96,7 +96,10 @@ async function evaluateModule() {
   }
 
   /* @vite-ignore */
-  mod = await import(modUrl)
+  mod = await import(
+    /* webpackIgnore */
+    modUrl
+  )
 
   // wrap part function return values in type marker
   const parts =
