@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/screenshot",
-  "version": "0.6.1",
+  "version": "0.6.2",
   "type": "module",
   "bin": "./src/bin.ts",
   "exports": {
@@ -28,9 +28,9 @@
     "@villagekit/part-fastener": "^0.6.0",
     "@villagekit/part-gridbeam": "^0.6.0",
     "@villagekit/part-gridpanel": "^0.6.0",
-    "@villagekit/plugin-smart-fasteners": "^0.6.1",
+    "@villagekit/plugin-smart-fasteners": "^0.6.2",
     "@villagekit/product": "^0.6.0",
-    "@villagekit/product-kit": "^0.6.1",
+    "@villagekit/product-kit": "^0.6.2",
     "@villagekit/sandbox": "^0.6.0",
     "@villagekit/ui": "^0.6.0",
     "@vitejs/plugin-react": "^4.3.1",
