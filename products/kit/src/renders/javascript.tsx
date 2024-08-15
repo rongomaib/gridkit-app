@@ -1,7 +1,6 @@
 import '@villagekit/part-gridpanel/creator'
 import '@villagekit/part-gridbeam/creator'
 import '@villagekit/part-fastener/creator'
-import './javascript-comlink'
 
 import { AnyMap, type TraceMap, originalPositionFor } from '@jridgewell/trace-mapping'
 import * as Comlink from 'comlink'
@@ -9,6 +8,9 @@ import { parseStackTrace } from 'errorstacks'
 import { fromCallback } from 'xstate'
 import type { Params, ParamsValues, PartVariantsByType, Parts, PartsFn, Presets } from '../types'
 import type { RenderEvent, RendererMachineEvent } from './'
+import { setComlinkTransferHandlers } from './javascript-comlink'
+
+setComlinkTransferHandlers()
 
 type Evaluator = {
   loadModule: (code: string) => Promise<string>

@@ -1,10 +1,13 @@
 import '@villagekit/part-gridpanel/creator'
 import '@villagekit/part-gridbeam/creator'
 import '@villagekit/part-fastener/creator'
-import './javascript-comlink'
 
 import * as Comlink from 'comlink'
 import { init as initModuleLexer, parse as parseModule } from 'es-module-lexer'
+
+import { setComlinkTransferHandlers } from './javascript-comlink'
+
+setComlinkTransferHandlers()
 
 interface ImportMap {
   [moduleId: string]: string
