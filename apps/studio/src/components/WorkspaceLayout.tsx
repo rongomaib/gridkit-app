@@ -37,7 +37,13 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
       <Flex sx={{ flexDirection: 'row', width: '100%' }}>
         <Resplit.Pane order={0} initialSize="0.15fr" asChild>
           <VStack
-            sx={{ alignItems: 'flex-start', maxHeight: '100dvh', overflowY: 'auto', marginY: 2 }}
+            sx={{
+              alignItems: 'flex-start',
+              maxHeight: '100dvh',
+              overflowY: 'auto',
+              margin: 0,
+              paddingY: 2,
+            }}
           >
             <Tooltip label={activeWorkspace.path}>
               <Box sx={{ alignSelf: 'center' }}>
@@ -51,14 +57,22 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
                 {productIndexes?.map((productIndex) => (
                   <ListItem
                     key={productIndex.path}
-                    sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}
+                    sx={{
+                      display: 'flex',
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                    }}
                   >
                     <ListIcon as={FaChevronRight} sx={{ marginInlineEnd: 0 }} />
                     <HStack>
                       <Button
                         variant="toolbar"
                         onClick={() => selectProductId(productIndex.id)}
-                        sx={{ fontSize: 'md', paddingInlineStart: 1, paddingInlineEnd: 1 }}
+                        sx={{
+                          fontSize: 'md',
+                          paddingInlineStart: 1,
+                          paddingInlineEnd: 1,
+                        }}
                       >
                         {productIndex.id}
                       </Button>

@@ -5,8 +5,9 @@ import {
   Tabs as BaseTabs,
   type TabListProps,
   type TabsProps,
+  useMergeRefs,
 } from '@chakra-ui/react'
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { forwardRef, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 
 export type { TabsProps }
 export { Tab, TabPanel, TabPanels } from '@chakra-ui/react'
@@ -15,12 +16,12 @@ const isClient = typeof window !== 'undefined'
 
 const useSafeLayoutEffect = isClient ? useLayoutEffect : useEffect
 
-export function Tabs(props: TabsProps) {
+export const Tabs = forwardRef<TabsProps>(function Tabs(props, ref) {
   // @ts-ignore
-  return <BaseTabs variant="unstyled" {...props} />
-}
+  return <BaseTabs variant="unstyled" ref={ref} {...props} />
+})
 
-export function TabList(props: TabListProps) {
+export const TabList = forwardRef<TabListProps>(function TabList(props, ref) {
   const tabsRef = useRef<HTMLDivElement>(null)
 
   const [fadeOut, setFadeOut] = useState(false)
@@ -46,7 +47,7 @@ export function TabList(props: TabListProps) {
   return (
     <BaseTabList
       // @ts-ignore
-      ref={tabsRef}
+      ref={useMergeRefs(tabsRef, ref)}
       sx={{
         ...(fadeOut
           ? {
@@ -67,7 +68,7 @@ export function TabList(props: TabListProps) {
       {...props}
     />
   )
-}
+})
 
 export const tabsTheme = {
   baseStyle: {

@@ -120,6 +120,7 @@ export {
   useControllableProp,
   useControllableState,
   useDisclosure,
+  useDimensions,
   useMediaQuery,
   useMergeRefs,
   useOutsideClick,

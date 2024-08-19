@@ -30,7 +30,7 @@ export function ProductEditor(_props: ProductEditorProps) {
       ref={parentRef}
       sx={{
         width: '100%',
-        height: '100vh',
+        height: '100%',
 
         '.cm-editor': {
           height: '100%',
