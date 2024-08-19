@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/design",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "type": "module",
   "exports": {
     "./kit": {
@@ -32,6 +32,6 @@
   "dependencies": {
     "@villagekit/part-gridbeam": "^0.6.0",
     "@villagekit/part-gridpanel": "^0.6.0",
-    "@villagekit/product-kit": "^0.6.3"
+    "@villagekit/product-kit": "^0.6.4"
   }
 }
