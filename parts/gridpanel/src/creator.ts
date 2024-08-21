@@ -1,5 +1,5 @@
 import { changeOfBasisTransform, mirrorTransform } from '@villagekit/math'
-import { BasePartCreator, type Typed, registerSerializer } from '@villagekit/part/creator'
+import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
 import type { GridPanelFit, GridPanelHoles, GridPanelType, GridPanelVariant } from './types'
 import { gridPanelVariants } from './variants'
@@ -17,8 +17,7 @@ const mirrorXTransform = mirrorTransform('x')
 const mirrorYTransform = mirrorTransform('y')
 const mirrorZTransform = mirrorTransform('z')
 
-export class GridPanelSpec implements Typed<GridPanelType> {
-  type: GridPanelType
+export class GridPanelSpec extends BasePartSpec<GridPanelType> {
   variantId: keyof typeof gridPanelVariants
   sizeInGrids: [number, number]
   holes: GridPanelHoles
@@ -28,10 +27,42 @@ export class GridPanelSpec implements Typed<GridPanelType> {
     variantId?: keyof typeof gridPanelVariants,
     holes: GridPanelHoles = true,
   ) {
-    this.type = 'gridpanel'
+    super('gridpanel')
     this.variantId = variantId ?? getDefaultVariantId()
     this.sizeInGrids = sizeInGrids
     this.holes = holes
+  }
+
+  equals(other: this): boolean {
+    return (
+      this.type === other.type &&
+      this.variantId === other.variantId &&
+      this.sizeInGrids[0] === other.sizeInGrids[0] &&
+      this.sizeInGrids[1] === other.sizeInGrids[1] &&
+      holesEquals(this.holes, other.holes)
+    )
+  }
+
+  compare(other: this): number {
+    return -compareXYs(this.sizeInGrids, other.sizeInGrids)
+  }
+
+  normalize(): this {
+    const { variantId } = this
+    let { sizeInGrids, holes } = this
+
+    // "rotate" panel so main length is larger side
+    if (sizeInGrids[1] > sizeInGrids[0]) {
+      sizeInGrids = [sizeInGrids[1], sizeInGrids[0]]
+      holes = Array.isArray(holes) ? holes.map((hole) => [hole[1], hole[0]]) : holes
+    }
+
+    // sort holes by sorting
+    if (Array.isArray(holes)) {
+      holes = holes.slice().sort(compareXYs)
+    }
+
+    return new GridPanelSpec(sizeInGrids, variantId, holes) as this
   }
 }
 
@@ -219,8 +250,32 @@ function getThickness(variant: GridPanelVariant): number {
 
 registerSerializer({
   type: 'gridpanel',
-  Spec: GridPanelSpec,
   serializeSpec,
   deserializeSpec,
   Creator: GridPanel,
 })
+
+function holesEquals(a: GridPanelHoles, b: GridPanelHoles) {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    for (let i = 0; i < a.length; i++) {
+      const holeA = a[i]!
+      const holeB = b[i]!
+      if (holeA[0] !== holeB[0] && holeA[1] !== holeB[1]) {
+        return false
+      }
+    }
+    return true
+  }
+  return a === b
+}
+
+type XY = [number, number]
+// XY sort comparator for ascending order
+function compareXYs(a: XY, b: XY) {
+  if (a[0] === b[0]) {
+    // if x values are the same, compare y values
+    return a[1] - b[1]
+  }
+  // otherwise, compare x values
+  return a[0] - b[0]
+}

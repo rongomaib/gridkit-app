@@ -1,5 +1,5 @@
 import { changeOfBasisTransform, mirrorTransform } from '@villagekit/math'
-import { BasePartCreator, type Typed, registerSerializer } from '@villagekit/part/creator'
+import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
 import type { GridBeamType } from './types'
 import { gridBeamVariants } from './variants'
@@ -17,15 +17,26 @@ const mirrorXTransform = mirrorTransform('x')
 const mirrorYTransform = mirrorTransform('y')
 const mirrorZTransform = mirrorTransform('z')
 
-export class GridBeamSpec implements Typed<GridBeamType> {
-  type: GridBeamType
+export class GridBeamSpec extends BasePartSpec<GridBeamType> {
   variantId: keyof typeof gridBeamVariants
   lengthInGrids: number
 
   constructor(lengthInGrids: number, variantId?: keyof typeof gridBeamVariants) {
-    this.type = 'gridbeam'
+    super('gridbeam')
     this.variantId = variantId ?? getDefaultVariantId()
     this.lengthInGrids = lengthInGrids
+  }
+
+  equals(other: this): boolean {
+    return (
+      this.type === other.type &&
+      this.variantId === other.variantId &&
+      this.lengthInGrids === other.lengthInGrids
+    )
+  }
+
+  compare(other: this): number {
+    return other.lengthInGrids - this.lengthInGrids
   }
 }
 
@@ -148,7 +159,6 @@ function getGridLengthInMeters(variantId: string): number {
 
 registerSerializer({
   type: 'gridbeam',
-  Spec: GridBeamSpec,
   serializeSpec,
   deserializeSpec,
   Creator: GridBeam,

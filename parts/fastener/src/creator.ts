@@ -1,17 +1,27 @@
 import { AxisId, type Point3, axisIdToDirectionVector } from '@villagekit/math'
-import { BasePartCreator, type Typed, registerSerializer } from '@villagekit/part/creator'
+import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
 import { Matrix4, Quaternion, Vector3 } from 'three'
 import type { FastenerType } from './types'
 import { fastenerVariants } from './variants'
 
-export class FastenerSpec implements Typed<FastenerType> {
-  type: FastenerType
+export class FastenerSpec extends BasePartSpec<FastenerType> {
   variantId: keyof typeof fastenerVariants
 
   constructor(variantId: keyof typeof fastenerVariants) {
-    this.type = 'fastener'
+    super('fastener')
     this.variantId = variantId
+  }
+
+  equals(other: this): boolean {
+    return this.type === other.type && this.variantId === other.variantId
+  }
+
+  compare(other: this): number {
+    return (
+      fastenerVariants[this.variantId]!.fastenedLength.value -
+      fastenerVariants[other.variantId]!.fastenedLength.value
+    )
   }
 }
 
@@ -77,7 +87,6 @@ interface FastenerLineOptions extends BaseCreatorOptions {
 
 registerSerializer({
   type: 'fastener',
-  Spec: FastenerSpec,
   serializeSpec,
   deserializeSpec,
   Creator: Fastener,

@@ -8,7 +8,7 @@ import {
   calculateNumFastenersToFasten,
 } from './methods'
 import { fastenerSchemas } from './schemas'
-import { PartsSummary } from './summary'
+import { FastenerSvg } from './svg'
 import type { FastenerGlValue, FastenerType } from './types'
 import { fastenerVariants } from './variants'
 
@@ -36,9 +36,13 @@ declare global {
 }
 
 registerPartModule({
+  labels: {
+    single: 'fastener',
+    plural: 'fasteners',
+  },
   components: {
     PartsGl,
-    PartsSummary,
+    PartSvg: FastenerSvg,
   },
   id: 'fastener' as const,
   methods: {

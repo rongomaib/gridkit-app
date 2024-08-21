@@ -9,7 +9,7 @@ import {
 import type { FasteningPoint, WithRequiredId } from '@villagekit/part'
 import { convert, meter } from '@villagekit/units'
 import { Box3, Matrix4, Quaternion, Vector3 } from 'three'
-import type { GridBeam, GridBeamSpec } from './creator'
+import type { GridBeam } from './creator'
 import type { GridBeamGlValue } from './types'
 import { gridBeamVariants } from './variants'
 
@@ -73,12 +73,6 @@ export function calculateBoundingBox(creator: GridBeam): Box3 {
   box.applyMatrix4(new Matrix4().fromArray(transform))
 
   return box
-}
-
-export function calculateSummaryKey(creator: GridBeamSpec): string {
-  const { type, variantId, lengthInGrids } = creator
-
-  return `${type}::${variantId}::${lengthInGrids}`
 }
 
 const fasteningAxesByAxisId: Record<AxisId, Array<AxisId>> = {

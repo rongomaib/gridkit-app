@@ -1,5 +1,6 @@
 import { useGLTF } from '@react-three/drei'
-import { type PartsGlProps, useTexture } from '@villagekit/part/base'
+import type { PartsGlProps } from '@villagekit/part'
+import { useTexture } from '@villagekit/part/base'
 import { map } from 'lodash-es'
 import { memo, useMemo } from 'react'
 import {

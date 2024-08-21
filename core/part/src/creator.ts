@@ -7,6 +7,23 @@ export interface Typed<Type extends string> {
 
 export type TypeOf<T> = T extends Typed<infer Type> ? Type : never
 
+export abstract class BasePartSpec<Type extends string> implements Typed<Type> {
+  type: Type
+
+  constructor(type: Type) {
+    this.type = type
+  }
+
+  abstract equals(_other: this): boolean
+
+  // comparator to sort for order displayed in parts list
+  abstract compare(_other: this): number
+
+  normalize(): this {
+    return this
+  }
+}
+
 export type RotateOptions = {
   angle: number
   origin?: [number, number, number]
@@ -20,7 +37,7 @@ export type ApplyRotationOptions = {
 
 export type SpecOfCreator<Creator> = Creator extends BasePartCreator<infer Spec> ? Spec : never
 
-export class BasePartCreator<Spec extends Typed<any>> {
+export abstract class BasePartCreator<Spec extends BasePartSpec<any>> {
   spec: Spec
   id?: string
   transform: TransformMatrix
@@ -90,15 +107,14 @@ export class BasePartCreator<Spec extends Typed<any>> {
 
 type Serializer<
   Type extends string,
-  Spec extends { new (...args: Array<any>): Typed<Type> },
+  Spec extends BasePartSpec<Type>,
   SpecSerialized extends Typed<Type>,
-  Creator extends typeof BasePartCreator<InstanceType<Spec>>,
+  Creator extends typeof BasePartCreator<Spec>,
   CreatorSerialized extends Typed<Type> = DefaultCreatorSerialized<SpecSerialized>,
 > = {
   type: Type
-  Spec: Spec
-  serializeSpec: (instance: InstanceType<Spec>) => SpecSerialized
-  deserializeSpec: (object: SpecSerialized) => InstanceType<Spec>
+  serializeSpec: (instance: Spec) => SpecSerialized
+  deserializeSpec: (object: SpecSerialized) => Spec
   Creator: Creator
   serializeCreator: (instance: InstanceType<Creator>) => CreatorSerialized
   deserializeCreator: (object: CreatorSerialized) => InstanceType<Creator>
@@ -114,9 +130,9 @@ const serializers: Serializers = {}
 
 export function registerSerializer<
   Type extends string,
-  Spec extends { new (...args: Array<any>): Typed<Type> },
+  Spec extends BasePartSpec<Type>,
   SpecSerialized extends Typed<Type>,
-  Creator extends typeof BasePartCreator<InstanceType<Spec>>,
+  Creator extends typeof BasePartCreator<Spec>,
   CreatorSerialized extends Typed<Type> = DefaultCreatorSerialized<SpecSerialized>,
 >(
   options: Optional<
@@ -126,7 +142,6 @@ export function registerSerializer<
 ) {
   const {
     type,
-    Spec,
     serializeSpec,
     deserializeSpec,
     Creator,
@@ -135,7 +150,6 @@ export function registerSerializer<
   } = options
   serializers[type] = {
     type,
-    Spec,
     deserializeSpec,
     serializeSpec,
     Creator,
@@ -181,9 +195,9 @@ type DefaultCreatorSerialized<SpecSerialized extends Typed<any>> = {
 
 function defaultSerializeCreator<
   Type extends string,
-  Spec extends { new (...args: Array<any>): Typed<Type> },
+  Spec extends BasePartSpec<Type>,
   SpecSerialized extends Typed<Type>,
-  Creator extends typeof BasePartCreator<InstanceType<Spec>>,
+  Creator extends typeof BasePartCreator<Spec>,
 >(
   this: Serializer<Type, Spec, SpecSerialized, Creator, DefaultCreatorSerialized<SpecSerialized>>,
   creator: InstanceType<Creator>,
@@ -200,14 +214,18 @@ function defaultSerializeCreator<
 
 function defaultDeserializeCreator<
   Type extends string,
-  Spec extends { new (...args: Array<any>): Typed<Type> },
+  Spec extends BasePartSpec<Type>,
   SpecSerialized extends Typed<Type>,
-  Creator extends typeof BasePartCreator<InstanceType<Spec>>,
+  Creator extends typeof BasePartCreator<Spec>,
 >(
   this: Serializer<Type, Spec, SpecSerialized, Creator, DefaultCreatorSerialized<SpecSerialized>>,
   object: DefaultCreatorSerialized<SpecSerialized>,
 ): InstanceType<Creator> {
   const { spec: specObject, id, transform } = object
   const spec = this.deserializeSpec(specObject)
-  return new this.Creator(spec, id, transform) as InstanceType<Creator>
+  return new (this.Creator as unknown as new (...args: Array<any>) => InstanceType<Creator>)(
+    spec,
+    id,
+    transform,
+  )
 }

@@ -8,7 +8,7 @@ import {
   calculateNumFastenersToFasten,
 } from './methods'
 import { gridBeamSchemas } from './schemas'
-import { PartsSummary } from './summary'
+import { SummaryGridBeamSvg as PartSvg } from './svg/summary-grid-beam-svg'
 import type { GridBeamGlValue, GridBeamType } from './types'
 import { gridBeamVariants } from './variants'
 
@@ -16,7 +16,6 @@ export * from './svg/index'
 export * from './types'
 export { gridBeamVariants }
 
-/* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   namespace VK {
     interface EveryPartTypeId {
@@ -38,9 +37,13 @@ declare global {
 }
 
 registerPartModule({
+  labels: {
+    single: 'beam',
+    plural: 'beams',
+  },
   components: {
     PartsGl,
-    PartsSummary,
+    PartSvg,
   },
   id: 'gridbeam' as const,
   methods: {

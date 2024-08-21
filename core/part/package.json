@@ -51,6 +51,7 @@
     "@villagekit/ui": "^0.6.0",
     "dnum": "^2.13.1",
     "lodash-es": "^4.17.21",
+    "nanoid": "^5.0.7",
     "zod": "^3.23.8"
   },
   "peerDependencies": {

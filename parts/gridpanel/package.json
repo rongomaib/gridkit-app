@@ -44,7 +44,6 @@
     "@villagekit/part": "^0.6.0",
     "@villagekit/ui": "^0.6.0",
     "@villagekit/units": "^0.6.0",
-    "deadbeef": "github:ahdinosaur/deadbeef#fix-typescript-declarations",
     "zod": "^3.23.8"
   },
   "devDependencies": {

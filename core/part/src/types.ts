@@ -3,8 +3,6 @@ import type { ReactElement } from 'react'
 import type { Box3 } from 'three'
 import type { ZodDiscriminatedUnionOption } from 'zod'
 
-import type { PartsGlProps, PartsSummaryProps } from './base'
-
 declare global {
   namespace VK {
     export interface EveryPartTypeId {
@@ -57,8 +55,16 @@ export type WithRequiredId<T extends { id?: string }> = { id: string } & {
   [Key in keyof T as Exclude<Key, 'id'>]: T[Key]
 }
 
+export interface PartsGlProps<PartGlValue> {
+  parts: Array<PartGlValue>
+}
 export type PartsGl<GlValue> = (props: PartsGlProps<GlValue>) => ReactElement | null
-export type PartsSummary<Spec> = (props: PartsSummaryProps<Spec>) => ReactElement | null
+
+export interface PartSvgProps<PartSpec> {
+  part: PartSpec
+  displayUnit: 'gu' | 'mm'
+}
+export type PartSvg<Spec> = (props: PartSvgProps<Spec>) => ReactElement | null
 
 export interface PartModule<
   Id extends PartTypeId,
@@ -68,9 +74,13 @@ export interface PartModule<
   Variants,
 > {
   id: Id
+  labels: {
+    single: string
+    plural: string
+  }
   variants: Variants
   components: {
-    PartsSummary: PartsSummary<Spec>
+    PartSvg: PartSvg<Spec>
     PartsGl: PartsGl<GlValue>
   }
   methods: {

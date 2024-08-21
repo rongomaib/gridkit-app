@@ -8,7 +8,7 @@ import {
   calculateNumFastenersToFasten,
 } from './methods'
 import { gridPanelSchemas } from './schemas'
-import { PartsSummary } from './summary'
+import { SummaryGridPanelSvg as PartSvg } from './svg/summary-grid-panel-svg'
 import type { GridPanelGlValue, GridPanelType } from './types'
 import { gridPanelVariants } from './variants'
 
@@ -16,7 +16,6 @@ export * from './svg/index'
 export * from './types'
 export { gridPanelVariants }
 
-/* eslint-disable @typescript-eslint/no-namespace */
 declare global {
   namespace VK {
     interface EveryPartTypeId {
@@ -38,9 +37,13 @@ declare global {
 }
 
 registerPartModule({
+  labels: {
+    single: 'panel',
+    plural: 'panels',
+  },
   components: {
     PartsGl,
-    PartsSummary,
+    PartSvg,
   },
   id: 'gridpanel' as const,
   methods: {

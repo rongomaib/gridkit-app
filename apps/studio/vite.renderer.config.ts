@@ -32,9 +32,5 @@ export default defineConfig(async (env) => {
     optimizeDeps: {
       exclude: ['@swc/wasm-web'],
     },
-    // to fix error when using `deadbeef` module in Worker
-    define: {
-      global: 'globalThis',
-    },
   } as UserConfig
 })

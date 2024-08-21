@@ -21,27 +21,6 @@ export interface PartVariant {
   materials: PartMaterials
 }
 
-export interface PartsGlProps<PartGlValue> {
-  parts: Array<PartGlValue>
-}
-
-export type PartSummaryEntry<T> = [string, T]
-
-export type PartSummaryQuotaSingle<T> = {
-  type: 'single'
-  key: string
-  part: T
-}
-
-export type PartSummaryQuotaGrouped<T> = {
-  type: 'grouped'
-  key: string
-  part: T
-  count: number
-}
-
-export type PartSummaryQuota<T> = PartSummaryQuotaSingle<T> | PartSummaryQuotaGrouped<T>
-
 export interface PartsSummaryProps<T> {
   parts: Array<T>
 }
@@ -69,37 +48,4 @@ export function useTexture(
   }, [texture, options])
 
   return texture
-}
-
-export function partsToPartQuotas<T>(
-  type: PartSummaryQuota<T>['type'],
-  entries: Array<PartSummaryEntry<T>>,
-): Array<PartSummaryQuota<T>> {
-  switch (type) {
-    case 'single':
-      return entries.map(([key, part]) => ({
-        key,
-        part,
-        type: 'single' as const,
-      }))
-    case 'grouped':
-      return Object.values(
-        entries.reduce<Record<string, PartSummaryQuotaGrouped<T>>>((result, [key, part]) => {
-          if (key in result) {
-            const entry = result[key]
-            if (entry != null && entry.count != null) {
-              entry.count += 1
-            }
-          } else {
-            result[key] = {
-              count: 1,
-              key,
-              part,
-              type: 'grouped',
-            }
-          }
-          return result
-        }, {}),
-      )
-  }
 }

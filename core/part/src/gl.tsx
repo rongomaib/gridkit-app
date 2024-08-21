@@ -1,7 +1,7 @@
 import { groupBy, map } from 'lodash-es'
 import type React from 'react'
 import { useMemo } from 'react'
-import { type PartGlValue, type PartSpec, type PartTypeId, getPartModule } from './index'
+import { type PartGlValue, type PartTypeId, getPartModule } from './index'
 
 export interface PartsGlForAllProps {
   partGlValues: Array<PartGlValue>
@@ -41,39 +41,4 @@ export function PartsGlForType(props: PartsGlForTypeProps): React.ReactElement {
 
   // @ts-ignore
   return <PartsGl parts={partGlValues} />
-}
-
-export interface PartsSummaryForAllProps {
-  parts: Array<PartSpec>
-}
-
-export function PartsSummaryForAll(props: PartsSummaryForAllProps): React.ReactElement {
-  const { parts } = props
-
-  const partsByType = useMemo(() => {
-    return groupBy(parts, 'type')
-  }, [parts])
-
-  return (
-    <>
-      {map(partsByType, (partsForType: Array<PartSpec>, partType: PartTypeId) => {
-        return <PartsSummaryForType key={partType} partType={partType} parts={partsForType} />
-      })}
-    </>
-  )
-}
-
-export interface PartsSummaryForTypeProps {
-  partType: PartTypeId
-  parts: Array<PartSpec>
-}
-
-export function PartsSummaryForType(props: PartsSummaryForTypeProps): React.ReactElement {
-  const { partType, parts } = props
-
-  const partModule = getPartModule(partType)
-  const PartsSummary = partModule.components.PartsSummary
-
-  // @ts-ignore
-  return <PartsSummary parts={parts} />
 }

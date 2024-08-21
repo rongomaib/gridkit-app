@@ -98,8 +98,8 @@ async function evaluateModule() {
     throw new Error('Unexpected: Module not loaded')
   }
 
-  /* @vite-ignore */
   mod = await import(
+    /* @vite-ignore */
     /* webpackIgnore: true */
     modUrl
   )
