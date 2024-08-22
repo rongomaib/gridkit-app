@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/part-gridpanel",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "type": "module",
   "exports": {
     ".": {
@@ -41,10 +41,10 @@
   "homepage": "https://github.com/villagekit/villagekit/tree/main/parts/gridpanel#readme",
   "dependencies": {
     "@tarikjabiri/dxf": "^2.8.9",
-    "@villagekit/math": "^0.6.0",
-    "@villagekit/part": "^0.6.0",
-    "@villagekit/ui": "^0.6.0",
-    "@villagekit/units": "^0.6.0",
+    "@villagekit/math": "^0.7.0",
+    "@villagekit/part": "^0.7.0",
+    "@villagekit/ui": "^0.7.0",
+    "@villagekit/units": "^0.7.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
