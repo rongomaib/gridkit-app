@@ -40,6 +40,7 @@
   },
   "homepage": "https://github.com/villagekit/villagekit/tree/main/parts/gridpanel#readme",
   "dependencies": {
+    "@tarikjabiri/dxf": "^2.8.9",
     "@villagekit/math": "^0.6.0",
     "@villagekit/part": "^0.6.0",
     "@villagekit/ui": "^0.6.0",

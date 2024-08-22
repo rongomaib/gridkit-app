@@ -1,6 +1,6 @@
 import { type PartCreator, PartsSummaryForAll } from '@villagekit/part'
 import { SummaryContextProvider } from '@villagekit/part/base'
-import type { ProductSummaryProps } from '@villagekit/product'
+import { type ProductSummaryProps, useProductMeta } from '@villagekit/product'
 import { debounce } from 'lodash-es'
 import { useEffect, useMemo, useState } from 'react'
 import { useProductKitContext } from './context'
@@ -29,9 +29,14 @@ export function ProductKitSummary(props: ProductSummaryProps) {
     setPartsDebounced(parts)
   }, [setPartsDebounced, parts])
 
+  const { name } = useProductMeta()
+  const summaryId = useMemo(() => {
+    return name.includes('/') ? name.split('/')[1]! : name
+  }, [name])
+
   return (
     <SummaryContextProvider displayUnit={displayUnit} groupParts={groupParts}>
-      <PartsSummaryForAll parts={localPartSpecs} />
+      <PartsSummaryForAll parts={localPartSpecs} summaryId={summaryId} />
     </SummaryContextProvider>
   )
 }

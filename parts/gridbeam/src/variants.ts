@@ -2,7 +2,8 @@ import { millimeter } from '@villagekit/units'
 import type { GridBeamVariant } from './types'
 
 export const gridBeamVariants: Record<string, GridBeamVariant> = {
-  '40mm:8mm:douglas-fir': {
+  Grid40mm_Hole8mm_MaterialDouglasFir: {
+    id: 'Grid40mm_Hole8mm_MaterialDouglasFir',
     gridLength: {
       type: 'quantity',
       unit: millimeter,
@@ -13,7 +14,6 @@ export const gridBeamVariants: Record<string, GridBeamVariant> = {
       unit: millimeter,
       value: 8,
     },
-    id: '40mm:8mm:douglas-fir',
     materials: {
       beam: {
         textureUrl:

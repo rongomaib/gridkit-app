@@ -4,7 +4,8 @@ import { convert, meter } from '@villagekit/units'
 import type { GridPanelFit, GridPanelHoles, GridPanelType, GridPanelVariant } from './types'
 import { gridPanelVariants } from './variants'
 
-const getDefaultVariantId = (): keyof typeof gridPanelVariants => '40mm:8mm:12mm:douglas-fir'
+const getDefaultVariantId = (): keyof typeof gridPanelVariants =>
+  'Grid40mm_Hole8mm_Thickness12mm_MaterialPlywood'
 
 const X_AXIS: [number, number, number] = [1, 0, 0]
 const Y_AXIS: [number, number, number] = [0, 1, 0]
@@ -31,6 +32,10 @@ export class GridPanelSpec extends BasePartSpec<GridPanelType> {
     this.variantId = variantId ?? getDefaultVariantId()
     this.sizeInGrids = sizeInGrids
     this.holes = holes
+  }
+
+  id(): string {
+    return `GridPanel_Size${this.sizeInGrids[0]}x${this.sizeInGrids[1]}gu_${this.variantId}`
   }
 
   equals(other: this): boolean {

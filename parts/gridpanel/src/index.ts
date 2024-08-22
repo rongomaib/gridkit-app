@@ -6,6 +6,7 @@ import {
   calculateFasteningPoints,
   calculateGlValue,
   calculateNumFastenersToFasten,
+  exportDxf,
 } from './methods'
 import { gridPanelSchemas } from './schemas'
 import { SummaryGridPanelSvg as PartSvg } from './svg/summary-grid-panel-svg'
@@ -51,6 +52,7 @@ registerPartModule({
     calculateFasteningPoints,
     calculateGlValue,
     calculateNumFastenersToFasten,
+    exportDxf,
   },
   variants: gridPanelVariants,
   schemas: gridPanelSchemas,

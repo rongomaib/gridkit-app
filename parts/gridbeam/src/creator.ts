@@ -4,7 +4,8 @@ import { convert, meter } from '@villagekit/units'
 import type { GridBeamType } from './types'
 import { gridBeamVariants } from './variants'
 
-const getDefaultVariantId = () => '40mm:8mm:douglas-fir'
+const getDefaultVariantId = (): keyof typeof gridBeamVariants =>
+  'Grid40mm_Hole8mm_MaterialDouglasFir'
 
 const X_AXIS: [number, number, number] = [1, 0, 0]
 const Y_AXIS: [number, number, number] = [0, 1, 0]
@@ -25,6 +26,10 @@ export class GridBeamSpec extends BasePartSpec<GridBeamType> {
     super('gridbeam')
     this.variantId = variantId ?? getDefaultVariantId()
     this.lengthInGrids = lengthInGrids
+  }
+
+  id(): string {
+    return `GridBeam_Length${this.lengthInGrids}gu_${this.variantId}`
   }
 
   equals(other: this): boolean {

@@ -1,7 +1,7 @@
-import { HStack, Text, VStack } from '@villagekit/ui'
-import { groupBy, map } from 'lodash-es'
+import { Button, HStack, Text, VStack } from '@villagekit/ui'
+import { camelCase, groupBy, map, upperFirst } from 'lodash-es'
 import { nanoid } from 'nanoid'
-import { type FunctionComponent, useMemo } from 'react'
+import { type FunctionComponent, useCallback, useMemo } from 'react'
 import { PartCount, type PartsSummaryProps, useSummaryContext } from './base'
 import type { BasePartSpec } from './creator'
 import { getPartModule } from './modules'
@@ -24,10 +24,11 @@ export type PartSummaryQuota<T> = PartSummaryQuotaSingle<T> | PartSummaryQuotaGr
 
 export interface PartsSummaryForAllProps {
   parts: Array<PartSpec>
+  summaryId: string
 }
 
 export function PartsSummaryForAll(props: PartsSummaryForAllProps): React.ReactElement {
-  const { parts } = props
+  const { parts, summaryId } = props
 
   const partsByType = useMemo(() => {
     return groupBy(parts, 'type')
@@ -36,7 +37,14 @@ export function PartsSummaryForAll(props: PartsSummaryForAllProps): React.ReactE
   return (
     <>
       {map(partsByType, (partsForType: Array<PartSpec>, partType: PartTypeId) => {
-        return <PartsSummaryForType key={partType} partType={partType} parts={partsForType} />
+        return (
+          <PartsSummaryForType
+            key={partType}
+            partType={partType}
+            parts={partsForType}
+            summaryId={summaryId}
+          />
+        )
       })}
     </>
   )
@@ -45,10 +53,11 @@ export function PartsSummaryForAll(props: PartsSummaryForAllProps): React.ReactE
 export interface PartsSummaryForTypeProps {
   partType: PartTypeId
   parts: Array<PartSpec>
+  summaryId: string
 }
 
 export function PartsSummaryForType(props: PartsSummaryForTypeProps): React.ReactElement {
-  const { partType, parts } = props
+  const { partType, parts, summaryId } = props
 
   const partModule = getPartModule(partType)
   const plural = partModule.labels.plural
@@ -81,7 +90,13 @@ export function PartsSummaryForType(props: PartsSummaryForTypeProps): React.Reac
 
       <VStack role="list" width="full">
         {partQuotas.map((quota) => (
-          <PartSummary key={quota.key} quota={quota} Svg={PartSvg} />
+          <PartSummary
+            key={quota.key}
+            partType={partType}
+            quota={quota}
+            Svg={PartSvg}
+            summaryId={summaryId}
+          />
         ))}
       </VStack>
     </VStack>
@@ -89,26 +104,60 @@ export function PartsSummaryForType(props: PartsSummaryForTypeProps): React.Reac
 }
 
 type PartSummaryProps = Omit<PartsSummaryProps<PartSpec>, 'parts'> & {
+  partType: PartTypeId
   Svg: FunctionComponent<PartSvgProps<PartSpec>>
   quota: PartSummaryQuota<PartSpec>
+  summaryId: string
 }
 
 function PartSummary(props: PartSummaryProps) {
-  const { Svg, quota } = props
+  const { partType, Svg, quota, summaryId } = props
   const { part } = quota
 
   const { displayUnit } = useSummaryContext()
+
+  const partModule = getPartModule(partType)
+  const hasExportDxf = Boolean(partModule.methods.exportDxf)
+  const exportDxfToFile = useCallback(() => {
+    ;(async () => {
+      if (partModule.methods.exportDxf == null) {
+        throw new Error(`Unable to export dxf for part type ${partType}`)
+      }
+      const dxf = await partModule.methods.exportDxf(part)
+      const content = dxf.stringify()
+      // @ts-ignore
+      const filename = `${pascalCase(summaryId)}_${part.id()}.dxf`
+      const mimeType = 'application/dxf'
+      downloadFile(content, filename, mimeType)
+    })()
+  }, [partType, partModule, part, summaryId])
 
   return (
     <HStack role="listitem" alignItems="center" spacing="4" sx={{ width: '100%' }}>
       {quota.type === 'grouped' && <PartCount count={quota.count} />}
 
       <Svg displayUnit={displayUnit} part={part} />
+      {hasExportDxf && (
+        <Button variant="secondary" onClick={exportDxfToFile} aria-label="Export .dxf" size="xs">
+          .dxf
+        </Button>
+      )}
     </HStack>
   )
 }
 
-export function partsToPartQuotas<Spec extends BasePartSpec<any>>(
+function downloadFile(content: string, filename: string, mimeType: string) {
+  const blob = new Blob([content], { type: mimeType })
+  const link = document.createElement('a')
+  link.setAttribute('href', URL.createObjectURL(blob))
+  link.setAttribute('download', filename)
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  URL.revokeObjectURL(link.href)
+}
+
+function partsToPartQuotas<Spec extends BasePartSpec<any>>(
   type: 'single' | 'grouped',
   parts: Array<Spec>,
 ): Array<PartSummaryQuota<Spec>> {
@@ -140,3 +189,5 @@ export function partsToPartQuotas<Spec extends BasePartSpec<any>>(
     }
   }
 }
+
+const pascalCase = (str: string) => upperFirst(camelCase(str))

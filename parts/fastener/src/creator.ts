@@ -13,6 +13,10 @@ export class FastenerSpec extends BasePartSpec<FastenerType> {
     this.variantId = variantId
   }
 
+  id(): string {
+    return `Fastener_${this.variantId}`
+  }
+
   equals(other: this): boolean {
     return this.type === other.type && this.variantId === other.variantId
   }

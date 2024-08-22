@@ -8,6 +8,8 @@ export interface GridPanelVariant {
   gridLength: Length
   holeDiameter: Length
   thickness: Length
+  cornerRadius: Length
+  profileCutterDiameter: Length
   materials: {
     panel: {
       textureUrl: string
