@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        task: [deps, lint, test, 'build:pkg']
+        task: [deps, lint, test, 'test:pkg']
 
     name: ${{ matrix.task }}
     steps:

@@ -50,7 +50,7 @@ export default function Product() {
 
 function ProductControls() {
   const showParamControls = useHasParams()
-  const tabListRef = useRef()
+  const tabListRef = useRef(null)
   const tabListDimensions = useDimensions(tabListRef)
 
   return (
@@ -85,7 +85,7 @@ function ProductViewer() {
   const meta = useProductMeta()
   const productError = useProductError()
   const showParamControls = useHasParams()
-  const tabListRef = useRef()
+  const tabListRef = useRef(null)
   const tabListDimensions = useDimensions(tabListRef)
 
   if (productError != null) {

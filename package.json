@@ -10,11 +10,13 @@
     "dev:app:studio": "npm run dev:app -w '@villagekit/studio'",
     "dev:app:storybook": "npm run dev:app -w '@villagekit/storybook'",
     "deps": "turbo deps",
+    "types": "turbo types",
     "lint": "turbo lint",
     "format": "biome check --apply .",
     "format:unsafe": "biome check --apply-unsafe .",
     "publint": "turbo publint",
     "test": "turbo test",
+    "test:pkg": "turbo build:pkg && turbo types",
     "version": "biome check --apply $(glob **/package.json) && git add **/package.json",
     "version:bump": "lerna version --sync-workspace-lock"
   },

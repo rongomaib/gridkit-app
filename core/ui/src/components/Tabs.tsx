@@ -16,12 +16,12 @@ const isClient = typeof window !== 'undefined'
 
 const useSafeLayoutEffect = isClient ? useLayoutEffect : useEffect
 
-export const Tabs = forwardRef<TabsProps>(function Tabs(props, ref) {
+export const Tabs = forwardRef<HTMLDivElement, TabsProps>(function Tabs(props, ref) {
   // @ts-ignore
   return <BaseTabs variant="unstyled" ref={ref} {...props} />
 })
 
-export const TabList = forwardRef<TabListProps>(function TabList(props, ref) {
+export const TabList = forwardRef<HTMLDivElement, TabListProps>(function TabList(props, ref) {
   const tabsRef = useRef<HTMLDivElement>(null)
 
   const [fadeOut, setFadeOut] = useState(false)

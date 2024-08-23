@@ -116,7 +116,7 @@ export const createDiagnosticTheme = (palette: Palette) => {
   })
 }
 
-export const createDiagnosticGutterTheme = (palette: Palette) =>
+export const createDiagnosticGutterTheme = (_palette: Palette) =>
   EditorView.baseTheme({
     '.cm-gutter-diagnostic': {
       width: '1.4em',

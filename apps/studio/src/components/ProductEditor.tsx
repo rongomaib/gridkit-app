@@ -22,6 +22,7 @@ export function ProductEditor(_props: ProductEditorProps) {
 
   const parentRef = useRef(null)
   useEffect(() => {
+    if (parentRef.current == null) return
     setParentEl(parentRef.current)
   }, [setParentEl])
 
