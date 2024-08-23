@@ -14,6 +14,7 @@
     },
     "types": {},
     "test": {},
+    "deps": {},
     "lint": {
       "dependsOn": ["^lint"]
     },

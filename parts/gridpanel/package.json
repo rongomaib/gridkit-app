@@ -26,6 +26,7 @@
     "build:dist-bundles": "rollup dist/creator.js --file ./dist-bundles/creator.js --format esm",
     "build:dist-type-bundles": "dts-bundle-generator --config ./dts-bundle-generator.json",
     "build:pkg": "npm run build:dist && npm run build:dist-bundles && npm run build:dist-type-bundles",
+    "deps": "depcheck",
     "lint": "biome check .",
     "publint": "publint"
   },
@@ -45,6 +46,7 @@
     "@villagekit/part": "^0.7.0",
     "@villagekit/ui": "^0.7.0",
     "@villagekit/units": "^0.7.0",
+    "lodash-es": "^4.17.21",
     "zod": "^3.23.8"
   },
   "devDependencies": {

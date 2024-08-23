@@ -33,6 +33,7 @@
   "sideEffects": false,
   "scripts": {
     "build:pkg": "tsup src",
+    "deps": "depcheck",
     "lint": "biome check .",
     "publint": "publint"
   },
@@ -50,7 +51,6 @@
     "@tarikjabiri/dxf": "^2.8.9",
     "@villagekit/math": "^0.7.0",
     "@villagekit/ui": "^0.7.0",
-    "dnum": "^2.13.1",
     "lodash-es": "^4.17.21",
     "nanoid": "^5.0.7",
     "zod": "^3.23.8"

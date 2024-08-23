@@ -10,6 +10,7 @@
   "sideEffects": false,
   "scripts": {
     "build:pkg": "vite build",
+    "deps": "depcheck",
     "lint": "biome check .",
     "publint": "publint"
   },
@@ -31,15 +32,13 @@
     "@villagekit/plugin-smart-fasteners": "^0.7.0",
     "@villagekit/product": "^0.7.0",
     "@villagekit/product-kit": "^0.7.0",
-    "@villagekit/sandbox": "^0.7.0",
     "@villagekit/ui": "^0.7.0",
     "@vitejs/plugin-react": "^4.3.1",
     "argsclopts": "^1.0.4",
-    "mkdirp": "^1.0.4",
+    "lodash-es": "^4.17.21",
     "puppeteer": "^22.11.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "run-series": "^1.1.9",
     "serve-handler": "^6.1.5",
     "smol-toml": "^1.2.1",
     "tsx": "^4.15.6"

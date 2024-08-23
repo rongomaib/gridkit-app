@@ -1,0 +1,18 @@
+
+ignores:
+- "@villagekit/tsconfig"
+- tsx
+- vite
+
+ignore-patterns:
+- dist/
+
+parsers:
+  "**/*.js":
+    - 'es6'
+  "**/*.mjs":
+    - 'es6'
+  "**/*.ts":
+    - 'typescript'
+  "**/*.tsx":
+    - 'typescript'

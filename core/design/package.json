@@ -16,6 +16,7 @@
   "scripts": {
     "build:types": "dts-bundle-generator --config ./dts-bundle-generator.json",
     "build:pkg": "npm run build:types && tsup src --no-splitting",
+    "deps": "depcheck",
     "lint": "biome check .",
     "publint": "publint"
   },
@@ -32,6 +33,8 @@
   "dependencies": {
     "@villagekit/part-gridbeam": "^0.7.0",
     "@villagekit/part-gridpanel": "^0.7.0",
+    "@villagekit/part-fastener": "^0.7.0",
+    "@villagekit/plugin-smart-fasteners": "^0.7.0",
     "@villagekit/product-kit": "^0.7.0"
   }
 }

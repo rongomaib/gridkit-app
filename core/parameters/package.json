@@ -15,6 +15,7 @@
   "sideEffects": false,
   "scripts": {
     "build:pkg": "tsup src",
+    "deps": "depcheck",
     "lint": "biome check .",
     "publint": "publint"
   },
@@ -34,14 +35,11 @@
     "lodash-es": "^4.17.21",
     "query-string": "^9.0.0",
     "serialize-query-params": "^2.0.2",
-    "use-debounce": "^10.0.1",
     "xstate": "^5.13.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@storybook/react": "^8.1.6",
-    "@villagekit/part-gridbeam": "^0.7.0",
-    "@villagekit/part-gridpanel": "^0.7.0"
+    "@storybook/react": "^8.1.6"
   },
   "peerDependencies": {
     "react": "^18.3.1"

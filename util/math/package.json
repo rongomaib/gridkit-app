@@ -15,6 +15,7 @@
   "sideEffects": false,
   "scripts": {
     "build:pkg": "tsup src",
+    "deps": "depcheck",
     "lint": "biome check .",
     "publint": "publint"
   },
