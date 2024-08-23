@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/units",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "type": "module",
   "exports": {
     ".": {
@@ -16,7 +16,6 @@
   "scripts": {
     "deps": "depcheck",
     "build:pkg": "tsup src",
-    "deps": "depcheck",
     "lint": "biome check .",
     "publint": "publint",
     "test": "vitest run"

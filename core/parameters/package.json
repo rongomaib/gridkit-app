@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/parameters",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "type": "module",
   "exports": {
     ".": {
@@ -30,7 +30,7 @@
   },
   "homepage": "https://github.com/villagekit/villagekit/tree/main/core/parameters#readme",
   "dependencies": {
-    "@villagekit/ui": "^0.7.0",
+    "@villagekit/ui": "^0.7.1",
     "@xstate/react": "^4.1.1",
     "lodash-es": "^4.17.21",
     "query-string": "^9.0.0",

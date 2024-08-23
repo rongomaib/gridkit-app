@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/sandbox",
-  "version": "0.7.0",
+  "version": "0.7.1",
   "type": "module",
   "exports": {
     ".": {
@@ -32,8 +32,8 @@
   "dependencies": {
     "@juggle/resize-observer": "^3.4.0",
     "@react-three/drei": "^9.106.0",
-    "@villagekit/parameters": "^0.7.0",
-    "@villagekit/ui": "^0.7.0",
+    "@villagekit/parameters": "^0.7.1",
+    "@villagekit/ui": "^0.7.1",
     "camera-controls": "^1.38.2",
     "r3f-perf": "^7.2.1",
     "react-icons": "^5.2.1",
@@ -48,7 +48,7 @@
   },
   "devDependencies": {
     "@storybook/react": "^8.1.6",
-    "@villagekit/part-gridbeam": "^0.7.0",
-    "@villagekit/part-gridpanel": "^0.7.0"
+    "@villagekit/part-gridbeam": "^0.7.1",
+    "@villagekit/part-gridpanel": "^0.7.1"
   }
 }
