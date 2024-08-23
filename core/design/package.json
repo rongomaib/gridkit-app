@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/design",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "type": "module",
   "exports": {
     "./kit": {
@@ -31,10 +31,10 @@
   },
   "homepage": "https://github.com/villagekit/villagekit/tree/main/core/design#readme",
   "dependencies": {
-    "@villagekit/part-fastener": "^0.7.1",
-    "@villagekit/part-gridbeam": "^0.7.1",
-    "@villagekit/part-gridpanel": "^0.7.1",
-    "@villagekit/plugin-smart-fasteners": "^0.7.1",
-    "@villagekit/product-kit": "^0.7.1"
+    "@villagekit/part-fastener": "^0.7.2",
+    "@villagekit/part-gridbeam": "^0.7.2",
+    "@villagekit/part-gridpanel": "^0.7.2",
+    "@villagekit/plugin-smart-fasteners": "^0.7.2",
+    "@villagekit/product-kit": "^0.7.2"
   }
 }

@@ -1,7 +1,7 @@
 {
   "name": "@villagekit/storybook",
   "private": true,
-  "version": "0.7.1",
+  "version": "0.7.2",
   "type": "module",
   "scripts": {
     "dev:app": "storybook dev -p 6006",
@@ -11,12 +11,12 @@
   "dependencies": {
     "@fontsource/bitter": "^5.0.18",
     "@fontsource/fredoka-one": "^5.0.5",
-    "@villagekit/parameters": "^0.7.1",
-    "@villagekit/part-gridbeam": "^0.7.1",
-    "@villagekit/part-gridpanel": "^0.7.1",
-    "@villagekit/sandbox": "^0.7.1",
+    "@villagekit/parameters": "^0.7.2",
+    "@villagekit/part-gridbeam": "^0.7.2",
+    "@villagekit/part-gridpanel": "^0.7.2",
+    "@villagekit/sandbox": "^0.7.2",
     "@villagekit/tsconfig": "^0.7.0",
-    "@villagekit/ui": "^0.7.1",
+    "@villagekit/ui": "^0.7.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "use-query-params": "^2.2.1"
