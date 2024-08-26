@@ -2,8 +2,6 @@
   "extends": "@villagekit/tsconfig/react-library.json",
   "compilerOptions": {
     "allowJs": true,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext",
     "baseUrl": "src/",
     "paths": {
       "@/*": ["*"]
