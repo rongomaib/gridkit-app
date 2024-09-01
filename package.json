@@ -2,8 +2,8 @@
   "name": "villagekit",
   "private": true,
   "scripts": {
-    "postinstall": "patch-package",
     "build:app": "turbo build:app",
+    "build:app:studio": "npm run build:app -w '@villagekit/studio'",
     "build:pkg": "turbo build:pkg",
     "dev:pkg": "turbo watch build:pkg",
     "dev:app": "turbo watch build:pkg dev:app",
@@ -37,7 +37,6 @@
     "esbuild-plugin-raw": "^0.1.8",
     "dts-bundle-generator": "^9.5.1",
     "glob": "^10.4.1",
-    "patch-package": "^8.0.0",
     "publint": "^0.2.8",
     "tsup": "^8.1.0",
     "tsx": "^4.15.1",

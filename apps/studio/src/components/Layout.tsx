@@ -1,4 +1,3 @@
-import { client } from '@/client'
 import { EditorProvider } from '@/context/editor'
 import { ProductProvider } from '@/context/product'
 import { WorkspaceProvider, useWorkspaceContext } from '@/context/workspace'
@@ -7,7 +6,6 @@ import { theme } from '@/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ChakraProvider, Flex } from '@villagekit/ui'
-import { ipcLink } from 'electron-trpc/renderer'
 import { useState } from 'react'
 
 export interface LayoutProps {
@@ -29,25 +27,18 @@ export function ProvidersLayout({ children }: LayoutProps) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            useErrorBoundary: process.env.NODE_ENV === 'development',
+            throwOnError: process.env.NODE_ENV === 'development',
           },
         },
       }),
   )
-  const [trpcClient] = useState(() =>
-    client.createClient({
-      links: [ipcLink()],
-    }),
-  )
 
   return (
     <ChakraProvider theme={theme}>
-      <client.Provider client={trpcClient} queryClient={queryClient}>
-        <QueryClientProvider client={queryClient}>
-          <ReactQueryDevtools />
-          {children}
-        </QueryClientProvider>
-      </client.Provider>
+      <QueryClientProvider client={queryClient}>
+        <ReactQueryDevtools buttonPosition="bottom-left" />
+        {children}
+      </QueryClientProvider>
     </ChakraProvider>
   )
 }

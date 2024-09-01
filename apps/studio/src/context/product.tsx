@@ -3,7 +3,7 @@ import '@villagekit/part-gridpanel'
 import '@villagekit/part-fastener'
 import '@villagekit/plugin-smart-fasteners'
 
-import { client } from '@/client'
+import { useGetProductFileQuery, useGetProductMetaQuery } from '@/client'
 import {
   ProductProvider as CoreProductProvider,
   type ProductMeta,
@@ -43,12 +43,12 @@ export function ProductProvider(props: PropsWithChildren<ProductOptions>) {
 function useProductEntry(options: ProductOptions): ProductEntry {
   const { productPath } = options
 
-  const productMetaQuery = client.getProductMeta.useQuery({ productPath })
+  const productMetaQuery = useGetProductMetaQuery({ productPath })
 
-  const productExportsQuery = client.getProductFile.useQuery(
+  const productExportsQuery = useGetProductFileQuery(
     {
       productPath,
-      filePath: productMetaQuery.isSuccess ? productMetaQuery.data.exports : '',
+      fileName: productMetaQuery.isSuccess ? productMetaQuery.data.exports : '',
     },
     { enabled: productMetaQuery.isSuccess },
   )

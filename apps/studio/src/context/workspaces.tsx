@@ -1,4 +1,10 @@
-import { client } from '@/client'
+import {
+  useAddWorkspaceMutation,
+  useListWorkspacesQuery,
+  useOpenWorkspaceMutation,
+  useRemoveWorkspaceMutation,
+} from '@/client'
+import { useQueryClient } from '@tanstack/react-query'
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 
 export interface Workspace {
@@ -15,12 +21,12 @@ export interface WorkspacesState {
 }
 
 function useWorkspaces(): WorkspacesState {
-  const queryUtils = client.useUtils()
+  const queryClient = useQueryClient()
 
-  const listWorkspacesQuery = client.listWorkspaces.useQuery()
+  const listWorkspacesQuery = useListWorkspacesQuery()
   const workspaces = listWorkspacesQuery.isSuccess ? listWorkspacesQuery.data : null
 
-  const openWorkspaceMutation = client.openWorkspace.useMutation({
+  const openWorkspaceMutation = useOpenWorkspaceMutation({
     onSuccess(selectedDirectory) {
       if (typeof selectedDirectory !== 'string') return
       addWorkspace(selectedDirectory)
@@ -28,7 +34,7 @@ function useWorkspaces(): WorkspacesState {
     },
   })
   const openWorkspace = useCallback(() => {
-    openWorkspaceMutation.mutate()
+    openWorkspaceMutation.mutate({})
   }, [openWorkspaceMutation])
 
   const [activeWorkspacePath, selectWorkspace] = useState<string | null>(null)
@@ -38,9 +44,9 @@ function useWorkspaces(): WorkspacesState {
     return workspaces.find((workspace) => workspace.path === activeWorkspacePath) || null
   }, [activeWorkspacePath, workspaces])
 
-  const addWorkspaceMutation = client.addWorkspace.useMutation({
+  const addWorkspaceMutation = useAddWorkspaceMutation({
     onSuccess() {
-      queryUtils.listWorkspaces.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['list_workspaces'] })
     },
   })
   const addWorkspace = useCallback(
@@ -50,9 +56,9 @@ function useWorkspaces(): WorkspacesState {
     [addWorkspaceMutation],
   )
 
-  const removeWorkspaceMutation = client.removeWorkspace.useMutation({
+  const removeWorkspaceMutation = useRemoveWorkspaceMutation({
     onSuccess() {
-      queryUtils.listWorkspaces.invalidate()
+      queryClient.invalidateQueries({ queryKey: ['list_workspaces'] })
     },
   })
   const removeWorkspace = useCallback(

@@ -1,5 +1,5 @@
-import { client } from '@/client'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
+import { useListProductsQuery } from '../client'
 import type { Workspace } from './workspaces'
 
 export interface WorkspaceOptions {
@@ -22,7 +22,7 @@ export interface WorkspaceState {
 function useWorkspace(options: WorkspaceOptions): WorkspaceState {
   const { workspace } = options
 
-  const productIndexesQuery = client.listProducts.useQuery({ workspacePath: workspace.path })
+  const productIndexesQuery = useListProductsQuery({ workspacePath: workspace.path })
   const productIndexes = productIndexesQuery.isSuccess ? productIndexesQuery.data : null
 
   const [activeProductId, selectProductId] = useState<string | null>(null)
