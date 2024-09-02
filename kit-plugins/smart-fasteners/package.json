@@ -29,17 +29,17 @@
   },
   "homepage": "https://github.com/villagekit/villagekit/tree/main/kit-plugins/smart-fasteners#readme",
   "dependencies": {
-    "@villagekit/math": "",
-    "@villagekit/part": "^0.7.2",
-    "@villagekit/part-fastener": "^0.7.2",
-    "@villagekit/part-gridbeam": "^0.7.2",
-    "@villagekit/part-gridpanel": "^0.7.2",
-    "@villagekit/product-kit": "^0.7.2",
+    "@villagekit/math": "workspace:*",
+    "@villagekit/part": "workspace:*",
+    "@villagekit/part-fastener": "workspace:*",
+    "@villagekit/part-gridbeam": "workspace:*",
+    "@villagekit/part-gridpanel": "workspace:*",
+    "@villagekit/product-kit": "workspace:*",
     "lodash-es": "^4.17.21",
     "p-defer": "^4.0.0"
   },
   "devDependencies": {
-    "@villagekit/math": "^0.7.1"
+    "@villagekit/math": "workspace:*"
   },
   "peerDependencies": {
     "three": "^0.165.0"

@@ -49,8 +49,8 @@
   "homepage": "https://github.com/villagekit/villagekit/tree/main/core/part#readme",
   "dependencies": {
     "@tarikjabiri/dxf": "^2.8.9",
-    "@villagekit/math": "^0.7.1",
-    "@villagekit/ui": "^0.7.2",
+    "@villagekit/math": "workspace:*",
+    "@villagekit/ui": "workspace:*",
     "lodash-es": "^4.17.21",
     "nanoid": "^5.0.7",
     "zod": "^3.23.8"

@@ -3,12 +3,12 @@
   "private": true,
   "scripts": {
     "build:app": "turbo build:app",
-    "build:app:studio": "npm run build:app -w '@villagekit/studio'",
+    "build:app:studio": "pnpm run build:app -w '@villagekit/studio'",
     "build:pkg": "turbo build:pkg",
     "dev:pkg": "turbo watch build:pkg",
     "dev:app": "turbo watch build:pkg dev:app",
-    "dev:app:studio": "npm run dev:app -w '@villagekit/studio'",
-    "dev:app:storybook": "npm run dev:app -w '@villagekit/storybook'",
+    "dev:app:studio": "pnpm run dev:app -w '@villagekit/studio'",
+    "dev:app:storybook": "pnpm run dev:app -w '@villagekit/storybook'",
     "deps": "turbo deps",
     "types": "turbo types",
     "lint": "turbo lint",
@@ -31,32 +31,22 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/three": "^0.165.0",
-    "@villagekit/tsconfig": "*",
+    "@villagekit/tsconfig": "workspace:*",
     "depcheck": "^1.4.7",
     "esbuild-plugin-file-path-extensions": "^2.1.2",
     "esbuild-plugin-raw": "^0.1.8",
     "dts-bundle-generator": "^9.5.1",
     "glob": "^10.4.1",
     "publint": "^0.2.8",
+    "rollup": "^4.21.2",
     "tsup": "^8.1.0",
     "tsx": "^4.15.1",
     "turbo": "^2.0.4",
     "vite": "^5.2.13",
     "vite-tsconfig-paths": "^4.3.2"
   },
-  "workspaces": [
-    "dev/*",
-    "core/*",
-    "util/*",
-    "parts/*",
-    "products/*",
-    "apps/*",
-    "kit-plugins/*",
-    "commands/*"
-  ],
   "overrides": {
     "three": "^0.165.0"
   },
-  "version": "0.3.0",
-  "packageManager": "npm@10.5.0"
+  "packageManager": "pnpm@9.9.0"
 }

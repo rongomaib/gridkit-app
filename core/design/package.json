@@ -15,7 +15,7 @@
   "sideEffects": false,
   "scripts": {
     "build:types": "dts-bundle-generator --config ./dts-bundle-generator.json",
-    "build:pkg": "npm run build:types && tsup src --no-splitting",
+    "build:pkg": "pnpm run build:types && tsup src --no-splitting",
     "deps": "depcheck",
     "lint": "biome check .",
     "publint": "publint"
@@ -31,10 +31,10 @@
   },
   "homepage": "https://github.com/villagekit/villagekit/tree/main/core/design#readme",
   "dependencies": {
-    "@villagekit/part-fastener": "^0.7.2",
-    "@villagekit/part-gridbeam": "^0.7.2",
-    "@villagekit/part-gridpanel": "^0.7.2",
-    "@villagekit/plugin-smart-fasteners": "^0.7.2",
-    "@villagekit/product-kit": "^0.7.2"
+    "@villagekit/part-fastener": "workspace:*",
+    "@villagekit/part-gridbeam": "workspace:*",
+    "@villagekit/part-gridpanel": "workspace:*",
+    "@villagekit/plugin-smart-fasteners": "workspace:*",
+    "@villagekit/product-kit": "workspace:*"
   }
 }

@@ -113,7 +113,7 @@ Now you can run any of the scripts below:
 Start live development servers
 
 ```shell
-npm run dev
+pnpm run dev
 ```
 
 ### Build
@@ -121,7 +121,7 @@ npm run dev
 Build code
 
 ```shell
-npm run build
+pnpm run build
 ```
 
 ### Lint
@@ -129,7 +129,7 @@ npm run build
 Lint code using [Biome](https://biomejs.dev/)
 
 ```shell
-npm run lint
+pnpm run lint
 ```
 
 ### Format
@@ -137,7 +137,7 @@ npm run lint
 Format code using [Biome](https://biomejs.dev/)
 
 ```shell
-npm run format
+pnpm run format
 ```
 
 ## Code Decisions

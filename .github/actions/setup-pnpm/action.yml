@@ -1,0 +1,62 @@
+name: Setup pnpm
+description: ""
+
+inputs:
+  install-packages:
+    description: 'Whether to install packages'
+    required: false
+    default: 'true'
+
+  setup-cache-only:
+    description: 'Whether action is used to only setup cache'
+    required: false
+    default: 'false'
+
+runs:
+  using: "composite"
+
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+
+    - name: Get pnpm metadata (store directory)
+      id: pnpm-meta
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+    - name: Lookup pnpm cache
+      id: lookup
+      if: inputs.setup-cache-only == 'true'
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.pnpm-meta.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+        lookup-only: ${{ inputs.setup-cache-only == 'true' }}
+
+    - name: Setup pnpm cache
+      if: inputs.setup-cache-only == 'false' || steps.lookup.outputs.cache-hit != 'true'
+      uses: actions/cache@v4
+      with:
+        path: ${{ steps.pnpm-meta.outputs.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-
+
+    - name: Set up Node
+      uses: actions/setup-node@v3
+      if: inputs.setup-cache-only == 'false' || steps.lookup.outputs.cache-hit != 'true'
+      with:
+        registry-url: 'https://registry.npmjs.org/'
+        node-version-file: '.nvmrc'
+
+    - name: Install dependencies
+      if: inputs.install-packages == 'true' && (inputs.setup-cache-only == 'false' || steps.lookup.outputs.cache-hit != 'true')
+      run: pnpm install
+      shell: bash
+
+    - name: Prune pnpm store
+      if: inputs.setup-cache-only == 'true' && steps.lookup.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        pnpm store prune

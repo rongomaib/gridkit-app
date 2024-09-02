@@ -18,9 +18,9 @@ async function loadImports(): Promise<ImportMap> {
 
   const modules1 = await Promise.all([
     // @ts-ignore
-    import('../../../../node_modules/comlink/dist/esm/comlink.js?raw'),
+    import('../../node_modules/comlink/dist/esm/comlink.js?raw'),
     // @ts-ignore
-    import('../../../../node_modules/three/build/three.module.js?raw'),
+    import('../../node_modules/three/build/three.module.js?raw'),
   ])
   const loaded1 = modules1.map((module) => loadImport(module.default))
   const [comlink, three] = loaded1
