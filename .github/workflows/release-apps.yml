@@ -75,7 +75,7 @@ jobs:
           # tagName: ${{ github.event_name == 'release' && github.event.release.tag_name || 'app-v__VERSION__' }}
           # releaseDraft: ${{ github.event_name == 'release' && github.event.release.draft || true }}
           # prerelease: ${{ github.event_name == 'release' && github.event.release.prerelease || true }}
-          tagName: app-v__VERSION__
+          tagName: studio-v__VERSION__
           releaseDraft: true
           prerelease: true
           releaseName: 'Village Kit Studio v__VERSION__'
