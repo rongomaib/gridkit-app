@@ -107,6 +107,7 @@ export const useInvokeQuery = <TArgs extends Record<string, unknown>, TResult>(
   return useQuery({
     queryKey: [command, args],
     queryFn: () => invokeFetcher<TArgs, TResult>(command, args),
+    refetchInterval: 1000,
     ...extendendOptions,
   })
 }

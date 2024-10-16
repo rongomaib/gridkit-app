@@ -140,6 +140,8 @@ async fn list_products(workspace_path: PathBuf) -> Result<Vec<ProductIndex>> {
         })
     }
 
+    products.sort_by_key(|p| p.id.clone());
+
     Ok(products)
 }
 
