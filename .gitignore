@@ -43,3 +43,6 @@ yarn-error.log*
 storybook-static
 
 lerna-debug.log
+
+src-tauri/target/
+src-tauri/gen/schemas/

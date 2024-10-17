@@ -4,8 +4,8 @@
   "identifier": "com.villagekit.studio.app",
   "build": {
     "beforeDevCommand": "pnpm run js:dev",
-    "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "pnpm run js:build",
+    "devUrl": "http://localhost:5173",
     "frontendDist": "../dist"
   },
   "app": {
