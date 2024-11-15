@@ -266,7 +266,7 @@ export const paramsMachine = setup({
             throw new Error('Unexpected context: params or presets are not set')
           }
           const { paramsValues } = event
-          return { ...context, presetId: null, paramsValues }
+          return { ...context, presetId: null, paramsValues, showControls: true }
         }),
 
         sendTo('queryParams', ({ event }) => event),
