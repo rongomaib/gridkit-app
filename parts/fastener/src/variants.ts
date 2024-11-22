@@ -130,10 +130,10 @@ export const fastenerVariants: Record<string, FastenerVariant> = {
     },
     nutLength: nutLengths['25mm'],
   },
-  ThreadedRod115mm_Nut12mm: {
+  Bolt115mm_Nut12mm: {
     ...baseVariant,
-    id: 'ThreadedRod115mm_Nut12mm',
-    boltLabel: 'threaded rod',
+    id: 'Bolt115mm_Nut12mm',
+    boltLabel: 'bolt',
     boltLength: boltLengths['115mm'],
     fastenedLength: {
       type: 'quantity',
@@ -142,10 +142,10 @@ export const fastenerVariants: Record<string, FastenerVariant> = {
     },
     nutLength: nutLengths['12mm'],
   },
-  ThreadedRod115mm_Nut25mm: {
+  Bolt115mm_Nut25mm: {
     ...baseVariant,
-    id: 'ThreadedRod115mm_Nut25mm',
-    boltLabel: 'threaded rod',
+    id: 'Bolt115mm_Nut25mm',
+    boltLabel: 'bolt',
     boltLength: boltLengths['115mm'],
     fastenedLength: {
       type: 'quantity',
