@@ -22,7 +22,7 @@ export function calculateGlValue(creator: WithRequiredId<GridPanel>): GridPanelG
   const {
     type,
     id,
-    spec: { variantId, sizeInGrids, holes },
+    spec: { variantId, sizeInGrids, holes, holeVariant },
     transform,
   } = creator
 
@@ -47,6 +47,7 @@ export function calculateGlValue(creator: WithRequiredId<GridPanel>): GridPanelG
     variant,
     sizeInGrids,
     holes,
+    holeVariant,
     gridLengthInMeters,
     holeDiameterInMeters,
     thicknessInMeters,

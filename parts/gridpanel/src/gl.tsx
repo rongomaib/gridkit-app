@@ -14,7 +14,7 @@ import {
   Vector3,
 } from 'three'
 import { getEveryHolePosition } from './helpers'
-import type { GridPanelGlValue, GridPanelHoles } from './types'
+import type { GridPanelGlValue, GridPanelHoles, GridPanelSpecHoleVariant } from './types'
 
 export function PartsGl(props: PartsGlProps<GridPanelGlValue>) {
   const { parts, ...restProps } = props
@@ -39,6 +39,7 @@ export function PartGl(props: PartGlProps) {
     variant,
     sizeInGrids,
     holes,
+    holeVariant,
     gridLengthInMeters,
     holeDiameterInMeters,
     thicknessInMeters,
@@ -72,6 +73,7 @@ export function PartGl(props: PartGlProps) {
             holeDiameterInMeters={holeDiameterInMeters}
             thicknessInMeters={thicknessInMeters}
             holes={holes}
+            holeVariant={holeVariant}
           />
         )}
       </Panel>
@@ -219,10 +221,18 @@ interface HolesProps {
   holeDiameterInMeters: number
   thicknessInMeters: number
   holes: Exclude<GridPanelHoles, false>
+  holeVariant: GridPanelSpecHoleVariant
 }
 
 function Holes(props: HolesProps) {
-  const { sizeInGrids, gridLengthInMeters, holeDiameterInMeters, thicknessInMeters, holes } = props
+  const {
+    sizeInGrids,
+    gridLengthInMeters,
+    holeDiameterInMeters,
+    thicknessInMeters,
+    holes,
+    holeVariant,
+  } = props
   const holeRadius = holeDiameterInMeters / 2
 
   const material = useMemo(() => {
@@ -236,24 +246,31 @@ function Holes(props: HolesProps) {
   const mesh = useMemo(() => {
     const holePositions = holes === true ? getEveryHolePosition(sizeInGrids) : holes
 
-    const m = new InstancedMesh(geometry, material, 2 * holePositions.length)
+    const numHoleMeshes =
+      holeVariant === 'through' ? 2 * holePositions.length : holePositions.length
+    const m = new InstancedMesh(geometry, material, numHoleMeshes)
     const dummy = new Object3D()
 
-    for (let holePositionIndex = 0; holePositionIndex < holePositions.length; holePositionIndex++) {
+    for (
+      let holePositionIndex = 0, mIndex = 0;
+      holePositionIndex < holePositions.length;
+      holePositionIndex++
+    ) {
       const holePosition = holePositions[holePositionIndex]
       if (holePosition === undefined) throw new Error('unexpected: holePosition is undefined')
       const [mainIndex, crossIndex] = holePosition
-      const mIndex = 2 * holePositionIndex
 
       // up
-      dummy.setRotationFromQuaternion(IDENTITY_QUATERNION)
-      dummy.position.set(
-        mainIndex * gridLengthInMeters,
-        crossIndex * gridLengthInMeters,
-        1e-4 + 0.5 * thicknessInMeters,
-      )
-      dummy.updateMatrix()
-      m.setMatrixAt(mIndex, dummy.matrix)
+      if (holeVariant === 'through') {
+        dummy.setRotationFromQuaternion(IDENTITY_QUATERNION)
+        dummy.position.set(
+          mainIndex * gridLengthInMeters,
+          crossIndex * gridLengthInMeters,
+          1e-4 + 0.5 * thicknessInMeters,
+        )
+        dummy.updateMatrix()
+        m.setMatrixAt(mIndex++, dummy.matrix)
+      }
 
       // down
       dummy.setRotationFromQuaternion(FLIP_Z_QUATERNION)
@@ -263,11 +280,11 @@ function Holes(props: HolesProps) {
         -1e-4 - 0.5 * thicknessInMeters,
       )
       dummy.updateMatrix()
-      m.setMatrixAt(mIndex + 1, dummy.matrix)
+      m.setMatrixAt(mIndex++, dummy.matrix)
     }
 
     return m
-  }, [holes, sizeInGrids, thicknessInMeters, gridLengthInMeters, geometry, material])
+  }, [holes, holeVariant, sizeInGrids, thicknessInMeters, gridLengthInMeters, geometry, material])
 
   return <primitive name="gridpanel-holes" object={mesh} />
 }
