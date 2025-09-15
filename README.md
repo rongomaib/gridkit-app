@@ -19,6 +19,16 @@ Any product can be parametric.
 
 Inspired by [NopSCADlib](https://github.com/nophead/NopSCADlib).
 
+## Demo
+
+Here is a demo of the design process:
+
+<https://youtu.be/tMxWzfpn7Kg> 📺
+
+[![Screenshot of the YouTube demo](./demo.png)](https://youtu.be/tMxWzfpn7Kg)
+
+While not up-to-date with the latest, hopefully this gives you an idea of what this project aimed to achieve.
+
 ## Get Started
 
 To get started with the CAD-as-code modular design app.
