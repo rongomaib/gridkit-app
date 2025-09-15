@@ -1,6 +1,6 @@
 # Grid Kit (Legacy)
 
-_PROOF OF CONCEPT PROTOTYPE_
+_PROOF OF CONCEPT PROTOTYPE_, superseded by [@villagekit/villagekit](https://github.com/villagekit/villagekit).
 
 A code-as-CAD platform for [Village Kit](https://villagekit.com), the next generation of open source CAD design.
 
