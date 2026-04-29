@@ -88,6 +88,14 @@ See [`villagekit/gridkit-products`](https://github.com/villagekit/gridkit-produc
 |---------|---------|
 | [`@villagekit/screenshot`](./commands/screenshot) | Headless CLI for rendering product screenshots from a workspace manifest |
 
+## Studio app
+
+The studio (`apps/studio`) is a Tauri-wrapped desktop CAD-as-code editor for authoring new designs against this engine. It bundles the engine packages, a CodeMirror TypeScript editor, and a react-three-fiber preview into a Mac/Windows/Linux app.
+
+The studio stays a **separate downloadable desktop app** — it isn't embedded into [gridbeam.xyz](https://gridbeam.xyz). Browser users configure existing designs through the website's parameter UI; design authoring happens locally in the studio. This keeps the website fast and lets the studio do file-system things a browser tab can't.
+
+Build it from source via the [Get started](#get-started) instructions, or — once releases ship — download the latest from the [GitHub releases page](https://github.com/villagekit/gridkit-legacy/releases).
+
 ## Contributing
 
 See [DEV.md](./DEV.md) for environment setup, package layout, and code conventions.
