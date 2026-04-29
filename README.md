@@ -45,4 +45,6 @@ For an example workspace of modular products, see [`villagekit/gridkit-products`
 
 ## License
 
-[European Union Public License (EUPL)](https://choosealicense.com/licenses/eupl-1.2/)
+Licensed under the [European Union Public Licence v. 1.2](./LICENSE) ([summary](https://choosealicense.com/licenses/eupl-1.2/)).
+
+Public packages (`core/*`, `parts/*`, `products/*`, `kit-plugins/*`, `util/*`, `commands/*`) are EUPL-1.2. The `apps/*` and `dev/tsconfig` packages are marked private and not separately licensed.

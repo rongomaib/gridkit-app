@@ -25,7 +25,7 @@
     "url": "git+https://github.com/villagekit/villagekit.git"
   },
   "author": "Village Kit <dev@villagekit.com>",
-  "license": "UNLICENSED",
+  "license": "EUPL-1.2",
   "bugs": {
     "url": "https://github.com/villagekit/villagekit/issues"
   },
