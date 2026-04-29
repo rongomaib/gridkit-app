@@ -21,14 +21,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/villagekit/villagekit.git"
+    "url": "git+https://github.com/villagekit/gridkit.git"
   },
   "author": "Village Kit <dev@villagekit.com>",
   "license": "EUPL-1.2",
   "bugs": {
-    "url": "https://github.com/villagekit/villagekit/issues"
+    "url": "https://github.com/villagekit/gridkit/issues"
   },
-  "homepage": "https://github.com/villagekit/villagekit/tree/main/products/kit#readme",
+  "homepage": "https://github.com/villagekit/gridkit/tree/main/products/kit#readme",
   "dependencies": {
     "@jridgewell/trace-mapping": "^0.3.25",
     "@swc/wasm-web": "^1.5.26",

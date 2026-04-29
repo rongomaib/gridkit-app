@@ -27,8 +27,8 @@ The video is from an earlier version, but the workflow is unchanged.
 **Run the studio app locally.** The studio is a desktop CAD-as-code editor for authoring new designs.
 
 ```sh
-git clone https://github.com/villagekit/gridkit-legacy
-cd gridkit-legacy
+git clone https://github.com/villagekit/gridkit
+cd gridkit
 pnpm install
 pnpm dev:app:studio
 ```
@@ -94,7 +94,7 @@ The studio (`apps/studio`) is a Tauri-wrapped desktop CAD-as-code editor for aut
 
 The studio stays a **separate downloadable desktop app** — it isn't embedded into [gridbeam.xyz](https://gridbeam.xyz). Browser users configure existing designs through the website's parameter UI; design authoring happens locally in the studio. This keeps the website fast and lets the studio do file-system things a browser tab can't.
 
-Build it from source via the [Get started](#get-started) instructions, or — once releases ship — download the latest from the [GitHub releases page](https://github.com/villagekit/gridkit-legacy/releases).
+Build it from source via the [Get started](#get-started) instructions, or — once releases ship — download the latest from the [GitHub releases page](https://github.com/villagekit/gridkit/releases).
 
 ## Contributing
 

@@ -39,14 +39,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/villagekit/villagekit.git"
+    "url": "git+https://github.com/villagekit/gridkit.git"
   },
   "author": "Village Kit <dev@villagekit.com>",
   "license": "EUPL-1.2",
   "bugs": {
-    "url": "https://github.com/villagekit/villagekit/issues"
+    "url": "https://github.com/villagekit/gridkit/issues"
   },
-  "homepage": "https://github.com/villagekit/villagekit/tree/main/core/part#readme",
+  "homepage": "https://github.com/villagekit/gridkit/tree/main/core/part#readme",
   "dependencies": {
     "@tarikjabiri/dxf": "^2.8.9",
     "@villagekit/math": "workspace:*",

@@ -21,14 +21,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/villagekit/villagekit.git"
+    "url": "git+https://github.com/villagekit/gridkit.git"
   },
   "author": "Village Kit <dev@villagekit.com>",
   "license": "EUPL-1.2",
   "bugs": {
-    "url": "https://github.com/villagekit/villagekit/issues"
+    "url": "https://github.com/villagekit/gridkit/issues"
   },
-  "homepage": "https://github.com/villagekit/villagekit/tree/main/util/math#readme",
+  "homepage": "https://github.com/villagekit/gridkit/tree/main/util/math#readme",
   "peerDependencies": {
     "three": "^0.165.0"
   }

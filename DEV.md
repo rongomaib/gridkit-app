@@ -79,13 +79,13 @@ To get started, first we need to install [`nvm`](https://github.com/nvm-sh/nvm) 
 Then clone this git repo:
 
 ```shell
-git clone https://github.com/villagekit/villagekit
+git clone https://github.com/villagekit/gridkit
 ```
 
 Then move inside, install Node, and install the project dependencies.
 
 ```shell
-cd villagekit
+cd gridkit
 nvm install
 npm install
 ```
