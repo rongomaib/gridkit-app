@@ -1,5 +1,5 @@
-import { FormControl, Switch as SwitchComponent } from '@villagekit/ui'
-import { type ChangeEvent, useCallback } from 'react'
+import { Field, Switch } from '@villagekit/ui'
+import { useCallback } from 'react'
 import * as SerializeQueryParams from 'serialize-query-params'
 import { z } from 'zod'
 import { Label } from '../components/label'
@@ -24,17 +24,22 @@ export function Boolean(props: BooleanProps) {
   const { id, onChange, value, label, description } = props
 
   const handleChange = useCallback(
-    (ev: ChangeEvent<HTMLInputElement>) => {
-      onChange(ev.target.checked)
+    (details: { checked: boolean }) => {
+      onChange(details.checked)
     },
     [onChange],
   )
 
   return (
-    <FormControl id={id}>
+    <Field.Root id={id}>
       <Label label={label} description={description} htmlFor={id} />
 
-      <SwitchComponent id={id} aria-label={label} isChecked={value} onChange={handleChange} />
-    </FormControl>
+      <Switch.Root id={id} aria-label={label} checked={value} onCheckedChange={handleChange}>
+        <Switch.HiddenInput />
+        <Switch.Control>
+          <Switch.Thumb />
+        </Switch.Control>
+      </Switch.Root>
+    </Field.Root>
   )
 }

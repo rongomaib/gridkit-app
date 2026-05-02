@@ -50,9 +50,9 @@
     "zod": "^3.23.8"
   },
   "peerDependencies": {
-    "@react-three/fiber": "^8.16.8",
-    "@xstate/react": "^4.1.1",
-    "react": "^18.3.1",
+    "@react-three/fiber": "^9.0.0",
+    "@xstate/react": "^6.0.0",
+    "react": "^19.1.0",
     "three": "^0.165.0",
     "xstate": "^5.13.1"
   }

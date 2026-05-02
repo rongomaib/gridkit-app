@@ -2,7 +2,7 @@ import '@fontsource/bitter'
 import '@fontsource/fredoka-one'
 
 import type { Preview } from '@storybook/react'
-import { ChakraProvider, theme } from '@villagekit/ui'
+import { Provider } from '@villagekit/ui'
 import React from 'react'
 import { QueryParamProvider } from 'use-query-params'
 import { WindowHistoryAdapter } from 'use-query-params/adapters/window'
@@ -13,9 +13,9 @@ const preview: Preview = {
       default: 'white',
       values: [
         { name: 'white', value: 'white' },
-        { name: 'primary', value: theme.colors.primary[50] },
-        { name: 'accentA', value: theme.colors.accentA[50] },
-        { name: 'accentB', value: theme.colors.accentB[50] },
+        { name: 'primary', value: 'var(--chakra-colors-primary-50)' },
+        { name: 'accentA', value: 'var(--chakra-colors-accentA-50)' },
+        { name: 'accentB', value: 'var(--chakra-colors-accentB-50)' },
       ],
     },
     actions: { argTypesRegex: '^on[A-Z].*' },
@@ -28,9 +28,9 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => (
-      <ChakraProvider theme={theme}>
+      <Provider>
         <Story />
-      </ChakraProvider>
+      </Provider>
     ),
     (Story) => (
       <QueryParamProvider adapter={WindowHistoryAdapter}>

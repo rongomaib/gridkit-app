@@ -4,7 +4,7 @@
 //   - https://github.com/Fyrestar/THREE.InfiniteGridHelper/blob/master/InfiniteGridHelper.js
 //   - https://github.com/pmndrs/drei/blob/master/src/core/shaderMaterial.tsx
 
-import { type MaterialNode, extend } from '@react-three/fiber'
+import { type ThreeElement, extend } from '@react-three/fiber'
 import { Color, DoubleSide, ShaderMaterial } from 'three'
 
 const DEFAULT_AXIS_LENGTH = 100
@@ -120,12 +120,9 @@ export class VkGridMaterial extends ShaderMaterial {
 
 extend({ VkGridMaterial })
 
-declare global {
-  /* eslint-disable @typescript-eslint/no-namespace */
-  namespace JSX {
-    interface IntrinsicElements {
-      vkGridMaterial: MaterialNode<VkGridMaterial, typeof VkGridMaterial>
-    }
+declare module '@react-three/fiber' {
+  interface ThreeElements {
+    vkGridMaterial: ThreeElement<typeof VkGridMaterial>
   }
 }
 

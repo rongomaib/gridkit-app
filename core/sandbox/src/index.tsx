@@ -1,7 +1,7 @@
 import './globals'
 
 import { ResizeObserver } from '@juggle/resize-observer'
-import { AdaptiveDpr, useContextBridge, useDetectGPU } from '@react-three/drei'
+import { AdaptiveDpr, useDetectGPU } from '@react-three/drei'
 import { Canvas } from '@react-three/fiber'
 import { Box, useDisclosure } from '@villagekit/ui'
 import { Perf } from 'r3f-perf'
@@ -15,7 +15,7 @@ import { useDefaultSandboxControlSettings, useSaveSandboxControlSettings } from 
 
 export type SandboxMode = 'default' | 'screenshot'
 export type SandboxInfoProps = {
-  containerRef?: React.RefObject<HTMLDivElement>
+  containerRef?: React.RefObject<HTMLDivElement | null>
 }
 
 export type SandboxProps = {
@@ -26,7 +26,6 @@ export type SandboxProps = {
   showParamControls?: boolean
   alwaysShowFullscreenControls?: boolean
   shouldDisplayAxes?: boolean
-  bridgeContexts?: Array<React.Context<any>>
   InfoComponent?: FunctionComponent<SandboxInfoProps>
 }
 
@@ -39,7 +38,6 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
     showParamControls = false,
     alwaysShowFullscreenControls = false,
     shouldDisplayAxes = false,
-    bridgeContexts = [],
     InfoComponent,
     children,
   } = props
@@ -49,20 +47,18 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
 
   const defaultSandboxControlSettings = useDefaultSandboxControlSettings()
 
-  const { isOpen: shouldAutoRotate, onToggle: onToggleAutoRotate } = useDisclosure({
-    defaultIsOpen: defaultSandboxControlSettings.shouldAutoRotate,
+  const { open: shouldAutoRotate, onToggle: onToggleAutoRotate } = useDisclosure({
+    defaultOpen: defaultSandboxControlSettings.shouldAutoRotate,
   })
 
-  const { isOpen: shouldDisplayGrid, onToggle: onToggleDisplayGrid } = useDisclosure({
-    defaultIsOpen: defaultSandboxControlSettings.shouldDisplayGrid,
+  const { open: shouldDisplayGrid, onToggle: onToggleDisplayGrid } = useDisclosure({
+    defaultOpen: defaultSandboxControlSettings.shouldDisplayGrid,
   })
 
   useSaveSandboxControlSettings(shouldAutoRotate, shouldDisplayGrid)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const cameraControlsRef = useRef<CameraControlsRef | null>(null)
-
-  const ContextBridge = useContextBridge(...bridgeContexts)
 
   const gridLengthInMeters = 0.04
 
@@ -82,7 +78,7 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
       role="img"
       aria-label={label}
       ref={containerRef}
-      sx={{
+      css={{
         ':hover, :focus-within': {
           '.sandbox-controls': {
             opacity: 1,
@@ -115,24 +111,22 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
         }}
         resize={{ polyfill: ResizeObserver }}
       >
-        <ContextBridge>
-          {isDebug && mode !== 'screenshot' && <Perf />}
-          <AdaptiveDpr />
-          <SceneryGl
-            gridLengthInMeters={gridLengthInMeters}
-            centerInMeters={sceneryCenterInMeters}
-            mode={mode}
-            shouldDisplayGrid={shouldDisplayGrid}
-            shouldDisplayAxes={shouldDisplayAxes}
-          />
-          <CameraControls
-            ref={cameraControlsRef}
-            boundingBox={boundingBox}
-            mode={mode}
-            shouldAutoRotate={shouldAutoRotate}
-          />
-          {children}
-        </ContextBridge>
+        {isDebug && mode !== 'screenshot' && <Perf />}
+        <AdaptiveDpr />
+        <SceneryGl
+          gridLengthInMeters={gridLengthInMeters}
+          centerInMeters={sceneryCenterInMeters}
+          mode={mode}
+          shouldDisplayGrid={shouldDisplayGrid}
+          shouldDisplayAxes={shouldDisplayAxes}
+        />
+        <CameraControls
+          ref={cameraControlsRef}
+          boundingBox={boundingBox}
+          mode={mode}
+          shouldAutoRotate={shouldAutoRotate}
+        />
+        {children}
       </Canvas>
 
       {mode === 'default' && (

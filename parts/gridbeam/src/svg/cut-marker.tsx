@@ -13,12 +13,14 @@ export function CutMarker(props: CutMarkerProps) {
   const cutX = cut * GRID_SPACING
   const cutHeight = GRID_SPACING
 
-  const { colors } = useTheme()
+  const system = useTheme()
+  const labelColor = system.token('colors.primary.400')
+  const lineColor = system.token('colors.wood.dark')
 
   return (
     <>
       <g transform={`translate(0, ${GRID_SPACING})`}>
-        <LabelX value={cut} color={colors.primary[400]} x={cutX} />
+        <LabelX value={cut} color={labelColor} x={cutX} />
       </g>
 
       <line
@@ -26,7 +28,7 @@ export function CutMarker(props: CutMarkerProps) {
         y1={0}
         x2={cutX}
         y2={cutHeight}
-        style={{ stroke: colors.wood.dark, strokeWidth: 2 }}
+        style={{ stroke: lineColor, strokeWidth: 2 }}
       />
     </>
   )

@@ -88,6 +88,7 @@ export const rendererMachine = setup({
     renderError: null,
   },
   entry: assign({
+    // @ts-ignore — xstate v5 spawn types tighten too aggressively for our typed refs
     rendererRefs: ({ spawn }) => {
       // @ts-ignore
       const javascriptRendererRef = spawn(javascriptRenderer, {

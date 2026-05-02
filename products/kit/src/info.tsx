@@ -9,9 +9,7 @@ interface ProductKitInfoProps {
   containerRef?: React.RefObject<HTMLElement | null>
 }
 
-export function ProductKitInfo(props: ProductKitInfoProps) {
-  const { containerRef } = props
-
+export function ProductKitInfo(_props: ProductKitInfoProps) {
   const { boundingBox } = useProductKitContext()
 
   const dimensionsInMillimeters = useMemo(
@@ -36,14 +34,14 @@ export function ProductKitInfo(props: ProductKitInfoProps) {
       as="section"
       aria-label="Design information"
       justifyContent="center"
-      spacing="8"
-      sx={{ width: '100%' }}
+      gap="8"
+      css={{ width: '100%' }}
     >
       <HStack as="section" aria-label="Assembled dimensions" alignItems="flex-start">
-        <VStack sx={{ textAlign: 'center' }}>
+        <VStack css={{ textAlign: 'center' }}>
           <Text>Assembled Dimensions</Text>
 
-          <Text sx={{ fontStyle: 'italic' }}>
+          <Text css={{ fontStyle: 'italic' }}>
             {dimensionsInMillimeters[0]} x {dimensionsInMillimeters[1]} x{' '}
             {dimensionsInMillimeters[2]}mm
           </Text>
@@ -52,16 +50,14 @@ export function ProductKitInfo(props: ProductKitInfoProps) {
         <InfoTooltip
           label={
             <VStack alignItems="flex-start">
-              <Text sx={{ color: 'white', fontStyle: 'italic' }}>Width x Depth x Height</Text>
-              <Text sx={{ color: 'white' }}>
+              <Text css={{ color: 'white', fontStyle: 'italic' }}>Width x Depth x Height</Text>
+              <Text css={{ color: 'white' }}>
                 Dimensions are automatically caclulated based on the selected preset and
                 customisations.
               </Text>
             </VStack>
           }
           pointerTimeout={3000}
-          portalProps={{ containerRef: containerRef }}
-          sx={{ fontSize: 'sm', padding: 4 }}
         />
       </HStack>
     </HStack>

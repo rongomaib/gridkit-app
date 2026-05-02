@@ -50,11 +50,11 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@storybook/react": "^8.1.6"
+    "@storybook/react": "^10.3.6"
   },
   "peerDependencies": {
-    "@react-three/fiber": "^8.16.8",
-    "react": "18.3.1",
+    "@react-three/fiber": "^9.0.0",
+    "react": "^19.1.0",
     "three": "^0.165.0"
   }
 }

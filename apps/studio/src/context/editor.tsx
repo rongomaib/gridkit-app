@@ -1,7 +1,7 @@
 import { CodeMirror, updateCode, updateLanguageExtensions, updateTheme } from '@/editor'
 import type { EditorState } from '@codemirror/state'
 import { EditorView, type EditorViewConfig } from '@codemirror/view'
-import { useColorModeValue } from '@villagekit/ui'
+import { useMediaQuery } from '@villagekit/ui'
 import type { Variant } from 'codemirror-theme-catppuccin'
 import { createContext, useCallback, useContext, useEffect, useState } from 'react'
 
@@ -23,7 +23,8 @@ function useEditor(): EditorContextValue {
   const [codeToLoad, setCodeToLoad] = useState<string | null>(null)
   const resetCodeToLoad = useCallback(() => setCodeToLoad(null), [])
 
-  const theme = useColorModeValue<Variant>('latte', 'mocha') as Variant
+  const [prefersDark] = useMediaQuery(['(prefers-color-scheme: dark)'])
+  const theme: Variant = prefersDark ? 'mocha' : 'latte'
 
   const [languageExtensions, setLanguageExtensions] = useState<
     NonNullable<EditorViewConfig['extensions']>

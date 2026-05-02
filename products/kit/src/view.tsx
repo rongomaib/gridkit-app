@@ -3,7 +3,7 @@ import { type ProductViewProps, useProductMeta } from '@villagekit/product'
 import { Sandbox } from '@villagekit/sandbox'
 import { Flex, Spinner } from '@villagekit/ui'
 import { Suspense } from 'react'
-import { ProductKitContext, useProductKitContext } from './context'
+import { useProductKitContext } from './context'
 import { ProductKitInfo } from './info'
 
 export function ProductKitView(props: ProductViewProps) {
@@ -19,7 +19,6 @@ export function ProductKitView(props: ProductViewProps) {
         {...sandboxProps}
         label={meta.label}
         boundingBox={boundingBox}
-        bridgeContexts={[ProductKitContext]}
         InfoComponent={ProductKitInfo}
       >
         <PartsGlForAll partGlValues={partGlValues} />

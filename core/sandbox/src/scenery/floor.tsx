@@ -27,7 +27,7 @@ function Floor(props: FloorProps) {
   const center = useMemo(() => {
     const vector: Vector2 = (centerInMeters as Vector2).isVector2
       ? (centerInMeters as Vector2)
-      : new Vector2(...(centerInMeters as Array<number>))
+      : new Vector2(...(centerInMeters as readonly [number, number]))
     // quantize to grid units
     vector.divideScalar(gridLengthInMeters).floor().multiplyScalar(gridLengthInMeters)
     return vector

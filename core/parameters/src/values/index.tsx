@@ -101,8 +101,8 @@ export function ParamValueControls() {
   if (params == null) return null
 
   return (
-    <Box role="menu" sx={{ width: '100%' }}>
-      <VStack spacing="4">
+    <Box role="menu" css={{ width: '100%' }}>
+      <VStack gap="4">
         {map(params, (param, id) => (
           <ParamValueControl<typeof id, typeof params, typeof param>
             key={id}

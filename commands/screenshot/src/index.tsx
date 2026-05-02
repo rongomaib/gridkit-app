@@ -3,7 +3,7 @@ import '@villagekit/part-gridpanel'
 import '@villagekit/part-fastener'
 import '@villagekit/plugin-smart-fasteners'
 
-import { CSSReset, ChakraProvider, theme as baseTheme, extendTheme } from '@villagekit/ui'
+import { ChakraProvider, config, createSystem, defaultConfig, defineConfig } from '@villagekit/ui'
 import React from 'react'
 import { createRoot } from 'react-dom/client'
 
@@ -37,26 +37,20 @@ document.addEventListener('DOMContentLoaded', () => {
   )
 })
 
-const theme = extendTheme({
-  ...baseTheme,
-  styles: {
-    global: {
-      body: {
-        bg: 'transparent',
-      },
+const screenshotConfig = defineConfig({
+  globalCss: {
+    body: {
+      bg: 'transparent',
     },
   },
 })
+
+const system = createSystem(defaultConfig, config, screenshotConfig)
 
 function Provider({
   children,
 }: {
   children: React.ReactNode | Array<React.ReactNode>
 }) {
-  return (
-    <ChakraProvider theme={theme}>
-      <CSSReset />
-      {children}
-    </ChakraProvider>
-  )
+  return <ChakraProvider value={system}>{children}</ChakraProvider>
 }

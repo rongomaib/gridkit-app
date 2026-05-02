@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/villagekit/gridkit/tree/main/util/math#readme",
   "dependencies": {
+    "@emotion/react": "^11.14.0",
     "@types/serve-handler": "^6.1.4",
     "@villagekit/part-fastener": "workspace:*",
     "@villagekit/part-gridbeam": "workspace:*",
@@ -37,8 +38,8 @@
     "argsclopts": "^1.0.4",
     "lodash-es": "^4.17.21",
     "puppeteer": "^22.11.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "serve-handler": "^6.1.5",
     "smol-toml": "^1.2.1",
     "tsx": "^4.15.6"

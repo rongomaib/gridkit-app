@@ -9,6 +9,7 @@
     "lint": "biome check ."
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
     "@fontsource/bitter": "^5.0.18",
     "@fontsource/fredoka-one": "^5.0.5",
     "@villagekit/parameters": "workspace:*",
@@ -17,25 +18,19 @@
     "@villagekit/sandbox": "workspace:*",
     "@villagekit/tsconfig": "workspace:*",
     "@villagekit/ui": "workspace:*",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
     "use-query-params": "^2.2.1"
   },
   "devDependencies": {
-    "@storybook/addon-essentials": "^8.1.6",
-    "@storybook/addon-interactions": "^8.1.6",
-    "@storybook/addon-links": "^8.1.6",
-    "@storybook/blocks": "^8.1.6",
-    "@storybook/cli": "^8.1.6",
-    "@storybook/react": "^8.1.6",
-    "@storybook/react-vite": "^8.1.6",
-    "@storybook/test": "^8.1.6",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^7.12.0",
-    "@typescript-eslint/parser": "^7.12.0",
+    "@storybook/addon-a11y": "^10.3.6",
+    "@storybook/addon-docs": "^10.3.6",
+    "@storybook/react": "^10.3.6",
+    "@storybook/react-vite": "^10.3.6",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
     "@vitejs/plugin-react-swc": "^3.7.0",
-    "storybook": "^8.1.6",
+    "storybook": "^10.3.6",
     "typescript": "^5.4.5",
     "vite": "^5.2.13"
   }

@@ -1,17 +1,6 @@
 import { useWorkspaceContext } from '@/context/workspace'
 import { type Workspace, useWorkspacesContext } from '@/context/workspaces'
-import {
-  Box,
-  Button,
-  Flex,
-  HStack,
-  Heading,
-  List,
-  ListIcon,
-  ListItem,
-  Tooltip,
-  VStack,
-} from '@villagekit/ui'
+import { Box, Button, Flex, HStack, Heading, List, Tooltip, VStack } from '@villagekit/ui'
 import { useMemo } from 'react'
 import { FaChevronRight } from 'react-icons/fa'
 import { Resplit } from 'react-resplit'
@@ -34,10 +23,10 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
 
   return (
     <Resplit.Root direction="horizontal" asChild>
-      <Flex sx={{ flexDirection: 'row', width: '100%' }}>
+      <Flex css={{ flexDirection: 'row', width: '100%' }}>
         <Resplit.Pane order={0} initialSize="0.15fr" asChild>
           <VStack
-            sx={{
+            css={{
               alignItems: 'flex-start',
               maxHeight: '100dvh',
               overflowY: 'auto',
@@ -46,29 +35,31 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
             }}
           >
             <Tooltip label={activeWorkspace.path}>
-              <Box sx={{ alignSelf: 'center' }}>
-                <Heading as="h2" sx={{ fontSize: 'lg', fontWeight: 'bold' }}>
+              <Box css={{ alignSelf: 'center' }}>
+                <Heading as="h2" css={{ fontSize: 'lg', fontWeight: 'bold' }}>
                   {activeWorkspaceName}
                 </Heading>
               </Box>
             </Tooltip>
             <VStack>
-              <List>
+              <List.Root>
                 {productIndexes?.map((productIndex) => (
-                  <ListItem
+                  <List.Item
                     key={productIndex.path}
-                    sx={{
+                    css={{
                       display: 'flex',
                       flexDirection: 'row',
                       alignItems: 'center',
                     }}
                   >
-                    <ListIcon as={FaChevronRight} sx={{ marginInlineEnd: 0 }} />
+                    <List.Indicator asChild css={{ marginInlineEnd: 0 }}>
+                      <FaChevronRight />
+                    </List.Indicator>
                     <HStack>
                       <Button
                         variant="toolbar"
                         onClick={() => selectProductId(productIndex.id)}
-                        sx={{
+                        css={{
                           fontSize: 'md',
                           paddingInlineStart: 1,
                           paddingInlineEnd: 1,
@@ -76,15 +67,10 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
                       >
                         {productIndex.id}
                       </Button>
-                      {/*
-                <button type="button" onClick={() => removeproductName(productName.name)}>
-                  X
-                </button>
-                */}
                     </HStack>
-                  </ListItem>
+                  </List.Item>
                 ))}
-              </List>
+              </List.Root>
               {/*
         <button type="button" onClick={handleCreateproductName}>
           Create new productName
@@ -94,10 +80,10 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
           </VStack>
         </Resplit.Pane>
         <Resplit.Splitter order={1} size="16px" asChild>
-          <Box sx={{ backgroundColor: 'gray.100' }} />
+          <Box css={{ backgroundColor: 'gray.100' }} />
         </Resplit.Splitter>
         <Resplit.Pane order={2} initialSize="0.85fr" asChild>
-          <VStack as="main" sx={{ flex: 1 }}>
+          <VStack as="main" css={{ flex: 1 }}>
             {children}
           </VStack>
         </Resplit.Pane>

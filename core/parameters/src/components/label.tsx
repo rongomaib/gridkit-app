@@ -12,8 +12,8 @@ export function Label(props: LabelProps) {
 
   return (
     <>
-      <HStack sx={{ marginBottom: 2 }}>
-        <FormLabel htmlFor={htmlFor} sx={{ margin: 0 }}>
+      <HStack css={{ marginBottom: 2 }}>
+        <FormLabel htmlFor={htmlFor} css={{ margin: 0 }}>
           {label}
         </FormLabel>
 

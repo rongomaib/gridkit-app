@@ -1,4 +1,4 @@
-import { FormControl, Select as SelectComponent } from '@villagekit/ui'
+import { Field, Select } from '@villagekit/ui'
 import { map } from 'lodash-es'
 import { type ChangeEvent, useCallback } from 'react'
 import * as SerializeQueryParams from 'serialize-query-params'
@@ -32,16 +32,19 @@ export function Choice(props: ChoiceProps) {
   )
 
   return (
-    <FormControl id={id}>
+    <Field.Root id={id}>
       <Label label={label} description={description} />
 
-      <SelectComponent aria-label={label} value={value} onChange={handleChange}>
-        {map(options, (label, value) => (
-          <option key={value} value={value}>
-            {label}
-          </option>
-        ))}
-      </SelectComponent>
-    </FormControl>
+      <Select.Root>
+        <Select.Field aria-label={label} value={value} onChange={handleChange}>
+          {map(options, (label, value) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </Select.Field>
+        <Select.Indicator />
+      </Select.Root>
+    </Field.Root>
   )
 }

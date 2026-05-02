@@ -29,7 +29,7 @@ export function ProductEditor(_props: ProductEditorProps) {
   return (
     <Box
       ref={parentRef}
-      sx={{
+      css={{
         width: '100%',
         height: '100%',
 

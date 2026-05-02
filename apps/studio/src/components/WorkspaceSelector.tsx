@@ -1,17 +1,17 @@
 import { useWorkspacesContext } from '@/context/workspaces'
-import { Button, Heading, Icon, IconButton, List, ListItem, VStack } from '@villagekit/ui'
+import { Button, Heading, Icon, IconButton, List, VStack } from '@villagekit/ui'
 import { FaTimes } from 'react-icons/fa'
 
 export default function WorkspaceSelector() {
   const { workspaces, openWorkspace, removeWorkspace, selectWorkspace } = useWorkspacesContext()
 
   return (
-    <VStack sx={{ maxWidth: { md: 'container.lg', base: 'full' } }}>
+    <VStack css={{ maxWidth: { md: 'container.lg', base: 'full' } }}>
       <Heading as="h2">Workspaces</Heading>
       <VStack>
-        <List>
+        <List.Root>
           {workspaces?.map((workspace) => (
-            <ListItem key={workspace.path}>
+            <List.Item key={workspace.path}>
               <Button variant="toolbar" onClick={() => selectWorkspace(workspace.path)}>
                 {workspace.path}
               </Button>
@@ -21,9 +21,9 @@ export default function WorkspaceSelector() {
                 variant="tertiary"
                 onClick={() => removeWorkspace(workspace.path)}
               />
-            </ListItem>
+            </List.Item>
           ))}
-        </List>
+        </List.Root>
       </VStack>
       <Button variant="secondary" onClick={openWorkspace}>
         Open new workspace

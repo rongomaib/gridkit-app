@@ -8,7 +8,7 @@ export function PartCount(props: PartCountProps) {
   const { count } = props
 
   return (
-    <Text aria-label={`${count} of`} fontSize="sm" sx={{ width: '28px' }}>
+    <Text aria-label={`${count} of`} fontSize="sm" css={{ width: '28px' }}>
       {count}x
     </Text>
   )

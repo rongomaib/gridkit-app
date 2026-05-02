@@ -29,7 +29,11 @@ export function BeamSvg(props: BeamSvgProps) {
   const beamWidth = GRID_SPACING * sizeInGrids
   const beamHeight = GRID_SPACING
 
-  const { colors } = useTheme()
+  const system = useTheme()
+  const grayBeam = system.token('colors.gray.200')
+  const grayHole = system.token('colors.gray.600')
+  const woodBeam = system.token('colors.wood.light')
+  const woodHole = system.token('colors.wood.dark')
 
   const sizeInGrids2d = useMemo<[number, number]>(() => [sizeInGrids, 1], [sizeInGrids])
 
@@ -41,7 +45,7 @@ export function BeamSvg(props: BeamSvgProps) {
         cy={GRID_SPACING * 0.5}
         cx={GRID_SPACING * 0.5 + holeIndex * GRID_SPACING}
         r={4}
-        style={{ fill: isGrayscale ? colors.gray[600] : colors.wood.dark }}
+        style={{ fill: isGrayscale ? grayHole : woodHole }}
       />
     )
   }
@@ -52,7 +56,7 @@ export function BeamSvg(props: BeamSvgProps) {
         width={beamWidth}
         height={beamHeight}
         style={{
-          fill: isGrayscale ? colors.gray[200] : colors.wood.light,
+          fill: isGrayscale ? grayBeam : woodBeam,
           filter: showShadow ? 'drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5))' : undefined,
         }}
       />

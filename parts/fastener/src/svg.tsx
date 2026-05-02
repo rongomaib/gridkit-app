@@ -30,7 +30,7 @@ export function FastenerSvg(props: FastenerSvgProps) {
   const label = `${boltLength.value}${boltLength.unit.symbol} ${boltsLabel} + ${nutLength.value}${nutLength.unit.symbol} ${nutsLabel}`
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box css={{ width: '100%' }}>
       <svg
         role="img"
         aria-label={label}
@@ -67,8 +67,10 @@ function FastenerSvgContent(props: FastenerSvgContentProps) {
   const { boltDiameter, boltLength, endDiameter, extrusionLength, nutDiameter, nutLength, label } =
     props
 
-  const { colors } = useTheme()
-  const fastenerStyle = { fill: colors.gray[200] }
+  const system = useTheme()
+  const fastenerColor = system.token('colors.gray.200')
+  const labelColor = system.token('colors.gray.500')
+  const fastenerStyle = { fill: fastenerColor }
 
   return (
     <>
@@ -106,7 +108,7 @@ function FastenerSvgContent(props: FastenerSvgContentProps) {
       </g>
 
       <g transform={`translate(0, ${GRID_SPACING})`}>
-        <TextLabelX text={label} textAnchor="left" color={colors.gray[500]} x={0} />
+        <TextLabelX text={label} textAnchor="start" color={labelColor} x={0} />
       </g>
     </>
   )

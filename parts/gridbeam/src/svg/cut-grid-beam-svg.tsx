@@ -47,11 +47,12 @@ export function CutGridBeamSvg(props: CutGridBeamSvgProps) {
     )} millimeter markers.`
   }, [displayUnit, beamWidth, cuts, absoluteCuts, sizeInGrids])
 
-  const { colors } = useTheme()
+  const system = useTheme()
+  const labelColor = system.token('colors.gray.400')
 
   return (
     <SvgContextProvider displayUnit={displayUnit}>
-      <Box sx={{ width: '100%' }}>
+      <Box css={{ width: '100%' }}>
         <svg
           role="img"
           aria-label={label}
@@ -90,7 +91,7 @@ export function CutGridBeamSvg(props: CutGridBeamSvgProps) {
           ))}
 
           <g transform={`translate(0, ${GRID_SPACING})`}>
-            <LabelX value={sizeInGrids} color={colors.gray[400]} x={beamWidth} />
+            <LabelX value={sizeInGrids} color={labelColor} x={beamWidth} />
           </g>
         </svg>
       </Box>

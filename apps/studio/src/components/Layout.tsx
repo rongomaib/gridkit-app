@@ -2,7 +2,7 @@ import { EditorProvider } from '@/context/editor'
 import { ProductProvider } from '@/context/product'
 import { WorkspaceProvider, useWorkspaceContext } from '@/context/workspace'
 import { WorkspacesProvider, useWorkspacesContext } from '@/context/workspaces'
-import { theme } from '@/theme'
+import { system } from '@/theme'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ChakraProvider, Flex } from '@villagekit/ui'
@@ -34,7 +34,7 @@ export function ProvidersLayout({ children }: LayoutProps) {
   )
 
   return (
-    <ChakraProvider theme={theme}>
+    <ChakraProvider value={system}>
       <QueryClientProvider client={queryClient}>
         <ReactQueryDevtools buttonPosition="bottom-left" />
         {children}
@@ -79,7 +79,7 @@ function ContentLayout({ children }: LayoutProps) {
   return (
     <>
       <Flex
-        sx={{ flexDirection: 'row', justifyContent: 'center', minHeight: '100dvh', width: '100%' }}
+        css={{ flexDirection: 'row', justifyContent: 'center', minHeight: '100dvh', width: '100%' }}
       >
         {children}
       </Flex>

@@ -17,11 +17,14 @@ export function SizeMarkerX(props: SizeMarkerProps) {
 
   const [sizeInGridsX, sizeInGridsY] = sizeInGrids
 
-  const { colors } = useTheme()
+  const system = useTheme()
+  const grayLine = system.token('colors.gray.400')
+  const grayLabel = system.token('colors.gray.500')
+  const accentLine = system.token('colors.accentB.500')
 
   const lineStyle = {
     opacity: 0.5,
-    stroke: isGrayscale ? colors.gray[400] : colors.accentB[500],
+    stroke: isGrayscale ? grayLine : accentLine,
     strokeWidth: 2,
   }
 
@@ -43,7 +46,7 @@ export function SizeMarkerX(props: SizeMarkerProps) {
 
       <LabelX
         value={sizeInGridsX}
-        color={isGrayscale ? colors.gray[500] : colors.accentB[500]}
+        color={isGrayscale ? grayLabel : accentLine}
         x={sizeInGridsX * GRID_SPACING * 0.5}
       />
 
@@ -63,11 +66,12 @@ export function SizeMarkerY(props: SizeMarkerProps) {
 
   const [sizeInGridsX, sizeInGridsY] = sizeInGrids
 
-  const { colors } = useTheme()
+  const system = useTheme()
+  const accentLine = system.token('colors.accentB.500')
 
   const lineStyle = {
     opacity: 0.5,
-    stroke: colors.accentB[500],
+    stroke: accentLine,
     strokeWidth: 2,
   }
 
@@ -83,11 +87,7 @@ export function SizeMarkerY(props: SizeMarkerProps) {
         style={lineStyle}
       />
 
-      <LabelY
-        value={sizeInGridsY}
-        color={colors.accentB[500]}
-        y={sizeInGridsY * GRID_SPACING * 0.5}
-      />
+      <LabelY value={sizeInGridsY} color={accentLine} y={sizeInGridsY * GRID_SPACING * 0.5} />
 
       <line
         x1={MARKER_X_OFFSET}

@@ -26,7 +26,9 @@ export function PanelSvg(props: PanelSvgProps) {
   const panelWidth = GRID_SPACING * sizeInGridsX
   const panelHeight = GRID_SPACING * sizeInGridsY
 
-  const { colors } = useTheme()
+  const system = useTheme()
+  const panelColor = system.token('colors.wood.light')
+  const holeColor = system.token('colors.wood.dark')
 
   const holePositions = holes === true ? getEveryHolePosition(sizeInGrids) : holes
 
@@ -36,7 +38,7 @@ export function PanelSvg(props: PanelSvgProps) {
         width={panelWidth}
         height={panelHeight}
         style={{
-          fill: colors.wood.light,
+          fill: panelColor,
           filter: showShadow ? 'drop-shadow(0 2px 2px rgba(0, 0, 0, 0.5))' : undefined,
         }}
       />
@@ -48,7 +50,7 @@ export function PanelSvg(props: PanelSvgProps) {
             cx={GRID_SPACING * 0.5 + holeXIndex * GRID_SPACING}
             cy={GRID_SPACING * 0.5 + holeYIndex * GRID_SPACING}
             r={4}
-            style={{ fill: colors.wood.dark }}
+            style={{ fill: holeColor }}
           />
         ))}
 

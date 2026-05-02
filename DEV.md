@@ -18,10 +18,6 @@ A Storybook app
 
 Core modules
 
-#### `@villagekit/ui`
-
-Base component library
-
 #### `@villagekit/parameters`
 
 Module parameters
@@ -87,8 +83,10 @@ Then move inside, install Node, and install the project dependencies.
 ```shell
 cd gridkit
 nvm install
-npm install
+pnpm install
 ```
+
+> **Note:** the engine consumes `@villagekit/ui` (the standalone Village Kit component library) as a regular npm dependency. Until that package's Chakra v3 line is published to npm, install the engine from inside the parent [`gridbeam.xyz`](https://github.com/villagekit/gridbeam.xyz) repo — its top-level pnpm workspace links the local `./ui` checkout into the engine's packages. Running `pnpm install` directly inside `./gridkit` works once `@villagekit/ui@^1.0.0-beta` is published.
 
 Now you can run any of the scripts below:
 

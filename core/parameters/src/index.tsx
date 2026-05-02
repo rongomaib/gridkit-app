@@ -2,7 +2,7 @@ export * from './context'
 export * from './presets/index'
 export * from './values/index'
 
-import { FormControl, FormLabel, HStack, Switch, VStack } from '@villagekit/ui'
+import { Field, FormLabel, HStack, Switch, VStack } from '@villagekit/ui'
 import type React from 'react'
 import { useCallback } from 'react'
 import { useHasParams, useSetShowControls, useShowControls } from './context'
@@ -23,8 +23,8 @@ export function ParamControls(props: ParamControlsProps) {
 
   return (
     <ParamControlsInternalContextProvider containerRef={containerRef}>
-      <VStack role="menubar" spacing="4" sx={{ width: '100%' }}>
-        <HStack alignItems="baseline" spacing="4" sx={{ width: '100%' }}>
+      <VStack role="menubar" gap="4" css={{ width: '100%' }}>
+        <HStack alignItems="baseline" gap="4" css={{ width: '100%' }}>
           <PresetControls />
 
           <ShowControls />
@@ -40,26 +40,31 @@ function ShowControls() {
   const showControls = useShowControls()
   const setShowControls = useSetShowControls()
 
-  const handleShowControlsChange = useCallback(
-    (ev: React.ChangeEvent<HTMLInputElement>) => {
-      setShowControls(ev.target.checked)
+  const handleCheckedChange = useCallback(
+    (details: { checked: boolean }) => {
+      setShowControls(details.checked)
     },
     [setShowControls],
   )
 
   return (
-    <FormControl sx={{ flex: 0 }}>
+    <Field.Root css={{ flex: 0 }}>
       <FormLabel htmlFor="show-controls">Controls</FormLabel>
 
-      <Switch
+      <Switch.Root
         id="show-controls"
         role="menuitem"
         aria-haspopup="menu"
         aria-expanded={showControls}
-        isChecked={showControls}
-        onChange={handleShowControlsChange}
-        sx={{ marginTop: 2.5 }}
-      />
-    </FormControl>
+        checked={showControls}
+        onCheckedChange={handleCheckedChange}
+        css={{ marginTop: 2.5 }}
+      >
+        <Switch.HiddenInput />
+        <Switch.Control>
+          <Switch.Thumb />
+        </Switch.Control>
+      </Switch.Root>
+    </Field.Root>
   )
 }

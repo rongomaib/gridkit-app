@@ -31,7 +31,7 @@
   "homepage": "https://github.com/villagekit/gridkit/tree/main/core/parameters#readme",
   "dependencies": {
     "@villagekit/ui": "workspace:*",
-    "@xstate/react": "^4.1.1",
+    "@xstate/react": "^6.0.0",
     "lodash-es": "^4.17.21",
     "query-string": "^9.0.0",
     "serialize-query-params": "^2.0.2",
@@ -39,9 +39,9 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@storybook/react": "^8.1.6"
+    "@storybook/react": "^10.3.6"
   },
   "peerDependencies": {
-    "react": "^18.3.1"
+    "react": "^19.1.0"
   }
 }

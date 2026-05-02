@@ -382,7 +382,7 @@ function generateFastenersByWeighting(
       forEach(partPairs, (partPair) => {
         const [partA, partB] = sortPartPairs(...partPair)
         const partPairId = getPartPairId(partA, partB)
-        partPairChosenCounterMap[partPairId] += 1
+        partPairChosenCounterMap[partPairId] = (partPairChosenCounterMap[partPairId] ?? 0) + 1
       })
     }
   })

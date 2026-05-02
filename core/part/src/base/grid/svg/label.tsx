@@ -46,24 +46,21 @@ export function LabelY(props: LabelYProps) {
   )
 }
 
+type SvgTextAnchor = 'inherit' | 'end' | 'start' | 'middle'
+
 interface TextLabelXProps extends Omit<LabelXProps, 'value'> {
   text: string
-  textAnchor?: string
+  textAnchor?: SvgTextAnchor
 }
 
 export function TextLabelX(props: TextLabelXProps) {
   const { text, textAnchor = 'middle', color, x } = props
 
-  const { fontSizes } = useTheme()
+  const system = useTheme()
+  const fontSize = system.token('fontSizes.3xl')
 
   return (
-    <text
-      x={x}
-      y={LABEL_Y_OFFSET_Y}
-      fill={color}
-      fontSize={fontSizes['3xl']}
-      textAnchor={textAnchor}
-    >
+    <text x={x} y={LABEL_Y_OFFSET_Y} fill={color} fontSize={fontSize} textAnchor={textAnchor}>
       {text}
     </text>
   )
@@ -71,20 +68,21 @@ export function TextLabelX(props: TextLabelXProps) {
 
 interface TextLabelYProps extends Omit<LabelYProps, 'value'> {
   text: string
-  textAnchor?: string
+  textAnchor?: SvgTextAnchor
 }
 
 export function TextLabelY(props: TextLabelYProps) {
   const { text, textAnchor = 'middle', color, y } = props
 
-  const { fontSizes } = useTheme()
+  const system = useTheme()
+  const fontSize = system.token('fontSizes.3xl')
 
   return (
     <text
       x={LABEL_X_OFFSET_X}
       y={y + LABEL_X_OFFSET_Y}
       fill={color}
-      fontSize={fontSizes['3xl']}
+      fontSize={fontSize}
       textAnchor={textAnchor}
     >
       {text}

@@ -1,4 +1,4 @@
-import { FormControl, FormLabel, Select } from '@villagekit/ui'
+import { Field, FormLabel, Select } from '@villagekit/ui'
 import { find } from 'lodash-es'
 import { type ChangeEvent, useCallback } from 'react'
 import { z } from 'zod'
@@ -64,18 +64,21 @@ export function PresetControls() {
   if (presets == null) return null
 
   return (
-    <FormControl id="preset" role="group">
+    <Field.Root id="preset">
       <FormLabel>Preset</FormLabel>
 
-      <Select role="menuitem" value={presetId || 'custom'} onChange={handlePresetChange}>
-        {presets.map((preset) => (
-          <option key={preset.id} value={preset.id}>
-            {preset.label}
-          </option>
-        ))}
+      <Select.Root>
+        <Select.Field role="menuitem" value={presetId || 'custom'} onChange={handlePresetChange}>
+          {presets.map((preset) => (
+            <option key={preset.id} value={preset.id}>
+              {preset.label}
+            </option>
+          ))}
 
-        <option value="custom">Custom</option>
-      </Select>
-    </FormControl>
+          <option value="custom">Custom</option>
+        </Select.Field>
+        <Select.Indicator />
+      </Select.Root>
+    </Field.Root>
   )
 }

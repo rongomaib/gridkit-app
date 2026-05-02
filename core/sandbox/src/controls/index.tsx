@@ -34,8 +34,8 @@ export interface SandboxControlsProps {
   onToggleAutoRotate: () => void
   shouldDisplayGrid: boolean
   onToggleDisplayGrid: () => void
-  cameraControlsRef: React.MutableRefObject<CameraControlsRef | null>
-  containerRef: React.RefObject<HTMLDivElement>
+  cameraControlsRef: React.RefObject<CameraControlsRef | null>
+  containerRef: React.RefObject<HTMLDivElement | null>
   showParamControls?: boolean
   alwaysShowFullscreenControls?: boolean
   InfoComponent?: FunctionComponent<SandboxInfoProps>
@@ -139,7 +139,7 @@ export function SandboxControls(props: SandboxControlsProps) {
   return (
     <ControlsContextProvider controlMargin={controlMargin} controlScale={controlScale || 1}>
       <Control left top>
-        <VStack spacing="2">
+        <VStack gap="2">
           <IconButton
             icon={<Icon as={FaPlus} boxSize="4" />}
             variant="toolbar"
@@ -159,14 +159,14 @@ export function SandboxControls(props: SandboxControlsProps) {
       </Control>
 
       <Control top>
-        <HStack spacing="2">
+        <HStack gap="2">
           <IconButton
             icon={<Icon as={FaSyncAlt} boxSize="4" />}
             variant="toolbar"
             size="sm"
             title="Toggle auto-rotate"
             onClick={onToggleAutoRotate}
-            sx={shouldAutoRotate ? {} : { _focus: {}, color: 'gray.400' }}
+            css={shouldAutoRotate ? {} : { _focus: {}, color: 'gray.400' }}
           />
 
           <IconButton
@@ -175,7 +175,7 @@ export function SandboxControls(props: SandboxControlsProps) {
             size="sm"
             title="Toggle grid"
             onClick={onToggleDisplayGrid}
-            sx={shouldDisplayGrid ? {} : { _focus: {}, color: 'gray.400' }}
+            css={shouldDisplayGrid ? {} : { _focus: {}, color: 'gray.400' }}
           />
 
           <IconButton
@@ -189,7 +189,7 @@ export function SandboxControls(props: SandboxControlsProps) {
       </Control>
 
       {shouldShowFullscreenControls && canShowFullscreenControls && InfoComponent != null && (
-        <Control bottom sx={{ minWidth: 'md' }}>
+        <Control bottom css={{ minWidth: 'md' }}>
           <InfoComponent containerRef={containerRef} />
         </Control>
       )}
@@ -199,7 +199,7 @@ export function SandboxControls(props: SandboxControlsProps) {
           <Control
             right
             top
-            sx={{
+            css={{
               display: shouldShowFullscreenControls && canShowFullscreenControls ? 'block' : 'none',
               minWidth: 'xs',
               padding: 4,
@@ -212,8 +212,7 @@ export function SandboxControls(props: SandboxControlsProps) {
             <Control right top>
               <Tooltip
                 label="Rotate the screen to landscape to view the design controls"
-                isOpen={showTooltip}
-                portalProps={{ containerRef: containerRef }}
+                open={showTooltip}
               >
                 <Box onPointerEnter={onPointerEnterTooltip} onPointerLeave={onPointerLeaveTooltip}>
                   <IconButton
@@ -231,7 +230,7 @@ export function SandboxControls(props: SandboxControlsProps) {
 
       {screenfull.isEnabled && (
         <Control bottom right>
-          <HStack spacing="2">
+          <HStack gap="2">
             <IconButton
               icon={<Icon as={isFullscreen ? FaCompressAlt : FaExpandAlt} boxSize="4" />}
               variant="toolbar"

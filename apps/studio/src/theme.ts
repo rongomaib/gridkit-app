@@ -1,15 +1,19 @@
-import { theme as baseTheme } from '@villagekit/ui'
+import { config, createSystem, defaultConfig, defineConfig } from '@villagekit/ui'
 
-export const theme = {
-  ...baseTheme,
-  global: {
+const studioConfig = defineConfig({
+  globalCss: {
     'html, body, #root': {
       width: '100%',
       minHeight: '100dvh',
     },
   },
-  radii: {
-    ...baseTheme.radii,
-    xl: '1rem',
+  theme: {
+    tokens: {
+      radii: {
+        xl: { value: '1rem' },
+      },
+    },
   },
-}
+})
+
+export const system = createSystem(defaultConfig, config, studioConfig)

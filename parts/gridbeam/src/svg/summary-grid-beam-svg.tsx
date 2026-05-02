@@ -18,7 +18,7 @@ export function SummaryGridBeamSvg(props: SummaryGridBeamSvgProps) {
 
   return (
     <SvgContextProvider displayUnit={displayUnit}>
-      <Box sx={{ width: '100%' }}>
+      <Box css={{ width: '100%' }}>
         <svg
           role="img"
           aria-label={label}

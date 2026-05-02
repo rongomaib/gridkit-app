@@ -1,5 +1,5 @@
 import Ansi from '@curvenote/ansi-to-react'
-import { Box, Heading, List, ListIcon, ListItem, Text } from '@villagekit/ui'
+import { Box, Heading, List, Text } from '@villagekit/ui'
 import { type PropsWithChildren, useMemo } from 'react'
 import { MdChevronRight } from 'react-icons/md'
 import useFitText from 'use-fit-text-new'
@@ -78,16 +78,18 @@ function StackErrorDisplay(props: StackErrorProps) {
     <ErrorBox>
       <Heading as={'h3'}>Error: {title}</Heading>
       <Box>
-        <Box sx={{ fontWeight: 'bold' }}>{message}</Box>
-        <List>
+        <Box css={{ fontWeight: 'bold' }}>{message}</Box>
+        <List.Root>
           {stack.map((frame) => (
-            <ListItem key={`${frame.line}:${frame.column}`}>
-              <ListIcon as={MdChevronRight} />
+            <List.Item key={`${frame.line}:${frame.column}`}>
+              <List.Indicator asChild>
+                <MdChevronRight />
+              </List.Indicator>
               at line {frame.line}, column {frame.column}
               {frame.name !== '' && <>, function {frame.name}</>}
-            </ListItem>
+            </List.Item>
           ))}
-        </List>
+        </List.Root>
       </Box>
     </ErrorBox>
   )
@@ -105,22 +107,26 @@ function ValidationErrorDisplay(props: ValidationErrorProps) {
   }, [error])
 
   return (
-    <List>
+    <List.Root>
       {Object.entries(structuredError).map(([key, errors]) => (
-        <ListItem key={key} sx={{ marginLeft: 2 }}>
-          <ListIcon as={MdChevronRight} />
+        <List.Item key={key} css={{ marginLeft: 2 }}>
+          <List.Indicator asChild>
+            <MdChevronRight />
+          </List.Indicator>
           <Text as="span">{key || '.'}</Text>
-          <List>
+          <List.Root>
             {(errors as Array<string>).map((error) => (
-              <ListItem key={error} sx={{ marginLeft: 2 }}>
-                <ListIcon as={MdChevronRight} />
+              <List.Item key={error} css={{ marginLeft: 2 }}>
+                <List.Indicator asChild>
+                  <MdChevronRight />
+                </List.Indicator>
                 {error}
-              </ListItem>
+              </List.Item>
             ))}
-          </List>
-        </ListItem>
+          </List.Root>
+        </List.Item>
       ))}
-    </List>
+    </List.Root>
   )
 }
 
@@ -136,16 +142,16 @@ function ValidationErrorsDisplay(props: ValidationErrorsProps) {
   return (
     <ErrorBox>
       <Heading as={'h3'}>Error: Validation</Heading>
-      <List>
+      <List.Root>
         {Object.entries(errors).map(([key, error]) => (
-          <ListItem key={key}>
-            <Text as="span" sx={{ fontWeight: 'bold' }}>
+          <List.Item key={key}>
+            <Text as="span" css={{ fontWeight: 'bold' }}>
               {key}
             </Text>
             <ValidationErrorDisplay error={error} />
-          </ListItem>
+          </List.Item>
         ))}
-      </List>
+      </List.Root>
     </ErrorBox>
   )
 }
@@ -160,7 +166,7 @@ function ErrorBox(props: ErrorBoxProps) {
   return (
     <Box
       ref={ref}
-      sx={{
+      css={{
         backgroundColor: 'red.100',
         height: '100%',
         width: '100%',

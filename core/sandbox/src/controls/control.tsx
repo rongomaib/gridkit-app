@@ -9,7 +9,7 @@ interface ControlProps {
   left?: boolean
   right?: boolean
   top?: boolean
-  sx?: SystemStyleObject
+  css?: SystemStyleObject
 }
 
 const CONTROL_STYLES = {
@@ -23,7 +23,7 @@ const CONTROL_STYLES = {
 }
 
 export function Control(props: ControlProps) {
-  const { children, bottom, left, right, top, sx } = props
+  const { children, bottom, left, right, top, css } = props
 
   const { controlMargin, controlScale } = useControlsContext()
 
@@ -43,10 +43,10 @@ export function Control(props: ControlProps) {
 
   return (
     <Box
-      sx={{
+      css={{
         ...CONTROL_STYLES,
         ...positionStyles,
-        ...sx,
+        ...css,
       }}
       className="sandbox-controls"
     >

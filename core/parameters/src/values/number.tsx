@@ -1,17 +1,8 @@
-import {
-  FormControl,
-  Slider as SliderComponent,
-  SliderFilledTrack,
-  SliderThumb,
-  SliderTrack,
-  Text,
-  Tooltip,
-  useMobileFriendlyTooltip,
-} from '@villagekit/ui'
+import { Field, Slider, Text, Tooltip, useMobileFriendlyTooltip } from '@villagekit/ui'
+import { useCallback } from 'react'
 import * as SerializeQueryParams from 'serialize-query-params'
 import { z } from 'zod'
 import { Label } from '../components/label'
-import { useParamControlsInternalContext } from '../internal-context'
 import { type BaseProps, baseParamSchema } from './base'
 
 const { NumberParam: NumberQueryParam } = SerializeQueryParams
@@ -37,41 +28,46 @@ export function Number(props: NumberProps) {
 
   const { onPointerEnterTooltip, onPointerLeaveTooltip, showTooltip } = useMobileFriendlyTooltip()
 
-  const { containerRef } = useParamControlsInternalContext()
+  const handleValueChange = useCallback(
+    (details: { value: number[] }) => {
+      const next = details.value[0]
+      if (typeof next === 'number') onChange(next)
+    },
+    [onChange],
+  )
 
   return (
-    <FormControl id={id} role="group">
+    <Field.Root id={id}>
       <Label label={label} description={description} />
 
-      <SliderComponent
-        aria-label={label}
-        value={value}
-        onChange={onChange}
+      <Slider.Root
+        aria-label={[label]}
+        value={[value]}
+        onValueChange={handleValueChange}
         min={min}
         max={max}
         step={step}
-        focusThumbOnChange={false}
       >
-        <SliderTrack>
-          <SliderFilledTrack />
-        </SliderTrack>
+        <Slider.Control>
+          <Slider.Track>
+            <Slider.Range />
+          </Slider.Track>
 
-        <Tooltip
-          label={`${value * 40}mm`}
-          isOpen={showTooltip}
-          portalProps={{ containerRef: containerRef }}
-        >
-          <SliderThumb
-            onPointerEnter={onPointerEnterTooltip}
-            onPointerLeave={onPointerLeaveTooltip}
-            boxSize="6"
-          >
-            <Text fontSize="xs" sx={{ color: 'primary.400', fontWeight: 'bold' }}>
-              {value}
-            </Text>
-          </SliderThumb>
-        </Tooltip>
-      </SliderComponent>
-    </FormControl>
+          <Tooltip label={`${value * 40}mm`} open={showTooltip}>
+            <Slider.Thumb
+              index={0}
+              onPointerEnter={onPointerEnterTooltip}
+              onPointerLeave={onPointerLeaveTooltip}
+              boxSize="6"
+            >
+              <Slider.HiddenInput />
+              <Text fontSize="xs" css={{ color: 'primary.400', fontWeight: 'bold' }}>
+                {value}
+              </Text>
+            </Slider.Thumb>
+          </Tooltip>
+        </Slider.Control>
+      </Slider.Root>
+    </Field.Root>
   )
 }
