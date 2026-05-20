@@ -1,14 +1,12 @@
 # Grid Kit
 
+(Note: The new [gridbeam.xyz](https://gridbeam.xyz) is not yet live, so some of this README is aspirational.)
+
 A code-as-CAD engine for modular grid-beam designs. Powers [gridbeam.xyz](https://gridbeam.xyz).
 
 You write a parametric design in TypeScript; the engine renders it in 3D, validates parameters, and produces a bill of materials. The catalog of designs at gridbeam.xyz/designs is built entirely from this engine and the products in [`villagekit/gridkit-products`](https://github.com/villagekit/gridkit-products).
 
 Inspired by [NopSCADlib](https://github.com/nophead/NopSCADlib).
-
-## Status
-
-Active development for [gridbeam.xyz](https://gridbeam.xyz). Public API is stable enough to use; expect occasional breaking changes on minor versions until 1.0.
 
 ## Demo
 
@@ -94,7 +92,7 @@ The studio (`apps/studio`) is a Tauri-wrapped desktop CAD-as-code editor for aut
 
 The studio stays a **separate downloadable desktop app** — it isn't embedded into [gridbeam.xyz](https://gridbeam.xyz). Browser users configure existing designs through the website's parameter UI; design authoring happens locally in the studio. This keeps the website fast and lets the studio do file-system things a browser tab can't.
 
-Build it from source via the [Get started](#get-started) instructions, or — once releases ship — download the latest from the [GitHub releases page](https://github.com/villagekit/gridkit/releases).
+Build it from source via the [Get started](#get-started) instructions, or TODO download the latest from the [GitHub releases page](https://github.com/villagekit/gridkit/releases).
 
 ## Contributing
 
@@ -102,10 +100,8 @@ See [DEV.md](./DEV.md) for environment setup, package layout, and code conventio
 
 ## See also
 
-A separate, more ambitious engine effort lives at [`villagekit/villagekit`](https://github.com/villagekit/villagekit). The two projects share lineage but evolve independently for now — this one powers gridbeam.xyz today.
+[`villagekit/villagekit`](https://github.com/villagekit/villagekit) is the more ambitious more generic Rust-powered engine, a work in progress that came from learnings from this project.
 
 ## License
 
 Licensed under the [European Union Public Licence v. 1.2](./LICENSE) ([summary](https://choosealicense.com/licenses/eupl-1.2/)).
-
-Public packages (`core/*`, `parts/*`, `products/*`, `kit-plugins/*`, `util/*`, `commands/*`) are EUPL-1.2. The `apps/*` and `dev/tsconfig` packages are marked private and not separately licensed.
