@@ -33,7 +33,7 @@
     "@villagekit/plugin-smart-fasteners": "workspace:*",
     "@villagekit/product": "workspace:*",
     "@villagekit/product-kit": "workspace:*",
-    "@villagekit/ui": "workspace:*",
+    "@villagekit/ui": "^1.0.0",
     "@vitejs/plugin-react": "^4.3.1",
     "argsclopts": "^1.0.4",
     "lodash-es": "^4.17.21",

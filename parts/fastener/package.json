@@ -45,7 +45,7 @@
     "@react-three/drei": "^10.0.0",
     "@villagekit/math": "workspace:*",
     "@villagekit/part": "workspace:*",
-    "@villagekit/ui": "workspace:*",
+    "@villagekit/ui": "^1.0.0",
     "@villagekit/units": "workspace:*",
     "lodash-es": "^4.17.21",
     "three-stdlib": "^2.21.8",

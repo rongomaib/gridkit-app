@@ -18,12 +18,13 @@
     "test": "turbo test",
     "test:pkg": "turbo build:pkg && turbo types",
     "version": "biome check --apply $(glob **/package.json) && git add **/package.json",
-    "version:bump": "lerna version --sync-workspace-lock"
+    "version:bump": "lerna version --sync-workspace-lock",
+    "release:dry": "lerna publish from-git --dry-run"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.0",
-    "@lerna-lite/cli": "^3.6.0",
-    "@lerna-lite/publish": "^3.6.0",
+    "@lerna-lite/cli": "^5.2.1",
+    "@lerna-lite/publish": "^5.2.1",
     "@optimize-lodash/esbuild-plugin": "^2.0.3",
     "@types/lodash-es": "^4.17.12",
     "@types/node": "^20.14.2",

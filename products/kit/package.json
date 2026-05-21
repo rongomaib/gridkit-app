@@ -39,7 +39,7 @@
     "@villagekit/part-gridpanel": "workspace:*",
     "@villagekit/product": "workspace:*",
     "@villagekit/sandbox": "workspace:*",
-    "@villagekit/ui": "workspace:*",
+    "@villagekit/ui": "^1.0.0",
     "@villagekit/units": "workspace:*",
     "comlink": "^4.4.1",
     "errorstacks": "^2.4.1",

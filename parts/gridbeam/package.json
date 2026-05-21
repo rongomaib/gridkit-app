@@ -43,7 +43,7 @@
   "dependencies": {
     "@villagekit/math": "workspace:*",
     "@villagekit/part": "workspace:*",
-    "@villagekit/ui": "workspace:*",
+    "@villagekit/ui": "^1.0.0",
     "@villagekit/units": "workspace:*",
     "zod": "^3.23.8"
   },

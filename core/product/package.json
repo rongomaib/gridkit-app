@@ -33,7 +33,7 @@
     "@curvenote/ansi-to-react": "^7.0.0",
     "@villagekit/parameters": "workspace:*",
     "@villagekit/sandbox": "workspace:*",
-    "@villagekit/ui": "workspace:*",
+    "@villagekit/ui": "^1.0.0",
     "@xstate/react": "^6.0.0",
     "react-icons": "^5.2.1",
     "use-fit-text-new": "^3.0.0",

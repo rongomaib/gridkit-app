@@ -50,7 +50,7 @@
   "dependencies": {
     "@tarikjabiri/dxf": "^2.8.9",
     "@villagekit/math": "workspace:*",
-    "@villagekit/ui": "workspace:*",
+    "@villagekit/ui": "^1.0.0",
     "lodash-es": "^4.17.21",
     "nanoid": "^5.0.7",
     "zod": "^3.23.8"

@@ -37,7 +37,7 @@
     "@villagekit/plugin-smart-fasteners": "workspace:*",
     "@villagekit/product": "workspace:*",
     "@villagekit/product-kit": "workspace:*",
-    "@villagekit/ui": "workspace:*",
+    "@villagekit/ui": "^1.0.0",
     "@xstate/react": "^6.0.0",
     "codemirror": "^6.0.1",
     "codemirror-theme-catppuccin": "^0.3.0",
