@@ -17,7 +17,7 @@
     "@villagekit/part-gridpanel": "workspace:*",
     "@villagekit/sandbox": "workspace:*",
     "@villagekit/tsconfig": "workspace:*",
-    "@villagekit/ui": "^1.0.0",
+    "@villagekit/ui": "^1.1.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "use-query-params": "^2.2.1"

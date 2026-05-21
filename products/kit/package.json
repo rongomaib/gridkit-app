@@ -11,7 +11,10 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["./src", "./dist"],
+  "files": [
+    "./src",
+    "./dist"
+  ],
   "sideEffects": false,
   "scripts": {
     "build:pkg": "tsup src",
@@ -39,7 +42,7 @@
     "@villagekit/part-gridpanel": "workspace:*",
     "@villagekit/product": "workspace:*",
     "@villagekit/sandbox": "workspace:*",
-    "@villagekit/ui": "^1.0.0",
+    "@villagekit/ui": "^1.1.1",
     "@villagekit/units": "workspace:*",
     "comlink": "^4.4.1",
     "errorstacks": "^2.4.1",

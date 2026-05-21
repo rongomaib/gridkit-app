@@ -11,8 +11,14 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["./src", "./dist"],
-  "sideEffects": ["./src/globals.ts", "./dist/globals.js"],
+  "files": [
+    "./src",
+    "./dist"
+  ],
+  "sideEffects": [
+    "./src/globals.ts",
+    "./dist/globals.js"
+  ],
   "scripts": {
     "build:pkg": "tsup src",
     "deps": "depcheck",
@@ -33,7 +39,7 @@
     "@juggle/resize-observer": "^3.4.0",
     "@react-three/drei": "^10.0.0",
     "@villagekit/parameters": "workspace:*",
-    "@villagekit/ui": "^1.0.0",
+    "@villagekit/ui": "^1.1.1",
     "camera-controls": "^1.38.2",
     "r3f-perf": "^7.2.1",
     "react-icons": "^5.2.1",

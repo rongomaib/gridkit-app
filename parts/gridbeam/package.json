@@ -19,8 +19,18 @@
     "./type-bundles/creator.d.ts": "./dist-type-bundles/creator.d.ts",
     "./package.json": "./package.json"
   },
-  "files": ["./src", "./dist", "./dist-bundles", "./dist-type-bundles"],
-  "sideEffects": ["./src/index.ts", "./dist/index.js", "./src/creator.ts", "./dist/creator.js"],
+  "files": [
+    "./src",
+    "./dist",
+    "./dist-bundles",
+    "./dist-type-bundles"
+  ],
+  "sideEffects": [
+    "./src/index.ts",
+    "./dist/index.js",
+    "./src/creator.ts",
+    "./dist/creator.js"
+  ],
   "scripts": {
     "build:dist": "tsup src",
     "build:dist-bundles": "rollup dist/creator.js --file ./dist-bundles/creator.js --format esm",
@@ -43,7 +53,7 @@
   "dependencies": {
     "@villagekit/math": "workspace:*",
     "@villagekit/part": "workspace:*",
-    "@villagekit/ui": "^1.0.0",
+    "@villagekit/ui": "^1.1.1",
     "@villagekit/units": "workspace:*",
     "zod": "^3.23.8"
   },

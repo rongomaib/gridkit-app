@@ -29,7 +29,10 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["./src", "./dist"],
+  "files": [
+    "./src",
+    "./dist"
+  ],
   "sideEffects": false,
   "scripts": {
     "build:pkg": "tsup src",
@@ -50,7 +53,7 @@
   "dependencies": {
     "@tarikjabiri/dxf": "^2.8.9",
     "@villagekit/math": "workspace:*",
-    "@villagekit/ui": "^1.0.0",
+    "@villagekit/ui": "^1.1.1",
     "lodash-es": "^4.17.21",
     "nanoid": "^5.0.7",
     "zod": "^3.23.8"

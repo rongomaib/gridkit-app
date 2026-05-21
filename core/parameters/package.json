@@ -11,7 +11,10 @@
     },
     "./package.json": "./package.json"
   },
-  "files": ["./src", "./dist"],
+  "files": [
+    "./src",
+    "./dist"
+  ],
   "sideEffects": false,
   "scripts": {
     "build:pkg": "tsup src",
@@ -30,7 +33,7 @@
   },
   "homepage": "https://github.com/villagekit/gridkit/tree/main/core/parameters#readme",
   "dependencies": {
-    "@villagekit/ui": "^1.0.0",
+    "@villagekit/ui": "^1.1.1",
     "@xstate/react": "^6.0.0",
     "lodash-es": "^4.17.21",
     "query-string": "^9.0.0",
