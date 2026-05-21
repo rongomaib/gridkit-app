@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/part-fastener",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "type": "module",
   "exports": {
     ".": {
@@ -19,18 +19,8 @@
     "./type-bundles/creator.d.ts": "./dist-type-bundles/creator.d.ts",
     "./package.json": "./package.json"
   },
-  "files": [
-    "./src",
-    "./dist",
-    "./dist-bundles",
-    "./dist-type-bundles"
-  ],
-  "sideEffects": [
-    "./src/index.ts",
-    "./dist/index.js",
-    "./src/creator.ts",
-    "./dist/creator.js"
-  ],
+  "files": ["./src", "./dist", "./dist-bundles", "./dist-type-bundles"],
+  "sideEffects": ["./src/index.ts", "./dist/index.js", "./src/creator.ts", "./dist/creator.js"],
   "scripts": {
     "build:dist": "tsup src",
     "build:dist-bundles": "rollup dist/creator.js --file ./dist-bundles/creator.js --format esm",

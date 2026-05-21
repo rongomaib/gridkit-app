@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/sandbox",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "type": "module",
   "exports": {
     ".": {
@@ -11,14 +11,8 @@
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "./src",
-    "./dist"
-  ],
-  "sideEffects": [
-    "./src/globals.ts",
-    "./dist/globals.js"
-  ],
+  "files": ["./src", "./dist"],
+  "sideEffects": ["./src/globals.ts", "./dist/globals.js"],
   "scripts": {
     "build:pkg": "tsup src",
     "deps": "depcheck",

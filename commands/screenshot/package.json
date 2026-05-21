@@ -1,15 +1,12 @@
 {
   "name": "@villagekit/screenshot",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "type": "module",
   "bin": "./src/bin.ts",
   "exports": {
     "./package.json": "./package.json"
   },
-  "files": [
-    "./src",
-    "./dist"
-  ],
+  "files": ["./src", "./dist"],
   "sideEffects": false,
   "scripts": {
     "build:pkg": "vite build",

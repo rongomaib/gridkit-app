@@ -1,6 +1,6 @@
 {
   "name": "@villagekit/part",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "type": "module",
   "exports": {
     ".": {
@@ -29,10 +29,7 @@
     },
     "./package.json": "./package.json"
   },
-  "files": [
-    "./src",
-    "./dist"
-  ],
+  "files": ["./src", "./dist"],
   "sideEffects": false,
   "scripts": {
     "build:pkg": "tsup src",
