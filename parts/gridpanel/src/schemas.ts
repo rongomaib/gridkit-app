@@ -5,6 +5,7 @@ const gridPanelHolesSchema = z.union([z.boolean(), z.array(z.tuple([z.number(), 
 
 const gridPanelXYSchema = z.object({
   fit: gridPanelFitSchema.optional(),
+  flip: z.boolean().optional(),
   holes: gridPanelHolesSchema.optional(),
   type: z.literal('gridpanel:xy'),
   x: z.tuple([z.number(), z.number()]),
@@ -14,6 +15,7 @@ const gridPanelXYSchema = z.object({
 
 const gridPanelYZSchema = z.object({
   fit: gridPanelFitSchema.optional(),
+  flip: z.boolean().optional(),
   holes: gridPanelHolesSchema.optional(),
   type: z.literal('gridpanel:yz'),
   x: z.number(),
@@ -23,6 +25,7 @@ const gridPanelYZSchema = z.object({
 
 const gridPanelXZSchema = z.object({
   fit: gridPanelFitSchema.optional(),
+  flip: z.boolean().optional(),
   holes: gridPanelHolesSchema.optional(),
   type: z.literal('gridpanel:xz'),
   x: z.tuple([z.number(), z.number()]),

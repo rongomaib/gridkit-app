@@ -2,13 +2,32 @@ import { readFile, readdir, realpath } from 'node:fs/promises'
 import { join } from 'node:path'
 import { reverse, sortBy } from 'lodash-es'
 import { type BuildOptions, defineConfig } from 'vite'
+import { VitePWA } from 'vite-plugin-pwa'
 import tsconfigPaths from 'vite-tsconfig-paths'
 
 const host = process.env.TAURI_DEV_HOST
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => ({
-  plugins: [tsconfigPaths()],
+  plugins: [
+    tsconfigPaths(),
+    VitePWA({
+      registerType: 'autoUpdate',
+      devOptions: { enabled: true },
+      workbox: {
+        maximumFileSizeToCacheInBytes: 50 * 1024 * 1024 // 50MB
+      },
+      manifest: {
+        name: 'Grid Kit Studio',
+        short_name: 'Studio',
+        theme_color: '#ffffff',
+        display: 'standalone'
+      }
+    })
+  ],
+  define: {
+    'process.env': process.env
+  },
 
   // prevent vite from obscuring rust errors
   clearScreen: false,
@@ -16,7 +35,7 @@ export default defineConfig(async () => ({
     // Tauri expects a fixed port, fail if that port is not available
     strictPort: true,
     // if the host Tauri is expecting is set, use it
-    host: host || false,
+    host: host || '0.0.0.0',
     port: 5173,
   },
 
@@ -42,6 +61,7 @@ export default defineConfig(async () => ({
     format: 'es',
   },
   resolve: {
+    dedupe: ['react', 'react-dom'],
     alias: {
       ...(await workspaceAliases()),
     },
@@ -72,7 +92,9 @@ async function workspaceAliases() {
       //   important for module like @villagekit/part/base
       exportEntries = reverse(sortBy(exportEntries, ['[0]']))
       for (const [exportKey, exportMap] of exportEntries) {
-        const aliasKey = join('@villagekit', pkgName, exportKey)
+        // Use forward slashes in the alias key — path.join uses backslashes on Windows
+        // but Vite matches aliases against import strings which always use forward slashes.
+        const aliasKey = join('@villagekit', pkgName, exportKey).replace(/\\/g, '/')
         const aliasTo =
           typeof exportMap === 'string' ? exportMap : exportMap.source || exportMap.import
         const aliasValue = join(pkgBase, aliasTo)

@@ -4,11 +4,9 @@
   "version": "0.10.0",
   "type": "module",
   "scripts": {
-    "dev:app": "tauri dev",
-    "build:app": "tauri build",
-    "js:dev": "vite",
-    "js:build": "tsc && vite build",
-    "tauri": "tauri",
+    "dev": "vite",
+    "dev:app": "vite",
+    "build": "tsc && vite build",
     "types": "tsc -p ./tsconfig.json --noEmit",
     "lint": "biome check ."
   },
@@ -20,11 +18,6 @@
     "@codemirror/state": "^6.4.1",
     "@codemirror/view": "^6.27.0",
     "@emotion/react": "^11.14.0",
-    "@tanstack/react-query": "^5",
-    "@tanstack/react-query-devtools": "^5",
-    "@tauri-apps/api": "^2.0.0",
-    "@tauri-apps/plugin-dialog": "^2.0.0",
-    "@tauri-apps/plugin-shell": "^2.0.0",
     "@typescript/vfs": "^1.5.3",
     "@valtown/codemirror-ts": "^2.1.1",
     "@villagekit/design": "workspace:*",
@@ -34,6 +27,7 @@
     "@villagekit/part-fastener": "workspace:*",
     "@villagekit/part-gridbeam": "workspace:*",
     "@villagekit/part-gridpanel": "workspace:*",
+    "@villagekit/part-hinge": "workspace:*",
     "@villagekit/plugin-smart-fasteners": "workspace:*",
     "@villagekit/product": "workspace:*",
     "@villagekit/product-kit": "workspace:*",
@@ -42,20 +36,24 @@
     "codemirror": "^6.0.1",
     "codemirror-theme-catppuccin": "^0.3.0",
     "comlink": "^4.4.1",
+    "idb-keyval": "^6.2.4",
     "lodash-es": "^4.17.21",
+    "next": "^16.2.6",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.2.1",
     "react-resplit": "^1.3.1",
+    "smol-toml": "^1.2.1",
     "three": "^0.165.0",
     "xstate": "^5.31.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.0.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "@types/wicg-file-system-access": "^2023.10.7",
     "typescript": "^5.2.2",
-    "vite": "^5.3.1"
+    "vite": "^5.3.1",
+    "vite-plugin-pwa": "^1.3.0"
   }
 }

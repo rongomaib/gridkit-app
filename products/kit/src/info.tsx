@@ -1,7 +1,8 @@
+import { usePricingContext } from '@villagekit/part'
 import { HStack, InfoTooltip, Text, VStack } from '@villagekit/ui'
 import { convert, meter, millimeter } from '@villagekit/units'
 import type React from 'react'
-import { useMemo } from 'react'
+import { Fragment, useMemo } from 'react'
 import { Vector3 } from 'three'
 import { useProductKitContext } from './context'
 
@@ -9,8 +10,24 @@ interface ProductKitInfoProps {
   containerRef?: React.RefObject<HTMLElement | null>
 }
 
+const PART_LABELS: Record<string, string> = {
+  fastener: 'Bolts',
+  gridbeam: 'Beam Units',
+  gridpanel: 'Panel Units',
+}
+
+function formatPartId(id: string) {
+  const parts = id.split('__')
+  if (parts.length === 2) {
+    const name = parts[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+    return `${name} (${parts[0]})`
+  }
+  return id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+}
+
 export function ProductKitInfo(_props: ProductKitInfoProps) {
-  const { boundingBox } = useProductKitContext()
+  const { boundingBox, parts } = useProductKitContext()
+  const { prices } = usePricingContext()
 
   const dimensionsInMillimeters = useMemo(
     () =>
@@ -29,14 +46,41 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
     [boundingBox],
   )
 
-  return (
-    <HStack
+  // Count parts by type
+  const partCounts = useMemo(() => {
+    const counts: Record<string, number> = {}
+    for (const part of parts) {
+      const type = part.spec.type as string
+      counts[type] = (counts[type] ?? 0) + 1
+    }
+    return counts
+  }, [parts])
+
+  // Calculate line items and total
+  const priceBreakdown = useMemo(() => {
+    return Object.entries(partCounts)
+      .map(([type, count]) => {
+        const unitPrice = prices[type] ?? 0
+        return { type, count, unitPrice, subtotal: count * unitPrice }
+      })
+      .filter(({ unitPrice }) => unitPrice > 0)
+  }, [partCounts, prices])
+
+  const totalCost = useMemo(
+    () => priceBreakdown.reduce((sum, { subtotal }) => sum + subtotal, 0),
+    [priceBreakdown],
+  )
+
+  const hasPrices = Object.values(prices).some((p) => (p ?? 0) > 0)
+
+  const defaultInfo = (
+    <VStack
       as="section"
       aria-label="Design information"
-      justifyContent="center"
-      gap="8"
-      css={{ width: '100%' }}
+      gap="6"
+      css={{ width: '100%', padding: 4 }}
     >
+      {/* Assembled Dimensions */}
       <HStack as="section" aria-label="Assembled dimensions" alignItems="flex-start">
         <VStack css={{ textAlign: 'center' }}>
           <Text>Assembled Dimensions</Text>
@@ -60,6 +104,189 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
           pointerTimeout={3000}
         />
       </HStack>
-    </HStack>
+
+      {/* Price Quote */}
+      <VStack as="section" aria-label="Price quote" alignItems="flex-start" css={{ width: '100%' }}>
+        <HStack alignItems="center" gap="2">
+          <Text css={{ fontWeight: 'bold' }}>Price Quote</Text>
+          <InfoTooltip
+            label={
+              <Text css={{ color: 'white' }}>
+                Prices are set in the Pricing Admin panel in the sidebar.
+              </Text>
+            }
+            pointerTimeout={3000}
+          />
+        </HStack>
+
+        {!hasPrices ? (
+          <Text css={{ fontStyle: 'italic', color: 'gray.500' }}>
+            No prices configured. Set prices in the Pricing Admin panel.
+          </Text>
+        ) : (
+          <VStack css={{ width: '100%' }} gap="1">
+            {/* Part counts */}
+            {Object.entries(partCounts).map(([type, count]) => {
+              const unitPrice = prices[type] ?? 0
+              const label = PART_LABELS[type] ?? type
+              return (
+                <HStack key={type} css={{ justifyContent: 'space-between', width: '100%' }}>
+                  <Text css={{ color: 'gray.600' }}>
+                    {label} × {count}
+                  </Text>
+                  {unitPrice > 0 ? (
+                    <Text>${(count * unitPrice).toFixed(2)}</Text>
+                  ) : (
+                    <Text css={{ fontStyle: 'italic', color: 'gray.400' }}>no price set</Text>
+                  )}
+                </HStack>
+              )
+            })}
+
+            {/* Divider */}
+            <HStack
+              css={{
+                borderTop: '1px solid',
+                borderColor: 'gray.200',
+                paddingTop: 2,
+                marginTop: 1,
+                justifyContent: 'space-between',
+                width: '100%',
+              }}
+            >
+              <Text css={{ fontWeight: 'bold' }}>Total</Text>
+              <Text css={{ fontWeight: 'bold' }}>${totalCost.toFixed(2)}</Text>
+            </HStack>
+          </VStack>
+        )}
+      </VStack>
+    </VStack>
   )
+
+  const { selectedPartId, partValues, setSelectedPartId } = useProductKitContext()
+  const selectedPart = selectedPartId != null ? parts.find((p) => p.id === selectedPartId) : null
+  const selectedPartGlValue = selectedPartId != null ? partValues.find((p: any) => p.id === selectedPartId) : null
+
+  if (selectedPart != null && selectedPartGlValue != null) {
+    const partType = (selectedPart as any).spec.type as string
+    const partId = selectedPart.id
+
+    const dispatchUpdate = (property: string, value: number, mode: 'start' | 'end' | 'shift' = 'shift') => {
+      window.dispatchEvent(
+        new CustomEvent('update-part-property', {
+          detail: { id: partId, type: partType, property, value, mode }
+        })
+      )
+    }
+
+    return (
+      <VStack
+        as="section"
+        aria-label="Part Inspector"
+        gap="4"
+        css={{ width: '100%', padding: 4 }}
+      >
+        <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+          <Text css={{ fontWeight: 'bold', fontSize: 'lg' }}>Inspector</Text>
+          <button 
+            type="button" 
+            onClick={() => setSelectedPartId(null)}
+            style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}
+          >
+            ×
+          </button>
+        </HStack>
+
+        <VStack gap="2" css={{ width: '100%' }}>
+          <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+            <Text css={{ color: 'gray.600' }}>ID</Text>
+            <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>{formatPartId(partId)}</Text>
+          </HStack>
+          <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+            <Text css={{ color: 'gray.600' }}>Type</Text>
+            <Text>{PART_LABELS[partType] ?? partType}</Text>
+          </HStack>
+
+          {partType === 'gridbeam' && (
+            <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+              <Text css={{ color: 'gray.600' }}>Length</Text>
+              <Text>{(selectedPartGlValue as any).lengthInGrids} grids</Text>
+            </HStack>
+          )}
+
+          {partType === 'gridpanel' && (
+            <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+              <Text css={{ color: 'gray.600' }}>Size</Text>
+              <Text>
+                {(selectedPartGlValue as any).sizeInGrids[0]} × {(selectedPartGlValue as any).sizeInGrids[1]} grids
+              </Text>
+            </HStack>
+          )}
+        </VStack>
+
+        <VStack gap="2" css={{ width: '100%', marginTop: '8px' }}>
+          <Text css={{ fontWeight: 'bold' }}>Translate (Grid Units)</Text>
+          <div style={{ display: 'grid', gridTemplateColumns: '20px 1fr 1fr 1fr', columnGap: '24px', rowGap: '8px', width: '100%', alignItems: 'center' }}>
+            <div />
+            <Text css={{ fontSize: 'xs', color: 'gray.500', textAlign: 'center' }}>Start</Text>
+            <Text css={{ fontSize: 'xs', color: 'gray.500', textAlign: 'center' }}>End</Text>
+            <Text css={{ fontSize: 'xs', color: 'gray.500', textAlign: 'center' }}>Shift</Text>
+            
+            {['x', 'y', 'z'].map((axis) => {
+              const specVal = (selectedPart as any).spec[axis]
+              let startVal: React.ReactNode = ''
+              let endVal: React.ReactNode = ''
+              let shiftVal: React.ReactNode = ''
+              
+              if (Array.isArray(specVal)) {
+                startVal = specVal[0]
+                endVal = specVal[1]
+              } else if (typeof specVal === 'number') {
+                shiftVal = specVal
+              }
+
+              const renderControl = (val: React.ReactNode, mode: 'start' | 'end' | 'shift') => (
+                <HStack gap="1" css={{ justifyContent: 'center' }}>
+                  <button type="button" style={btnStyleSmall} onClick={() => dispatchUpdate(axis, -1, mode)}>-</button>
+                  {val !== '' && <Text css={{ fontSize: 'sm', width: '24px', textAlign: 'center' }}>{val}</Text>}
+                  <button type="button" style={btnStyleSmall} onClick={() => dispatchUpdate(axis, 1, mode)}>+</button>
+                </HStack>
+              )
+
+              return (
+                <Fragment key={axis}>
+                  <Text css={{ color: 'gray.600', fontWeight: 'bold', textTransform: 'uppercase' }}>{axis}</Text>
+                  {renderControl(startVal, 'start')}
+                  {renderControl(endVal, 'end')}
+                  {renderControl(shiftVal, 'shift')}
+                </Fragment>
+              )
+            })}
+          </div>
+        </VStack>
+
+      </VStack>
+    )
+  }
+
+  return defaultInfo
+}
+
+const btnStyle = {
+  padding: '4px 8px',
+  backgroundColor: '#e2e8f0',
+  border: '1px solid #cbd5e1',
+  borderRadius: '4px',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+}
+
+const btnStyleSmall = {
+  padding: '2px 6px',
+  backgroundColor: '#f1f5f9',
+  border: '1px solid #cbd5e1',
+  borderRadius: '4px',
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  fontSize: '12px'
 }

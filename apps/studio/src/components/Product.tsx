@@ -9,31 +9,60 @@ import {
   useProductMeta,
 } from '@villagekit/product'
 import { Box, Flex, Heading, Tabs } from '@villagekit/ui'
-import { Resplit } from 'react-resplit'
 import { Loading } from './Loading'
 import { ProductEditor } from './ProductEditor'
+import { useState, useRef } from 'react'
 
 export default function Product() {
   const hasProduct = useHasProduct()
+  const [leftWidth, setLeftWidth] = useState(400)
+  const isDragging = useRef(false)
 
   if (!hasProduct) {
     return <Loading />
   }
 
   return (
-    <Resplit.Root direction="horizontal" asChild>
-      <Flex css={{ width: '100%', height: '100%' }}>
-        <Resplit.Pane order={0} initialSize="0.5fr" minSize="0.1fr" asChild>
-          <ProductControls />
-        </Resplit.Pane>
-        <Resplit.Splitter order={1} size="16px" asChild>
-          <Box css={{ backgroundColor: 'gray.100' }} />
-        </Resplit.Splitter>
-        <Resplit.Pane order={2} initialSize="0.5fr" minSize="0.1fr">
-          <ProductViewer />
-        </Resplit.Pane>
-      </Flex>
-    </Resplit.Root>
+    <Flex css={{ width: '100%', height: '100%', flexDirection: 'row' }}>
+      <Box css={{ width: `${leftWidth}px`, height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <ProductControls />
+      </Box>
+      <Box
+        onPointerDown={(e) => {
+          isDragging.current = true
+          e.currentTarget.setPointerCapture(e.pointerId)
+        }}
+        onPointerMove={(e) => {
+          if (!isDragging.current) return
+          setLeftWidth((w) => Math.max(200, w + e.movementX))
+        }}
+        onPointerUp={(e) => {
+          isDragging.current = false
+          e.currentTarget.releasePointerCapture(e.pointerId)
+        }}
+        onPointerCancel={(e) => {
+          isDragging.current = false
+          e.currentTarget.releasePointerCapture(e.pointerId)
+        }}
+        css={{
+          width: '8px',
+          flexShrink: 0,
+          height: '100%',
+          cursor: 'col-resize',
+          backgroundColor: 'transparent',
+          borderLeft: '1px solid',
+          borderRight: '1px solid',
+          borderColor: 'gray.200',
+          transition: 'background-color 0.2s',
+          '&:hover, &:active': {
+            backgroundColor: 'gray.100',
+          },
+        }}
+      />
+      <Box css={{ flex: 1, height: '100%', minWidth: 0 }}>
+        <ProductViewer />
+      </Box>
+    </Flex>
   )
 }
 
@@ -49,11 +78,11 @@ function ProductControls() {
         <Tabs.Trigger value="code">Code</Tabs.Trigger>
         {showParamControls && <Tabs.Trigger value="parameters">Parameters</Tabs.Trigger>}
       </Tabs.List>
-      <Tabs.Content value="code" css={{ flex: 1, minHeight: 0, padding: 0 }}>
+      <Tabs.Content value="code" css={{ flex: 1, minHeight: 0, padding: 0, position: 'relative', width: '100%', height: '100%' }}>
         <ProductEditor />
       </Tabs.Content>
       {showParamControls && (
-        <Tabs.Content value="parameters" css={{ flex: 1, minHeight: 0 }}>
+        <Tabs.Content value="parameters" css={{ flex: 1, minHeight: 0, overflowY: 'auto' }}>
           <ParamControls />
         </Tabs.Content>
       )}
@@ -85,8 +114,10 @@ function ProductViewer() {
         css={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}
       >
         <Heading as="h2">{meta.label}</Heading>
-        <Box css={{ flexGrow: 1, minHeight: 0, width: '100%' }}>
-          <ProductView showParamControls={showParamControls} shouldDisplayAxes />
+        <Box css={{ flexGrow: 1, minHeight: 0, width: '100%', position: 'relative' }}>
+          <Box css={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
+            <ProductView showParamControls={showParamControls} shouldDisplayAxes />
+          </Box>
         </Box>
       </Tabs.Content>
       <Tabs.Content value="parts">

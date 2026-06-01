@@ -2,7 +2,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { useActorRef } from '@xstate/react'
 import type CameraControlsType from 'camera-controls'
 import CameraControlsImpl from 'camera-controls'
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef } from 'react'
+import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
 import {
   Box3,
   MOUSE,
@@ -68,16 +68,27 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
     )
     const actor = useActorRef(actorMachine)
 
-    const isControlEnabled = true
-
+    const [isControlEnabled, setIsControlEnabled] = useState(true)
+    
+    useEffect(() => {
+      const handler = (e: any) => setIsControlEnabled(!e.detail)
+      window.addEventListener('transform-dragging', handler)
+      return () => window.removeEventListener('transform-dragging', handler)
+    }, [])
     const invalidate = useThree(({ invalidate }) => invalidate)
     const camera = useThree(({ camera }) => camera)
     const gl = useThree(({ gl }) => gl)
+    const set = useThree(({ set }) => set)
     // const performance = useThree(({ performance }) => performance)
 
     const controls = useMemo(() => {
       return new CameraControlsImpl(camera, gl.domElement)
     }, [camera, gl])
+
+    useEffect(() => {
+      if (controls) set({ controls: controls as any })
+      return () => set({ controls: null })
+    }, [controls, set])
 
     const resetControlsBox = useCallback(() => {
       const fitBox = boundingBox.clone()

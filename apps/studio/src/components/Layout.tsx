@@ -3,10 +3,7 @@ import { ProductProvider } from '@/context/product'
 import { WorkspaceProvider, useWorkspaceContext } from '@/context/workspace'
 import { WorkspacesProvider, useWorkspacesContext } from '@/context/workspaces'
 import { system } from '@/theme'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { ChakraProvider, Flex } from '@villagekit/ui'
-import { useState } from 'react'
 
 export interface LayoutProps {
   children: React.ReactNode
@@ -22,23 +19,9 @@ export function AppLayout({ children }: LayoutProps) {
 }
 
 export function ProvidersLayout({ children }: LayoutProps) {
-  const [queryClient] = useState(
-    () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            throwOnError: process.env.NODE_ENV === 'development',
-          },
-        },
-      }),
-  )
-
   return (
     <ChakraProvider value={system}>
-      <QueryClientProvider client={queryClient}>
-        <ReactQueryDevtools buttonPosition="bottom-left" />
-        {children}
-      </QueryClientProvider>
+      {children}
     </ChakraProvider>
   )
 }
@@ -65,12 +48,13 @@ function WorkspaceLayout({ children }: LayoutProps) {
 
 function ProductLayout({ children }: LayoutProps) {
   const { activeProductIndex } = useWorkspaceContext()
+  const { activeWorkspace } = useWorkspacesContext()
 
-  if (activeProductIndex == null) return children
+  if (activeProductIndex == null || activeWorkspace == null) return children
 
   return (
     <EditorProvider>
-      <ProductProvider productPath={activeProductIndex.path}>{children}</ProductProvider>
+      <ProductProvider productPath={activeProductIndex.path} workspacePath={activeWorkspace.path}>{children}</ProductProvider>
     </EditorProvider>
   )
 }
@@ -79,7 +63,7 @@ function ContentLayout({ children }: LayoutProps) {
   return (
     <>
       <Flex
-        css={{ flexDirection: 'row', justifyContent: 'center', minHeight: '100dvh', width: '100%' }}
+        css={{ flexDirection: 'row', justifyContent: 'center', height: '100dvh', width: '100%', overflow: 'hidden' }}
       >
         {children}
       </Flex>

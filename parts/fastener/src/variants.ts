@@ -130,6 +130,17 @@ export const fastenerVariants: Record<string, FastenerVariant> = {
     },
     nutLength: nutLengths['25mm'],
   },
+  Bolt75mm_Fastened68mm_Nut12mm: {
+    ...baseVariant,
+    id: 'Bolt75mm_Fastened68mm_Nut12mm',
+    boltLength: boltLengths['75mm'],
+    fastenedLength: {
+      type: 'quantity',
+      unit: millimeter,
+      value: 68, // side panel + gap + beam
+    },
+    nutLength: nutLengths['12mm'],
+  },
   Bolt115mm_Nut12mm: {
     ...baseVariant,
     id: 'Bolt115mm_Nut12mm',

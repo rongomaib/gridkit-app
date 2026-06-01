@@ -1,6 +1,7 @@
 import '@villagekit/part-gridpanel/creator'
 import '@villagekit/part-gridbeam/creator'
 import '@villagekit/part-fastener/creator'
+import '@villagekit/part-hinge/creator'
 
 import type { PartCreator, WithRequiredId } from '@villagekit/part'
 import { deserializeCreator, serializeCreator } from '@villagekit/part/creator'

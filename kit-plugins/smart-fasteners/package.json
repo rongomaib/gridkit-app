@@ -34,6 +34,7 @@
     "@villagekit/part-fastener": "workspace:*",
     "@villagekit/part-gridbeam": "workspace:*",
     "@villagekit/part-gridpanel": "workspace:*",
+    "@villagekit/part-hinge": "workspace:*",
     "@villagekit/product-kit": "workspace:*",
     "lodash-es": "^4.17.21",
     "p-defer": "^4.0.0"

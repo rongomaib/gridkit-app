@@ -37,6 +37,7 @@
     "@villagekit/part-fastener": "workspace:*",
     "@villagekit/part-gridbeam": "workspace:*",
     "@villagekit/part-gridpanel": "workspace:*",
+    "@villagekit/part-hinge": "workspace:*",
     "@villagekit/product": "workspace:*",
     "@villagekit/sandbox": "workspace:*",
     "@villagekit/ui": "^1.1.1",

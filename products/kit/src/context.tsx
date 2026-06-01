@@ -35,6 +35,8 @@ type ProductKitState = {
   isLoading: boolean
   partValues: Array<PartGlValue>
   parts: Array<WithRequiredId<PartCreator>>
+  selectedPartId: string | null
+  setSelectedPartId: (id: string | null) => void
 }
 
 function useProductKit(): ProductKitState {
@@ -60,11 +62,15 @@ function useProductKit(): ProductKitState {
   const partValues = usePartValues(parts)
   const boundingBox = useBoundingBox(parts)
 
+  const [selectedPartId, setSelectedPartId] = useState<string | null>(null)
+
   return {
     boundingBox,
     isLoading,
     partValues,
     parts,
+    selectedPartId,
+    setSelectedPartId,
   }
 }
 

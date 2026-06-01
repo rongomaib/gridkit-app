@@ -16,13 +16,13 @@ import {
 import { getEveryHolePosition } from './helpers'
 import type { GridPanelGlValue, GridPanelHoles, GridPanelSpecHoleVariant } from './types'
 
-export function PartsGl(props: PartsGlProps<GridPanelGlValue>) {
-  const { parts, ...restProps } = props
+export function PartsGl(props: PartsGlProps<GridPanelGlValue> & { onPartClick?: (id: string) => void }) {
+  const { parts, onPartClick, ...restProps } = props
 
   return (
     <group name="gridpanels">
       {parts.map((part) => (
-        <PartGl key={part.id} part={part} {...restProps} />
+        <PartGl key={part.id} part={part} onPartClick={onPartClick} {...restProps} />
       ))}
     </group>
   )
@@ -30,10 +30,11 @@ export function PartsGl(props: PartsGlProps<GridPanelGlValue>) {
 
 type PartGlProps = Omit<PartsGlProps<GridPanelGlValue>, 'parts'> & {
   part: GridPanelGlValue
+  onPartClick?: (id: string) => void
 }
 
 export function PartGl(props: PartGlProps) {
-  const { part } = props
+  const { part, onPartClick } = props
   const {
     id,
     variant,
@@ -55,7 +56,11 @@ export function PartGl(props: PartGlProps) {
   }
 
   return (
-    <group name={`gridpanel-container-${id}`}>
+    <group
+      name={`gridpanel-container-${id}`}
+      userData={{ partId: id, partType: 'gridpanel' }}
+      onClick={(e) => { e.stopPropagation(); onPartClick?.(id) }}
+    >
       <Panel
         id={id}
         sizeInGrids={sizeInGrids}

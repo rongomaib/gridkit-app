@@ -3,8 +3,8 @@ import {
   useListWorkspacesQuery,
   useOpenWorkspaceMutation,
   useRemoveWorkspaceMutation,
+  useQueryClient,
 } from '@/client'
-import { useQueryClient } from '@tanstack/react-query'
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 
 export interface Workspace {
@@ -39,10 +39,9 @@ function useWorkspaces(): WorkspacesState {
 
   const [activeWorkspacePath, selectWorkspace] = useState<string | null>(null)
   const activeWorkspace = useMemo(() => {
-    if (workspaces == null) return null
     if (activeWorkspacePath == null) return null
-    return workspaces.find((workspace) => workspace.path === activeWorkspacePath) || null
-  }, [activeWorkspacePath, workspaces])
+    return { path: activeWorkspacePath }
+  }, [activeWorkspacePath])
 
   const addWorkspaceMutation = useAddWorkspaceMutation({
     onSuccess() {

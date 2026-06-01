@@ -79,8 +79,8 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
       aria-label={label}
       ref={containerRef}
       css={{
-        ':hover, :focus-within': {
-          '.sandbox-controls': {
+        '&:hover, &:focus-within': {
+          '& .sandbox-controls': {
             opacity: 1,
           },
         },

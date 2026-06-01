@@ -5,10 +5,11 @@ import { type PartGlValue, type PartTypeId, getPartModule } from './index'
 
 export interface PartsGlForAllProps {
   partGlValues: Array<PartGlValue>
+  onPartClick?: (id: string) => void
 }
 
 export function PartsGlForAll(props: PartsGlForAllProps): React.ReactElement {
-  const { partGlValues } = props
+  const { partGlValues, onPartClick } = props
 
   const partsByType = useMemo(() => {
     return groupBy(partGlValues, 'type')
@@ -20,7 +21,7 @@ export function PartsGlForAll(props: PartsGlForAllProps): React.ReactElement {
         partsByType,
         (partGlValuesForType: Array<PartGlValue>, partType: PartGlValue['type']) => {
           return (
-            <PartsGlForType key={partType} partType={partType} partGlValues={partGlValuesForType} />
+            <PartsGlForType key={partType} partType={partType} partGlValues={partGlValuesForType} onPartClick={onPartClick} />
           )
         },
       )}
@@ -31,14 +32,15 @@ export function PartsGlForAll(props: PartsGlForAllProps): React.ReactElement {
 export interface PartsGlForTypeProps {
   partType: PartTypeId
   partGlValues: Array<PartGlValue>
+  onPartClick?: (id: string) => void
 }
 
 export function PartsGlForType(props: PartsGlForTypeProps): React.ReactElement {
-  const { partType, partGlValues } = props
+  const { partType, partGlValues, onPartClick } = props
 
   const partModule = getPartModule(partType)
   const PartsGl = partModule.components.PartsGl
 
   // @ts-ignore
-  return <PartsGl parts={partGlValues} />
+  return <PartsGl parts={partGlValues} onPartClick={onPartClick} />
 }

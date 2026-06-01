@@ -13,13 +13,13 @@ import {
 } from 'three'
 import type { GridBeamGlValue } from './types'
 
-export function PartsGl(props: PartsGlProps<GridBeamGlValue>) {
-  const { parts, ...restProps } = props
+export function PartsGl(props: PartsGlProps<GridBeamGlValue> & { onPartClick?: (id: string) => void }) {
+  const { parts, onPartClick, ...restProps } = props
 
   return (
     <group name="gridbeams">
       {parts.map((part) => (
-        <PartGl key={part.id} part={part} {...restProps} />
+        <PartGl key={part.id} part={part} onPartClick={onPartClick} {...restProps} />
       ))}
     </group>
   )
@@ -27,6 +27,7 @@ export function PartsGl(props: PartsGlProps<GridBeamGlValue>) {
 
 type PartGlProps = Omit<PartsGlProps<GridBeamGlValue>, 'parts'> & {
   part: GridBeamGlValue
+  onPartClick?: (id: string) => void
 }
 
 export function PartGl(props: PartGlProps) {
@@ -42,6 +43,7 @@ export function PartGl(props: PartGlProps) {
       scale,
       variant: { id: variantId, materials },
     },
+    onPartClick,
   } = props
 
   const beamMaterial = materials.beam
@@ -55,6 +57,8 @@ export function PartGl(props: PartGlProps) {
       position={position}
       quaternion={quaternion}
       scale={scale}
+      userData={{ partId: id, partType: 'gridbeam' }}
+      onClick={(e) => { e.stopPropagation(); onPartClick?.(id) }}
     >
       <Beam
         id={id}

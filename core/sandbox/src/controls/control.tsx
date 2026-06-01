@@ -16,10 +16,11 @@ const CONTROL_STYLES = {
   background: 'white',
   borderRadius: '3xl',
   boxShadow: 'md',
-  opacity: 0,
+  opacity: 1,
   padding: 2,
   position: 'absolute',
   transitionDuration: 'fast',
+  zIndex: 10,
 }
 
 export function Control(props: ControlProps) {

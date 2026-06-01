@@ -1,6 +1,7 @@
 import '@villagekit/part-gridbeam'
 import '@villagekit/part-gridpanel'
 import '@villagekit/part-fastener'
+import '@villagekit/part-hinge'
 import '@villagekit/plugin-smart-fasteners'
 
 export type {

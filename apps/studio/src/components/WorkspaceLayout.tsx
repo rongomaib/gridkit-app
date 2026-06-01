@@ -1,19 +1,20 @@
 import { useWorkspaceContext } from '@/context/workspace'
 import { type Workspace, useWorkspacesContext } from '@/context/workspaces'
-import { Box, Button, Flex, HStack, Heading, List, Tooltip, VStack } from '@villagekit/ui'
-import { useMemo } from 'react'
-import { FaChevronRight } from 'react-icons/fa'
-import { Resplit } from 'react-resplit'
+import { Box, Button, Flex, HStack, Heading, List, Tooltip, VStack, IconButton, Icon } from '@villagekit/ui'
+import { useMemo, useState } from 'react'
+import { FaBars, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 
 interface WorkspaceLayoutProps {
   children: React.ReactNode
 }
+
 
 export function WorkspaceLayout(props: WorkspaceLayoutProps) {
   const { children } = props
 
   const { activeWorkspace } = useWorkspacesContext()
   const { productIndexes, selectProductId } = useWorkspaceContext()
+  const [isSidebarOpen, setSidebarOpen] = useState(true)
 
   if (activeWorkspace == null) {
     throw new Error('Unexpected: activeWorkspace is null')
@@ -22,73 +23,85 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
   const activeWorkspaceName = useMemo(() => getWorkspaceName(activeWorkspace), [activeWorkspace])
 
   return (
-    <Resplit.Root direction="horizontal" asChild>
-      <Flex css={{ flexDirection: 'row', width: '100%' }}>
-        <Resplit.Pane order={0} initialSize="0.15fr" asChild>
-          <VStack
-            css={{
-              alignItems: 'flex-start',
-              maxHeight: '100dvh',
-              overflowY: 'auto',
-              margin: 0,
-              paddingY: 2,
-            }}
-          >
-            <Tooltip label={activeWorkspace.path}>
-              <Box css={{ alignSelf: 'center' }}>
-                <Heading as="h2" css={{ fontSize: 'lg', fontWeight: 'bold' }}>
-                  {activeWorkspaceName}
-                </Heading>
-              </Box>
-            </Tooltip>
-            <VStack>
-              <List.Root>
-                {productIndexes?.map((productIndex) => (
-                  <List.Item
-                    key={productIndex.path}
-                    css={{
-                      display: 'flex',
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                    }}
-                  >
-                    <List.Indicator asChild css={{ marginInlineEnd: 0 }}>
-                      <FaChevronRight />
-                    </List.Indicator>
-                    <HStack>
-                      <Button
-                        variant="toolbar"
-                        onClick={() => selectProductId(productIndex.id)}
-                        css={{
-                          fontSize: 'md',
-                          paddingInlineStart: 1,
-                          paddingInlineEnd: 1,
-                        }}
-                      >
-                        {productIndex.id}
-                      </Button>
-                    </HStack>
-                  </List.Item>
-                ))}
-              </List.Root>
-              {/*
-        <button type="button" onClick={handleCreateproductName}>
-          Create new productName
-        </button>
-        */}
-            </VStack>
+    <Flex css={{ flexDirection: 'row', width: '100%', height: '100%' }}>
+      {isSidebarOpen ? (
+        <VStack
+          css={{
+            width: '250px',
+            alignItems: 'flex-start',
+            height: '100%',
+            overflowY: 'auto',
+            margin: 0,
+            paddingY: 2,
+            borderRight: '1px solid',
+            borderColor: 'gray.200',
+            position: 'relative',
+          }}
+        >
+          <IconButton
+            aria-label="Collapse sidebar"
+            title="Collapse sidebar"
+            variant="secondary"
+            size="sm"
+            onClick={() => setSidebarOpen(false)}
+            icon={<Icon as={FaChevronLeft} />}
+            css={{ position: 'absolute', right: '8px', top: '8px' }}
+          />
+          <Tooltip label={activeWorkspace.path}>
+            <Box css={{ alignSelf: 'center', paddingRight: '24px' }}>
+              <Heading as="h2" css={{ fontSize: 'lg', fontWeight: 'bold' }}>
+                {activeWorkspaceName}
+              </Heading>
+            </Box>
+          </Tooltip>
+          <VStack css={{ width: '100%', alignItems: 'stretch' }}>
+            <List.Root>
+              {productIndexes?.map((productIndex) => (
+                <List.Item
+                  key={productIndex.path}
+                  css={{
+                    display: 'flex',
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                  }}
+                >
+                  <List.Indicator asChild css={{ marginInlineEnd: 0 }}>
+                    <FaChevronRight />
+                  </List.Indicator>
+                  <HStack>
+                    <Button
+                      variant="toolbar"
+                      onClick={() => selectProductId(productIndex.id)}
+                      css={{
+                        fontSize: 'md',
+                        paddingInlineStart: 1,
+                        paddingInlineEnd: 1,
+                      }}
+                    >
+                      {productIndex.id}
+                    </Button>
+                  </HStack>
+                </List.Item>
+              ))}
+            </List.Root>
           </VStack>
-        </Resplit.Pane>
-        <Resplit.Splitter order={1} size="16px" asChild>
-          <Box css={{ backgroundColor: 'gray.100' }} />
-        </Resplit.Splitter>
-        <Resplit.Pane order={2} initialSize="0.85fr" asChild>
-          <VStack as="main" css={{ flex: 1 }}>
-            {children}
-          </VStack>
-        </Resplit.Pane>
-      </Flex>
-    </Resplit.Root>
+          <Box css={{ flexGrow: 1 }} />
+        </VStack>
+      ) : (
+        <Box css={{ borderRight: '1px solid', borderColor: 'gray.200', padding: 2, height: '100%' }}>
+          <IconButton
+            aria-label="Expand sidebar"
+            title="Expand sidebar"
+            variant="secondary"
+            onClick={() => setSidebarOpen(true)}
+            icon={<Icon as={FaBars} />}
+          />
+        </Box>
+      )}
+      <VStack as="main" css={{ flex: 1, height: '100%', minWidth: 0 }}>
+        {children}
+      </VStack>
+    </Flex>
   )
 }
 

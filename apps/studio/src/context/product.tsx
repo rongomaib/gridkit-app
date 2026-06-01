@@ -1,6 +1,7 @@
 import '@villagekit/part-gridbeam'
 import '@villagekit/part-gridpanel'
 import '@villagekit/part-fastener'
+import '@villagekit/part-hinge'
 import '@villagekit/plugin-smart-fasteners'
 
 import { useGetProductFileQuery, useGetProductMetaQuery } from '@/client'
@@ -15,6 +16,7 @@ import { useEditorContext } from './editor'
 
 export type ProductOptions = {
   productPath: string
+  workspacePath?: string
 }
 
 type ProductEntry = null | {
@@ -41,12 +43,13 @@ export function ProductProvider(props: PropsWithChildren<ProductOptions>) {
 }
 
 function useProductEntry(options: ProductOptions): ProductEntry {
-  const { productPath } = options
+  const { productPath, workspacePath } = options
 
-  const productMetaQuery = useGetProductMetaQuery({ productPath })
+  const productMetaQuery = useGetProductMetaQuery({ productPath, workspacePath: workspacePath || '' })
 
   const productExportsQuery = useGetProductFileQuery(
     {
+      workspacePath: workspacePath || '',
       productPath,
       fileName: productMetaQuery.isSuccess ? productMetaQuery.data.exports : '',
     },

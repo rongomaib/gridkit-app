@@ -71,17 +71,21 @@ export class GridBeam extends BasePartCreator<GridBeamSpec> {
 
     const gridUnit = getGridLengthInMeters(variantId)
 
+    const safeX = parseRange(x, 0)
+    const safeY = parseNumber(y, 0)
+    const safeZ = parseNumber(z, 0)
+
     let beam = GridBeam.create({
       id,
       variantId,
-      lengthInGrids: Math.abs(x[0] - x[1]),
+      lengthInGrids: Math.abs(safeX[0] - safeX[1]),
     })
 
-    if (x[0] > x[1]) {
+    if (safeX[0] > safeX[1]) {
       beam = beam.applyTransform(mirrorXTransform)
     }
 
-    return beam.translate([x[0] * gridUnit, y * gridUnit, z * gridUnit])
+    return beam.translate([safeX[0] * gridUnit, safeY * gridUnit, safeZ * gridUnit])
   }
 
   static Y(options: GridBeamYOptions) {
@@ -89,17 +93,21 @@ export class GridBeam extends BasePartCreator<GridBeamSpec> {
 
     const gridUnit = getGridLengthInMeters(variantId)
 
+    const safeX = parseNumber(x, 0)
+    const safeY = parseRange(y, 0)
+    const safeZ = parseNumber(z, 0)
+
     let beam = GridBeam.create({
       id,
       variantId,
-      lengthInGrids: Math.abs(y[0] - y[1]),
+      lengthInGrids: Math.abs(safeY[0] - safeY[1]),
     }).applyTransform(xToYTransform)
 
-    if (y[0] > y[1]) {
+    if (safeY[0] > safeY[1]) {
       beam = beam.applyTransform(mirrorYTransform)
     }
 
-    return beam.translate([x * gridUnit, y[0] * gridUnit, z * gridUnit])
+    return beam.translate([safeX * gridUnit, safeY[0] * gridUnit, safeZ * gridUnit])
   }
 
   static Z(options: GridBeamZOptions) {
@@ -107,17 +115,21 @@ export class GridBeam extends BasePartCreator<GridBeamSpec> {
 
     const gridUnit = getGridLengthInMeters(variantId)
 
+    const safeX = parseNumber(x, 0)
+    const safeY = parseNumber(y, 0)
+    const safeZ = parseRange(z, 0)
+
     let beam = GridBeam.create({
       id,
       variantId,
-      lengthInGrids: Math.abs(z[0] - z[1]),
+      lengthInGrids: Math.abs(safeZ[0] - safeZ[1]),
     }).applyTransform(xToZTransform)
 
-    if (z[0] > z[1]) {
+    if (safeZ[0] > safeZ[1]) {
       beam = beam.applyTransform(mirrorZTransform)
     }
 
-    return beam.translate([x * gridUnit, y * gridUnit, z[0] * gridUnit])
+    return beam.translate([safeX * gridUnit, safeY * gridUnit, safeZ[0] * gridUnit])
   }
 }
 
@@ -168,3 +180,17 @@ registerSerializer({
   deserializeSpec,
   Creator: GridBeam,
 })
+
+function parseRange(range: any, defaultValue = 0): [number, number] {
+  if (!Array.isArray(range)) {
+    const val = typeof range === 'number' && !isNaN(range) ? range : defaultValue
+    return [0, val]
+  }
+  const r0 = typeof range[0] === 'number' && !isNaN(range[0]) ? range[0] : defaultValue
+  const r1 = typeof range[1] === 'number' && !isNaN(range[1]) ? range[1] : (range[0] !== undefined && typeof range[0] === 'number' && !isNaN(range[0]) ? range[0] + 1 : defaultValue + 1)
+  return [r0, r1]
+}
+
+function parseNumber(val: any, defaultValue = 0): number {
+  return typeof val === 'number' && !isNaN(val) ? val : defaultValue
+}

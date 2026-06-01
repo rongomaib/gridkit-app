@@ -4,7 +4,7 @@
   "version": "0.10.0",
   "type": "module",
   "scripts": {
-    "dev:app": "storybook dev -p 6006",
+    "_dev:app": "storybook dev -p 6006",
     "build:app": "storybook build",
     "lint": "biome check ."
   },

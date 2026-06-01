@@ -4,7 +4,6 @@ import { WorkspaceLayout } from '@/components/WorkspaceLayout'
 import WorkspaceSelector from '@/components/WorkspaceSelector'
 import { useWorkspaceContext } from '@/context/workspace'
 import { useWorkspacesContext } from '@/context/workspaces'
-import React from 'react'
 import { createRoot } from 'react-dom/client'
 
 const rootElement = document.getElementById('root')
@@ -12,11 +11,9 @@ const rootElement = document.getElementById('root')
 if (rootElement == null) throw new Error('Failed to get root HTML element')
 
 createRoot(rootElement).render(
-  <React.StrictMode>
-    <AppLayout>
-      <RootPage />
-    </AppLayout>
-  </React.StrictMode>,
+  <AppLayout>
+    <RootPage />
+  </AppLayout>
 )
 
 function RootPage() {
@@ -32,13 +29,9 @@ function RootPage() {
 function WorkspacePage() {
   const { activeProductIndex } = useWorkspaceContext()
 
-  if (activeProductIndex == null) {
-    return null
-  }
-
   return (
     <WorkspaceLayout>
-      <Product />
+      {activeProductIndex != null ? <Product /> : null}
     </WorkspaceLayout>
   )
 }

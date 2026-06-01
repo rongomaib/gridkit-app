@@ -34,6 +34,7 @@
     "@villagekit/part-fastener": "workspace:*",
     "@villagekit/part-gridbeam": "workspace:*",
     "@villagekit/part-gridpanel": "workspace:*",
+    "@villagekit/part-hinge": "workspace:*",
     "@villagekit/plugin-smart-fasteners": "workspace:*",
     "@villagekit/product-kit": "workspace:*"
   }

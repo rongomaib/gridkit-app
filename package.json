@@ -6,7 +6,7 @@
     "build:app:studio": "pnpm --filter '@villagekit/storybook' run build:app",
     "build:pkg": "turbo build:pkg",
     "dev:pkg": "turbo watch build:pkg",
-    "dev:app": "turbo watch build:pkg dev:app",
+    "dev:app": "turbo watch build:pkg dev:app --filter=!@villagekit/storybook",
     "dev:app:studio": "pnpm --filter '@villagekit/studio' run dev:app",
     "dev:app:storybook": "pnpm --filter '@villagekit/storybook' run dev:app",
     "deps": "turbo deps",

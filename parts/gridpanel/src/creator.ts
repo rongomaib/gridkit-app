@@ -121,28 +121,35 @@ export class GridPanel extends BasePartCreator<GridPanelSpec> {
     const gridUnit = getGridLength(variant)
     const thickness = getThickness(variant)
 
+    const safeX = parseRange(x, 0)
+    const safeY = parseRange(y, 0)
+    const safeZ = parseNumber(z, 0)
+
     let panel = GridPanel.create({
       id,
       variantId,
-      sizeInGrids: [Math.abs(x[0] - x[1]), Math.abs(y[0] - y[1])],
+      sizeInGrids: [Math.abs(safeX[0] - safeX[1]), Math.abs(safeY[0] - safeY[1])],
       holes,
       holeVariant: toSpecHoleVariant(holeVariant),
     })
 
-    if (x[0] > x[1]) {
+    if (safeX[0] > safeX[1]) {
       panel = panel.applyTransform(mirrorXTransform)
     }
-    if (y[0] > y[1]) {
+    if (safeY[0] > safeY[1]) {
       panel = panel.applyTransform(mirrorYTransform)
     }
     if (fit === 'top') {
+      panel = panel.applyTransform(mirrorZTransform)
+    }
+    if (options.flip) {
       panel = panel.applyTransform(mirrorZTransform)
     }
     if (holeVariant === 'half-reverse') {
       panel = panel.applyTransform(mirrorZTransform)
     }
 
-    panel = panel.translate([x[0] * gridUnit, y[0] * gridUnit, z * gridUnit])
+    panel = panel.translate([safeX[0] * gridUnit, safeY[0] * gridUnit, safeZ * gridUnit])
 
     if (fit === 'bottom') {
       panel = panel.translate([0, 0, -0.5 * (gridUnit - thickness)])
@@ -169,28 +176,35 @@ export class GridPanel extends BasePartCreator<GridPanelSpec> {
     const gridUnit = getGridLength(variant)
     const thickness = getThickness(variant)
 
+    const safeX = parseNumber(x, 0)
+    const safeY = parseRange(y, 0)
+    const safeZ = parseRange(z, 0)
+
     let panel = GridPanel.create({
       id,
       variantId,
-      sizeInGrids: [Math.abs(y[0] - y[1]), Math.abs(z[0] - z[1])],
+      sizeInGrids: [Math.abs(safeY[0] - safeY[1]), Math.abs(safeZ[0] - safeZ[1])],
       holes,
       holeVariant: toSpecHoleVariant(holeVariant),
     }).applyTransform(xyToYZTransform)
 
-    if (y[0] > y[1]) {
+    if (safeY[0] > safeY[1]) {
       panel = panel.applyTransform(mirrorYTransform)
     }
-    if (z[0] > z[1]) {
+    if (safeZ[0] > safeZ[1]) {
       panel = panel.applyTransform(mirrorZTransform)
     }
     if (fit === 'top') {
+      panel = panel.applyTransform(mirrorXTransform)
+    }
+    if (options.flip) {
       panel = panel.applyTransform(mirrorXTransform)
     }
     if (holeVariant === 'half-reverse') {
       panel = panel.applyTransform(mirrorXTransform)
     }
 
-    panel = panel.translate([x * gridUnit, y[0] * gridUnit, z[0] * gridUnit])
+    panel = panel.translate([safeX * gridUnit, safeY[0] * gridUnit, safeZ[0] * gridUnit])
 
     if (fit === 'bottom') {
       panel = panel.translate([-0.5 * (gridUnit - thickness), 0, 0])
@@ -217,7 +231,11 @@ export class GridPanel extends BasePartCreator<GridPanelSpec> {
     const gridUnit = getGridLength(variant)
     const thickness = getThickness(variant)
 
-    const sizeInGrids: [number, number] = [Math.abs(x[0] - x[1]), Math.abs(z[0] - z[1])]
+    const safeX = parseRange(x, 0)
+    const safeY = parseNumber(y, 0)
+    const safeZ = parseRange(z, 0)
+
+    const sizeInGrids: [number, number] = [Math.abs(safeX[0] - safeX[1]), Math.abs(safeZ[0] - safeZ[1])]
 
     let panel = GridPanel.create({
       id,
@@ -227,20 +245,23 @@ export class GridPanel extends BasePartCreator<GridPanelSpec> {
       holeVariant: toSpecHoleVariant(holeVariant),
     }).applyTransform(xyToXZTransform)
 
-    if (x[0] > x[1]) {
+    if (safeX[0] > safeX[1]) {
       panel = panel.applyTransform(mirrorXTransform)
     }
-    if (z[0] > z[1]) {
+    if (safeZ[0] > safeZ[1]) {
       panel = panel.applyTransform(mirrorZTransform)
     }
     if (fit === 'top') {
+      panel = panel.applyTransform(mirrorYTransform)
+    }
+    if (options.flip) {
       panel = panel.applyTransform(mirrorYTransform)
     }
     if (holeVariant === 'half-reverse') {
       panel = panel.applyTransform(mirrorYTransform)
     }
 
-    panel = panel.translate([x[0] * gridUnit, y * gridUnit, z[0] * gridUnit])
+    panel = panel.translate([safeX[0] * gridUnit, safeY * gridUnit, safeZ[0] * gridUnit])
 
     if (fit === 'bottom') {
       panel = panel.translate([0, -0.5 * (gridUnit - thickness), 0])
@@ -269,6 +290,7 @@ interface GridPanelXYOptions extends BaseOptions {
   y: [number, number]
   z: number
   fit?: GridPanelFit
+  flip?: boolean
   holeVariant?: GridPanelHoleVariant
 }
 
@@ -278,6 +300,7 @@ interface GridPanelYZOptions extends BaseOptions {
   y: [number, number]
   z: [number, number]
   fit?: GridPanelFit
+  flip?: boolean
   holeVariant?: GridPanelHoleVariant
 }
 
@@ -287,6 +310,7 @@ interface GridPanelXZOptions extends BaseOptions {
   y: number
   z: [number, number]
   fit?: GridPanelFit
+  flip?: boolean
   holeVariant?: GridPanelHoleVariant
 }
 
@@ -348,4 +372,18 @@ function toSpecHoleVariant(holeVariant: GridPanelHoleVariant) {
     case 'half-reverse':
       return 'half'
   }
+}
+
+function parseRange(range: any, defaultValue = 0): [number, number] {
+  if (!Array.isArray(range)) {
+    const val = typeof range === 'number' && !isNaN(range) ? range : defaultValue
+    return [0, val]
+  }
+  const r0 = typeof range[0] === 'number' && !isNaN(range[0]) ? range[0] : defaultValue
+  const r1 = typeof range[1] === 'number' && !isNaN(range[1]) ? range[1] : (range[0] !== undefined && typeof range[0] === 'number' && !isNaN(range[0]) ? range[0] + 1 : defaultValue + 1)
+  return [r0, r1]
+}
+
+function parseNumber(val: any, defaultValue = 0): number {
+  return typeof val === 'number' && !isNaN(val) ? val : defaultValue
 }

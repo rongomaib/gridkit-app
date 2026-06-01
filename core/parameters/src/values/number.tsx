@@ -41,16 +41,18 @@ export function Number(props: NumberProps) {
       <Label label={label} description={description} />
 
       <Slider.Root
+        w="full"
         aria-label={[label]}
         value={[value]}
         onValueChange={handleValueChange}
         min={min}
         max={max}
         step={step}
+        css={{ my: '2', px: '2' }}
       >
-        <Slider.Control>
-          <Slider.Track>
-            <Slider.Range />
+        <Slider.Control css={{ display: 'flex', alignItems: 'center', position: 'relative', h: '6' }}>
+          <Slider.Track css={{ w: 'full', h: '1.5', bg: 'whiteAlpha.200', borderRadius: 'full', overflow: 'hidden' }}>
+            <Slider.Range css={{ bg: 'primary.400', h: 'full' }} />
           </Slider.Track>
 
           <Tooltip label={`${value * 40}mm`} open={showTooltip}>
@@ -59,6 +61,17 @@ export function Number(props: NumberProps) {
               onPointerEnter={onPointerEnterTooltip}
               onPointerLeave={onPointerLeaveTooltip}
               boxSize="6"
+              css={{
+                bg: 'white',
+                borderRadius: 'full',
+                borderWidth: '1px',
+                borderColor: 'whiteAlpha.300',
+                boxShadow: 'sm',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                _focus: { ring: '2px', ringColor: 'primary.400', ringOffset: '1px' }
+              }}
             >
               <Slider.HiddenInput />
               <Text fontSize="xs" css={{ color: 'primary.400', fontWeight: 'bold' }}>

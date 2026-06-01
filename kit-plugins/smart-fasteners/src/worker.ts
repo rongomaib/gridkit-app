@@ -4,6 +4,8 @@ import '@villagekit/part-gridbeam'
 import '@villagekit/part-gridbeam/creator'
 import '@villagekit/part-fastener'
 import '@villagekit/part-fastener/creator'
+import '@villagekit/part-hinge'
+import '@villagekit/part-hinge/creator'
 
 import type { PartCreator, WithRequiredId } from '@villagekit/part'
 

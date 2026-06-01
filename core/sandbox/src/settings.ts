@@ -1,6 +1,6 @@
 import { useEffect, useMemo } from 'react'
 
-const SANDBOX_CONTROL_SETTINGS_KEY = 'villagekit:sandbox_control_settings'
+const SANDBOX_CONTROL_SETTINGS_KEY = 'villagekit:sandbox_control_settings_v2'
 
 type SandboxControlSettings = {
   shouldAutoRotate: boolean
@@ -16,7 +16,7 @@ export function useDefaultSandboxControlSettings() {
     }
 
     return {
-      shouldAutoRotate: true,
+      shouldAutoRotate: false,
       shouldDisplayGrid: true,
     }
   }, [])

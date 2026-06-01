@@ -1,9 +1,9 @@
 import { CodeMirror, updateCode, updateLanguageExtensions, updateTheme } from '@/editor'
-import type { EditorState } from '@codemirror/state'
+import { EditorSelection, type EditorState } from '@codemirror/state'
 import { EditorView, type EditorViewConfig } from '@codemirror/view'
 import { useMediaQuery } from '@villagekit/ui'
 import type { Variant } from 'codemirror-theme-catppuccin'
-import { createContext, useCallback, useContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react'
 
 type EditorContextValue = {
   setParentEl: React.Dispatch<HTMLDivElement>
@@ -11,12 +11,13 @@ type EditorContextValue = {
   setCodeToLoad: React.Dispatch<string>
   resetCodeToLoad: React.Dispatch<void>
   setLanguageExtensions: React.Dispatch<NonNullable<EditorViewConfig['extensions']>>
+  scrollToLine: (line: number) => void
 }
 
 function useEditor(): EditorContextValue {
   const [parentEl, setParentEl] = useState<HTMLDivElement | null>(null)
 
-  const [view, setView] = useState<EditorView | null>(null)
+  const viewRef = useRef<EditorView | null>(null)
   const [editorState, setEditorState] = useState<EditorState | null>(null)
 
   const [code, setCode] = useState<string>('')
@@ -47,7 +48,7 @@ function useEditor(): EditorContextValue {
           })
 
     const view = new EditorView({ state, parent: parentEl })
-    setView(view)
+    viewRef.current = view
     if (codeToLoad != null) {
       updateCode(view, codeToLoad)
       resetCodeToLoad()
@@ -55,29 +56,40 @@ function useEditor(): EditorContextValue {
 
     return () => {
       view.destroy()
-      setView(null)
+      viewRef.current = null
     }
   }, [parentEl])
 
   // on code to load
   useEffect(() => {
-    if (view == null) return
+    if (viewRef.current == null) return
     if (codeToLoad == null) return
-    updateCode(view, codeToLoad)
+    updateCode(viewRef.current, codeToLoad)
     resetCodeToLoad()
-  }, [view, codeToLoad, resetCodeToLoad])
+  }, [codeToLoad, resetCodeToLoad])
 
   // on theme change
   useEffect(() => {
-    if (view == null) return
-    updateTheme(view, theme)
-  }, [view, theme])
+    if (viewRef.current == null) return
+    updateTheme(viewRef.current, theme)
+  }, [theme])
 
   // on language extensions change
   useEffect(() => {
+    if (viewRef.current == null) return
+    updateLanguageExtensions(viewRef.current, languageExtensions)
+  }, [languageExtensions])
+
+  const scrollToLine = useCallback((lineNumber: number) => {
+    const view = viewRef.current
     if (view == null) return
-    updateLanguageExtensions(view, languageExtensions)
-  }, [view, languageExtensions])
+    const line = view.state.doc.line(Math.max(1, Math.min(lineNumber, view.state.doc.lines)))
+    view.dispatch({
+      selection: EditorSelection.range(line.from, line.to),
+      effects: EditorView.scrollIntoView(line.from, { y: 'center' }),
+    })
+    view.focus()
+  }, [])
 
   return {
     setParentEl,
@@ -85,6 +97,7 @@ function useEditor(): EditorContextValue {
     setCodeToLoad,
     resetCodeToLoad,
     setLanguageExtensions,
+    scrollToLine,
   }
 }
 

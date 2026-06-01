@@ -1,6 +1,7 @@
 import '@villagekit/part-gridpanel/creator'
 import '@villagekit/part-gridbeam/creator'
 import '@villagekit/part-fastener/creator'
+import '@villagekit/part-hinge/creator'
 
 import { AnyMap, type TraceMap, originalPositionFor } from '@jridgewell/trace-mapping'
 import * as Comlink from 'comlink'
