@@ -21,7 +21,12 @@ export function PartsGlForAll(props: PartsGlForAllProps): React.ReactElement {
         partsByType,
         (partGlValuesForType: Array<PartGlValue>, partType: PartGlValue['type']) => {
           return (
-            <PartsGlForType key={partType} partType={partType} partGlValues={partGlValuesForType} onPartClick={onPartClick} />
+            <PartsGlForType
+              key={partType}
+              partType={partType}
+              partGlValues={partGlValuesForType}
+              onPartClick={onPartClick}
+            />
           )
         },
       )}

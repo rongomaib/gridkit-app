@@ -13,7 +13,7 @@ if (rootElement == null) throw new Error('Failed to get root HTML element')
 createRoot(rootElement).render(
   <AppLayout>
     <RootPage />
-  </AppLayout>
+  </AppLayout>,
 )
 
 function RootPage() {
@@ -29,9 +29,5 @@ function RootPage() {
 function WorkspacePage() {
   const { activeProductIndex } = useWorkspaceContext()
 
-  return (
-    <WorkspaceLayout>
-      {activeProductIndex != null ? <Product /> : null}
-    </WorkspaceLayout>
-  )
+  return <WorkspaceLayout>{activeProductIndex != null ? <Product /> : null}</WorkspaceLayout>
 }

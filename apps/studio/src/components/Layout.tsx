@@ -19,11 +19,7 @@ export function AppLayout({ children }: LayoutProps) {
 }
 
 export function ProvidersLayout({ children }: LayoutProps) {
-  return (
-    <ChakraProvider value={system}>
-      {children}
-    </ChakraProvider>
-  )
+  return <ChakraProvider value={system}>{children}</ChakraProvider>
 }
 
 function ContextLayout({ children }: LayoutProps) {
@@ -54,7 +50,9 @@ function ProductLayout({ children }: LayoutProps) {
 
   return (
     <EditorProvider>
-      <ProductProvider productPath={activeProductIndex.path} workspacePath={activeWorkspace.path}>{children}</ProductProvider>
+      <ProductProvider productPath={activeProductIndex.path} workspacePath={activeWorkspace.path}>
+        {children}
+      </ProductProvider>
     </EditorProvider>
   )
 }
@@ -63,7 +61,13 @@ function ContentLayout({ children }: LayoutProps) {
   return (
     <>
       <Flex
-        css={{ flexDirection: 'row', justifyContent: 'center', height: '100dvh', width: '100%', overflow: 'hidden' }}
+        css={{
+          flexDirection: 'row',
+          justifyContent: 'center',
+          height: '100dvh',
+          width: '100%',
+          overflow: 'hidden',
+        }}
       >
         {children}
       </Flex>

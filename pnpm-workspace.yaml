@@ -7,3 +7,4 @@ packages:
   - "apps/*"
   - "kit-plugins/*"
   - "commands/*"
+  - "solver/pkg"

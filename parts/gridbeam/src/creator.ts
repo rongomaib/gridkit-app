@@ -183,14 +183,19 @@ registerSerializer({
 
 function parseRange(range: any, defaultValue = 0): [number, number] {
   if (!Array.isArray(range)) {
-    const val = typeof range === 'number' && !isNaN(range) ? range : defaultValue
+    const val = typeof range === 'number' && !Number.isNaN(range) ? range : defaultValue
     return [0, val]
   }
-  const r0 = typeof range[0] === 'number' && !isNaN(range[0]) ? range[0] : defaultValue
-  const r1 = typeof range[1] === 'number' && !isNaN(range[1]) ? range[1] : (range[0] !== undefined && typeof range[0] === 'number' && !isNaN(range[0]) ? range[0] + 1 : defaultValue + 1)
+  const r0 = typeof range[0] === 'number' && !Number.isNaN(range[0]) ? range[0] : defaultValue
+  const r1 =
+    typeof range[1] === 'number' && !Number.isNaN(range[1])
+      ? range[1]
+      : range[0] !== undefined && typeof range[0] === 'number' && !Number.isNaN(range[0])
+        ? range[0] + 1
+        : defaultValue + 1
   return [r0, r1]
 }
 
 function parseNumber(val: any, defaultValue = 0): number {
-  return typeof val === 'number' && !isNaN(val) ? val : defaultValue
+  return typeof val === 'number' && !Number.isNaN(val) ? val : defaultValue
 }

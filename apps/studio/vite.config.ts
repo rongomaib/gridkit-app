@@ -15,18 +15,18 @@ export default defineConfig(async () => ({
       registerType: 'autoUpdate',
       devOptions: { enabled: true },
       workbox: {
-        maximumFileSizeToCacheInBytes: 50 * 1024 * 1024 // 50MB
+        maximumFileSizeToCacheInBytes: 50 * 1024 * 1024, // 50MB
       },
       manifest: {
         name: 'Grid Kit Studio',
         short_name: 'Studio',
         theme_color: '#ffffff',
-        display: 'standalone'
-      }
-    })
+        display: 'standalone',
+      },
+    }),
   ],
   define: {
-    'process.env': process.env
+    'process.env': process.env,
   },
 
   // prevent vite from obscuring rust errors
@@ -55,7 +55,9 @@ export default defineConfig(async () => ({
   },
 
   optimizeDeps: {
-    exclude: ['@swc/wasm-web'],
+    // Exclude WASM packages from pre-bundling — they rely on import.meta.url
+    // to locate the .wasm binary at runtime, which esbuild's pre-bundler breaks.
+    exclude: ['@swc/wasm-web', 'gridkit-solver'],
   },
   worker: {
     format: 'es',

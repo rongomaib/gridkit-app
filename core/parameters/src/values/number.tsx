@@ -50,8 +50,18 @@ export function Number(props: NumberProps) {
         step={step}
         css={{ my: '2', px: '2' }}
       >
-        <Slider.Control css={{ display: 'flex', alignItems: 'center', position: 'relative', h: '6' }}>
-          <Slider.Track css={{ w: 'full', h: '1.5', bg: 'whiteAlpha.200', borderRadius: 'full', overflow: 'hidden' }}>
+        <Slider.Control
+          css={{ display: 'flex', alignItems: 'center', position: 'relative', h: '6' }}
+        >
+          <Slider.Track
+            css={{
+              w: 'full',
+              h: '1.5',
+              bg: 'whiteAlpha.200',
+              borderRadius: 'full',
+              overflow: 'hidden',
+            }}
+          >
             <Slider.Range css={{ bg: 'primary.400', h: 'full' }} />
           </Slider.Track>
 
@@ -70,7 +80,7 @@ export function Number(props: NumberProps) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                _focus: { ring: '2px', ringColor: 'primary.400', ringOffset: '1px' }
+                _focus: { ring: '2px', ringColor: 'primary.400', ringOffset: '1px' },
               }}
             >
               <Slider.HiddenInput />

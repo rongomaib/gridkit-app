@@ -46,3 +46,15 @@ lerna-debug.log
 
 src-tauri/target/
 src-tauri/gen/schemas/
+
+# Vite PWA generated service-worker artefacts
+dev-dist/
+
+# Rust / wasm-pack build artefacts
+solver/target/
+
+# Temporary editor files
+*.tmp.*
+
+# Windows path artefact (created by symlink / OneDrive on Windows)
+%SystemDrive%/

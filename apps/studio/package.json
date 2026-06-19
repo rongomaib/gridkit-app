@@ -28,6 +28,8 @@
     "@villagekit/part-gridbeam": "workspace:*",
     "@villagekit/part-gridpanel": "workspace:*",
     "@villagekit/part-hinge": "workspace:*",
+    "@villagekit/part-panel-brace": "workspace:*",
+    "@villagekit/part-timber": "workspace:*",
     "@villagekit/plugin-smart-fasteners": "workspace:*",
     "@villagekit/product": "workspace:*",
     "@villagekit/product-kit": "workspace:*",

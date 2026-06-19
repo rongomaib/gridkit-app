@@ -13,21 +13,21 @@ import {
 import type { HingeGlValue } from './types'
 
 // ─── Hinge dimensions (all metres) ─────────────────────────────────────────
-const LEAF_WIDTH = 0.031          // each leaf: x extent
-const LEAF_HEIGHT = 0.063         // total height (barrel length along Y)
-const LEAF_THICKNESS = 0.004      // plate thickness in Z
+const LEAF_WIDTH = 0.031 // each leaf: x extent
+const LEAF_HEIGHT = 0.063 // total height (barrel length along Y)
+const LEAF_THICKNESS = 0.004 // plate thickness in Z
 
 const BARREL_OUTER_RADIUS = 0.0055
-const KNUCKLE_LENGTH = 0.01545    // (0.063 − 3×0.0004) / 4
+const KNUCKLE_LENGTH = 0.01545 // (0.063 − 3×0.0004) / 4
 const KNUCKLE_GAP = 0.0004
 
 // Mounting holes: 2 per leaf, 0.020m from centreline, 0.040m apart vertically
 // 0.0115m from top/bottom edges → centres at y = 0.0115 and y = 0.0115 + 0.040
-const HOLE_RADIUS = 0.0030        // visual circle radius (approx M6 bore / 2)
+const HOLE_RADIUS = 0.003 // visual circle radius (approx M6 bore / 2)
 const HOLE_SEGMENTS = 16
-const HOLE_X_FROM_CL = 0.020      // |x| offset from barrel centreline
-const HOLE_Y_BOTTOM = 0.0115      // y of lower hole centre (from bottom of hinge)
-const HOLE_Y_TOP = HOLE_Y_BOTTOM + 0.040  // 0.0515 m
+const HOLE_X_FROM_CL = 0.02 // |x| offset from barrel centreline
+const HOLE_Y_BOTTOM = 0.0115 // y of lower hole centre (from bottom of hinge)
+const HOLE_Y_TOP = HOLE_Y_BOTTOM + 0.04 // 0.0515 m
 
 // Barrel sits Z-forward of the plate face; in our coord system the plate
 // occupies Z ∈ [0, LEAF_THICKNESS] and the barrel centre is at Z = LEAF_THICKNESS + BARREL_OUTER_RADIUS.
@@ -40,7 +40,9 @@ const BODY_COLOR = '#4a4a4a'
 
 // ─── PartsGl ────────────────────────────────────────────────────────────────
 
-export function PartsGl(props: PartsGlProps<HingeGlValue> & { onPartClick?: (id: string) => void }) {
+export function PartsGl(
+  props: PartsGlProps<HingeGlValue> & { onPartClick?: (id: string) => void },
+) {
   const { parts, onPartClick, ...restProps } = props
 
   return (
@@ -71,19 +73,27 @@ export function PartGl(props: PartGlProps) {
   const leaf2RotationY = angleInRadians - Math.PI
 
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: Three.js canvas object, not a DOM element
     <group
       name={`hinge-container-${id}`}
       position={position}
       quaternion={quaternion}
       scale={scale}
       userData={{ partId: id, partType: 'hinge' }}
-      onClick={(e) => { e.stopPropagation(); onPartClick?.(id) }}
+      onClick={(e) => {
+        e.stopPropagation()
+        onPartClick?.(id)
+      }}
     >
       {/* Fixed left leaf */}
       <LeafLeft id={id} />
 
       {/* Rotating right leaf */}
-      <group name={`hinge-leaf2-${id}`} position={[0, 0, BARREL_Z]} rotation={[0, leaf2RotationY, 0]}>
+      <group
+        name={`hinge-leaf2-${id}`}
+        position={[0, 0, BARREL_Z]}
+        rotation={[0, leaf2RotationY, 0]}
+      >
         <group position={[0, 0, -BARREL_Z]}>
           <LeafRight id={id} />
         </group>
@@ -127,7 +137,13 @@ function LeafLeft({ id }: LeafLeftProps) {
   return (
     <group name={`hinge-leaf-left-${id}`}>
       {/* Plate */}
-      <mesh name="hinge-leaf-left-plate" geometry={plateGeometry} material={bodyMaterial} castShadow receiveShadow />
+      <mesh
+        name="hinge-leaf-left-plate"
+        geometry={plateGeometry}
+        material={bodyMaterial}
+        castShadow
+        receiveShadow
+      />
 
       {/* Knuckle 1 (top) */}
       <mesh
@@ -181,7 +197,13 @@ function LeafRight({ id }: LeafRightProps) {
   return (
     <group name={`hinge-leaf-right-${id}`}>
       {/* Plate */}
-      <mesh name="hinge-leaf-right-plate" geometry={plateGeometry} material={bodyMaterial} castShadow receiveShadow />
+      <mesh
+        name="hinge-leaf-right-plate"
+        geometry={plateGeometry}
+        material={bodyMaterial}
+        castShadow
+        receiveShadow
+      />
 
       {/* Knuckle 2 */}
       <mesh

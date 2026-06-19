@@ -13,7 +13,9 @@ import {
 } from 'three'
 import type { GridBeamGlValue } from './types'
 
-export function PartsGl(props: PartsGlProps<GridBeamGlValue> & { onPartClick?: (id: string) => void }) {
+export function PartsGl(
+  props: PartsGlProps<GridBeamGlValue> & { onPartClick?: (id: string) => void },
+) {
   const { parts, onPartClick, ...restProps } = props
 
   return (
@@ -52,13 +54,17 @@ export function PartGl(props: PartGlProps) {
   }
 
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: Three.js canvas object, not a DOM element
     <group
       name={`gridbeam-container-${id}`}
       position={position}
       quaternion={quaternion}
       scale={scale}
       userData={{ partId: id, partType: 'gridbeam' }}
-      onClick={(e) => { e.stopPropagation(); onPartClick?.(id) }}
+      onClick={(e) => {
+        e.stopPropagation()
+        onPartClick?.(id)
+      }}
     >
       <Beam
         id={id}

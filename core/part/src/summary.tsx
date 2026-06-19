@@ -88,7 +88,6 @@ export function PartsSummaryForType(props: PartsSummaryForTypeProps): React.Reac
         {plural}
       </Text>
 
-      {/* biome-ignore lint/a11y/useSemanticElements: layout uses VStack flex; semantic role is sufficient */}
       <VStack role="list" width="full">
         {partQuotas.map((quota) => (
           <PartSummary
@@ -134,7 +133,6 @@ function PartSummary(props: PartSummaryProps) {
   }, [partType, partModule, part, summaryId])
 
   return (
-    // biome-ignore lint/a11y/useSemanticElements: layout uses HStack flex; semantic role is sufficient
     <HStack role="listitem" alignItems="center" gap="4" css={{ width: '100%' }}>
       {quota.type === 'grouped' && <PartCount count={quota.count} />}
 

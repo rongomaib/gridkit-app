@@ -1,0 +1,26 @@
+{
+  "name": "@villagekit/analysis",
+  "version": "0.10.0",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "source": "./src/index.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": ["./src", "./dist"],
+  "scripts": {
+    "build:dist": "tsup src",
+    "build:pkg": "pnpm run build:dist",
+    "lint": "biome check ."
+  },
+  "dependencies": {
+    "gridkit-solver": "workspace:*"
+  },
+  "peerDependencies": {
+    "three": "^0.165.0"
+  }
+}

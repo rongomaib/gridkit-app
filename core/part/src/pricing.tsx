@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { type ReactNode, createContext, useContext, useEffect, useState } from 'react'
 
 export type PricingConfig = Record<string, number>
 
@@ -44,11 +44,7 @@ export function PricingProvider({ children }: { children: ReactNode }) {
     }))
   }
 
-  return (
-    <PricingContext.Provider value={{ prices, setPrice }}>
-      {children}
-    </PricingContext.Provider>
-  )
+  return <PricingContext.Provider value={{ prices, setPrice }}>{children}</PricingContext.Provider>
 }
 
 export function usePricingContext() {

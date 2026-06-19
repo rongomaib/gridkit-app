@@ -198,6 +198,12 @@ importers:
       '@villagekit/part-hinge':
         specifier: workspace:*
         version: link:../../parts/hinge
+      '@villagekit/part-panel-brace':
+        specifier: workspace:*
+        version: link:../../parts/panel-brace
+      '@villagekit/part-timber':
+        specifier: workspace:*
+        version: link:../../parts/timber
       '@villagekit/plugin-smart-fasteners':
         specifier: workspace:*
         version: link:../../kit-plugins/smart-fasteners
@@ -335,6 +341,15 @@ importers:
         specifier: ^4.15.6
         version: 4.19.0
 
+  core/analysis:
+    dependencies:
+      gridkit-solver:
+        specifier: workspace:*
+        version: link:../../solver/pkg
+      three:
+        specifier: ^0.165.0
+        version: 0.165.0
+
   core/design:
     dependencies:
       '@villagekit/part-fastener':
@@ -349,6 +364,12 @@ importers:
       '@villagekit/part-hinge':
         specifier: workspace:*
         version: link:../../parts/hinge
+      '@villagekit/part-panel-brace':
+        specifier: workspace:*
+        version: link:../../parts/panel-brace
+      '@villagekit/part-timber':
+        specifier: workspace:*
+        version: link:../../parts/timber
       '@villagekit/plugin-smart-fasteners':
         specifier: workspace:*
         version: link:../../kit-plugins/smart-fasteners
@@ -671,11 +692,62 @@ importers:
         specifier: ^3.23.8
         version: 3.23.8
 
+  parts/panel-brace:
+    dependencies:
+      '@react-three/fiber':
+        specifier: ^9.0.0
+        version: 9.6.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.165.0)
+      '@villagekit/math':
+        specifier: workspace:*
+        version: link:../../util/math
+      '@villagekit/part':
+        specifier: workspace:*
+        version: link:../../core/part
+      '@villagekit/units':
+        specifier: workspace:*
+        version: link:../../util/units
+      react:
+        specifier: ^19.1.0
+        version: 19.2.6
+      three:
+        specifier: ^0.165.0
+        version: 0.165.0
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+
+  parts/timber:
+    dependencies:
+      '@react-three/fiber':
+        specifier: ^9.0.0
+        version: 9.6.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.165.0)
+      '@villagekit/math':
+        specifier: workspace:*
+        version: link:../../util/math
+      '@villagekit/part':
+        specifier: workspace:*
+        version: link:../../core/part
+      '@villagekit/units':
+        specifier: workspace:*
+        version: link:../../util/units
+      react:
+        specifier: ^19.1.0
+        version: 19.2.6
+      three:
+        specifier: ^0.165.0
+        version: 0.165.0
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+
   products/kit:
     dependencies:
       '@jridgewell/trace-mapping':
         specifier: ^0.3.25
         version: 0.3.25
+      '@react-three/drei':
+        specifier: ^10.0.0
+        version: 10.7.7(@react-three/fiber@9.6.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.165.0))(@types/react@19.2.15)(@types/three@0.165.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.165.0)
       '@react-three/fiber':
         specifier: ^9.0.0
         version: 9.6.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.165.0)
@@ -745,6 +817,8 @@ importers:
       zod:
         specifier: ^3.23.8
         version: 3.23.8
+
+  solver/pkg: {}
 
   util/math:
     dependencies:

@@ -1,33 +1,35 @@
+import { useUpdateProductFileMutation } from '@/client'
 import { useEditorContext } from '@/context/editor'
+import { useWorkspaceContext } from '@/context/workspace'
+import { useWorkspacesContext } from '@/context/workspaces'
 import { getTypeScriptExtensions } from '@/editor/typescript'
 import { useProductMeta } from '@villagekit/product'
-import { Box, HStack, VStack, Text } from '@villagekit/ui'
-import { useEffect, useRef, useState, useCallback } from 'react'
-import { useWorkspacesContext } from '@/context/workspaces'
-import { useWorkspaceContext } from '@/context/workspace'
-import { useUpdateProductFileMutation } from '@/client'
-import { useProductHistory, type Revision } from './useProductHistory'
+import { Box, HStack, Text, VStack } from '@villagekit/ui'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { type Revision, useProductHistory } from './useProductHistory'
 
 interface ProductEditorProps {}
 
 export function ProductEditor(_props: ProductEditorProps) {
   const { exports } = useProductMeta()
-  const { setParentEl, setLanguageExtensions, code, scrollToLine, setCodeToLoad } = useEditorContext()
-  
+  const { setParentEl, setLanguageExtensions, code, scrollToLine, setCodeToLoad } =
+    useEditorContext()
+
   const { activeWorkspace } = useWorkspacesContext()
   const { activeProductIndex } = useWorkspaceContext()
   const workspacePath = activeWorkspace?.path
   const productPath = activeProductIndex?.path
   const fileName = exports
 
-  const { history, autosave, isReady, saveToHistory, saveAutosave, clearAutosave } = useProductHistory(workspacePath, productPath)
+  const { history, autosave, isReady, saveToHistory, saveAutosave, clearAutosave } =
+    useProductHistory(workspacePath, productPath)
 
   const [showHistory, setShowHistory] = useState(false)
   const [showRecover, setShowRecover] = useState(false)
 
   // Initialization & auto-save prompts
   const [initialCodeLoaded, setInitialCodeLoaded] = useState(false)
-  
+
   useEffect(() => {
     if (code && !initialCodeLoaded) {
       setInitialCodeLoaded(true)
@@ -76,7 +78,7 @@ export function ProductEditor(_props: ProductEditorProps) {
   const updateFile = useUpdateProductFileMutation({
     onSuccess() {
       clearAutosave()
-    }
+    },
   })
 
   const handleSave = useCallback(() => {
@@ -90,35 +92,36 @@ export function ProductEditor(_props: ProductEditorProps) {
     const handleInspect = (e: any) => {
       const { id, type } = e.detail
       const currentCode = codeRef.current
-      
+
       let targetLine = -1
-      
+
       // Strip the numeric index prefix the engine prepends (e.g. "0__front-post-0" → "front-post-0").
       // The engine builds IDs as `${parentIndices.join('__')}__${userId}` in helpers.ts,
       // so we skip leading all-numeric segments to recover the user-provided id.
       let searchId = id
       if (searchId.includes('__')) {
         const segments = searchId.split('__')
-        const firstNonNumericIdx = segments.findIndex(s => !/^\d+$/.test(s))
+        const firstNonNumericIdx = segments.findIndex((s) => !/^\d+$/.test(s))
         searchId = firstNonNumericIdx === -1 ? '' : segments.slice(firstNonNumericIdx).join('__')
       }
-      
+
       const lines = currentCode.split('\n')
-      
-      let exactIndex = lines.findIndex(l => 
-        l.includes(`id: '${searchId}'`) || 
-        l.includes(`id: "${searchId}"`) || 
-        l.includes(`id: \`${searchId}\``)
+
+      let exactIndex = lines.findIndex(
+        (l) =>
+          l.includes(`id: '${searchId}'`) ||
+          l.includes(`id: "${searchId}"`) ||
+          l.includes(`id: \`${searchId}\``),
       )
-      
+
       // 1b. If exact match fails, use a robust word-overlap scoring system
       if (exactIndex === -1) {
         // Extract meaningful words from the ID (ignoring numbers, hyphens, and engine suffixes)
-        const searchWords = searchId.split(/[^a-zA-Z]+/).filter(w => w.length > 2)
-        
+        const searchWords = searchId.split(/[^a-zA-Z]+/).filter((w) => w.length > 2)
+
         let bestScore = 0
         let bestIndex = -1
-        
+
         for (let i = 0; i < lines.length; i++) {
           const l = lines[i]
           if (l.includes('id:')) {
@@ -132,7 +135,7 @@ export function ProductEditor(_props: ProductEditorProps) {
             }
           }
         }
-        
+
         if (bestScore > 0) {
           exactIndex = bestIndex
         }
@@ -146,7 +149,7 @@ export function ProductEditor(_props: ProductEditorProps) {
         if (type === 'gridbeam') typeStr = 'GridBeam.'
         if (type === 'gridpanel') typeStr = 'GridPanel.'
         if (type === 'fastener') typeStr = 'Fastener.'
-        
+
         if (typeStr) {
           const matchIndices: number[] = []
           for (let i = 0; i < lines.length; i++) {
@@ -154,7 +157,7 @@ export function ProductEditor(_props: ProductEditorProps) {
               matchIndices.push(i)
             }
           }
-          
+
           if (matchIndices.length > 0) {
             if (lastSearchRef.current.id === id) {
               lastSearchRef.current.index = (lastSearchRef.current.index + 1) % matchIndices.length
@@ -166,7 +169,7 @@ export function ProductEditor(_props: ProductEditorProps) {
           }
         }
       }
-      
+
       if (targetLine > 0) {
         scrollToLine(targetLine)
       }
@@ -185,11 +188,12 @@ export function ProductEditor(_props: ProductEditorProps) {
       if (id.includes('__')) {
         const segments = id.split('__')
         const firstNonNumericIdx = segments.findIndex((s: string) => !/^\d+$/.test(s))
-        searchIdStripped = firstNonNumericIdx === -1 ? '' : segments.slice(firstNonNumericIdx).join('__')
+        searchIdStripped =
+          firstNonNumericIdx === -1 ? '' : segments.slice(firstNonNumericIdx).join('__')
       }
 
       const lines = currentCode.split('\n')
-      
+
       const idRegex = new RegExp(`\\bid\\s*:\\s*(['"\`])${id}\\1`)
       const strippedIdRegex = new RegExp(`\\bid\\s*:\\s*(['"\`])${searchIdStripped}\\1`)
 
@@ -204,7 +208,7 @@ export function ProductEditor(_props: ProductEditorProps) {
         const searchWords = searchIdStripped.split(/[^a-zA-Z]+/).filter((w: string) => w.length > 2)
         let bestScore = 0
         let bestIndex = -1
-        
+
         for (let i = 0; i < lines.length; i++) {
           const l = lines[i]
           if (l.includes('id:')) {
@@ -218,15 +222,23 @@ export function ProductEditor(_props: ProductEditorProps) {
             }
           }
         }
-        
+
         if (bestScore > 0) {
           startIndex = bestIndex
-          console.log('handleUpdateProperty: Found fallback match for ID using word overlap:', lines[startIndex])
+          console.log(
+            'handleUpdateProperty: Found fallback match for ID using word overlap:',
+            lines[startIndex],
+          )
         }
       }
 
       if (startIndex === -1) {
-        console.warn('handleUpdateProperty: Could not find part block for', id, 'or', searchIdStripped)
+        console.warn(
+          'handleUpdateProperty: Could not find part block for',
+          id,
+          'or',
+          searchIdStripped,
+        )
         return
       }
 
@@ -249,42 +261,44 @@ export function ProductEditor(_props: ProductEditorProps) {
         const strippedLine = lines[i].replace(/\$\{[^}]+\}/g, 'x')
         openBraces += (strippedLine.match(/\{/g) || []).length
         openBraces -= (strippedLine.match(/\}/g) || []).length
-        
+
         if (openBraces === 0 && i !== blockStartIndex) break
 
-        const arrayPropRegex = new RegExp(`\\b${property}\\s*:\\s*\\[\\s*(.+?)\\s*,\\s*(.+?)\\s*\\]`)
+        const arrayPropRegex = new RegExp(
+          `\\b${property}\\s*:\\s*\\[\\s*(.+?)\\s*,\\s*(.+?)\\s*\\]`,
+        )
         const numPropRegex = new RegExp(`\\b${property}\\s*:\\s*([^,}\\n]+)`)
 
         const arrayMatch = lines[i].match(arrayPropRegex)
         const numMatch = lines[i].match(numPropRegex)
-        
+
         const shiftExpr = (expr: string, val: number) => {
-          expr = expr.trim()
-          if (val === 0) return expr
-          const num = Number(expr)
-          if (!isNaN(num)) return String(num + val)
-          
-          const match = expr.match(/^(.*?)(?:\s*([+-])\s*)(\d+)$/)
+          const trimmed = expr.trim()
+          if (val === 0) return trimmed
+          const num = Number(trimmed)
+          if (!Number.isNaN(num)) return String(num + val)
+
+          const match = trimmed.match(/^(.*?)(?:\s*([+-])\s*)(\d+)$/)
           if (match) {
             const base = match[1].trim()
             const operator = match[2] === '+' ? 1 : -1
-            const existingNum = parseInt(match[3])
-            
-            const newTotal = (operator * existingNum) + val
-            
+            const existingNum = Number.parseInt(match[3])
+
+            const newTotal = operator * existingNum + val
+
             if (base === '') {
               return String(newTotal)
             }
             if (newTotal === 0) {
               return base
-            } else if (newTotal > 0) {
-              return `${base} + ${newTotal}`
-            } else {
-              return `${base} - ${Math.abs(newTotal)}`
             }
+            if (newTotal > 0) {
+              return `${base} + ${newTotal}`
+            }
+            return `${base} - ${Math.abs(newTotal)}`
           }
-          
-          return val > 0 ? `${expr} + ${val}` : `${expr} - ${Math.abs(val)}`
+
+          return val > 0 ? `${trimmed} + ${val}` : `${trimmed} - ${Math.abs(val)}`
         }
 
         if (arrayMatch) {
@@ -295,24 +309,35 @@ export function ProductEditor(_props: ProductEditorProps) {
           lines[i] = lines[i].replace(arrayPropRegex, `${property}: [${startStr}, ${endStr}]`)
           const newCode = lines.join('\n')
           setCodeToLoad(newCode)
-          console.log('handleUpdateProperty: Successfully updated array property', property, 'to', `[${startStr}, ${endStr}]`)
+          console.log(
+            'handleUpdateProperty: Successfully updated array property',
+            property,
+            'to',
+            `[${startStr}, ${endStr}]`,
+          )
           if (workspacePath && productPath && fileName) {
             updateFile.mutate({ workspacePath, productPath, fileName, content: newCode })
           }
           return
-        } else if (numMatch) {
+        }
+        if (numMatch) {
           const numStr = shiftExpr(numMatch[1].trim(), value)
           lines[i] = lines[i].replace(numPropRegex, `${property}: ${numStr}`)
           const newCode = lines.join('\n')
           setCodeToLoad(newCode)
-          console.log('handleUpdateProperty: Successfully updated numeric property', property, 'to', numStr)
+          console.log(
+            'handleUpdateProperty: Successfully updated numeric property',
+            property,
+            'to',
+            numStr,
+          )
           if (workspacePath && productPath && fileName) {
             updateFile.mutate({ workspacePath, productPath, fileName, content: newCode })
           }
           return
         }
       }
-      
+
       console.warn('handleUpdateProperty: Could not find property', property, 'in block for', id)
     }
 
@@ -336,13 +361,36 @@ export function ProductEditor(_props: ProductEditorProps) {
   }
 
   return (
-    <Box css={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%', overflow: 'hidden' }}>
-      <Box css={{ display: 'flex', padding: '8px', borderBottom: '1px solid #ccc', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#f9f9f9', flexShrink: 0, zIndex: 10 }}>
+    <Box
+      css={{
+        display: 'flex',
+        flexDirection: 'column',
+        width: '100%',
+        height: '100%',
+        overflow: 'hidden',
+      }}
+    >
+      <Box
+        css={{
+          display: 'flex',
+          padding: '8px',
+          borderBottom: '1px solid #ccc',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          backgroundColor: '#f9f9f9',
+          flexShrink: 0,
+          zIndex: 10,
+        }}
+      >
         <Box css={{ display: 'flex', gap: '8px' }}>
-          <button style={buttonStyle} onClick={handleSave}>
+          <button type="button" style={buttonStyle} onClick={handleSave}>
             {updateFile.isLoading ? 'Saving...' : 'Save Design'}
           </button>
-          <button style={secondaryButtonStyle} onClick={() => setShowHistory(!showHistory)}>
+          <button
+            type="button"
+            style={secondaryButtonStyle}
+            onClick={() => setShowHistory(!showHistory)}
+          >
             History ({history.length})
           </button>
         </Box>
@@ -353,28 +401,87 @@ export function ProductEditor(_props: ProductEditorProps) {
       </Box>
 
       {showRecover && (
-        <Box css={{ display: 'flex', padding: '8px', backgroundColor: '#fef08a', color: '#854d0e', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0, zIndex: 10 }}>
+        <Box
+          css={{
+            display: 'flex',
+            padding: '8px',
+            backgroundColor: '#fef08a',
+            color: '#854d0e',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexShrink: 0,
+            zIndex: 10,
+          }}
+        >
           <Text>Unsaved changes detected from your last session.</Text>
           <Box css={{ display: 'flex', gap: '8px' }}>
-            <button style={buttonStyle} onClick={() => { setCodeToLoad(autosave!); setShowRecover(false) }}>Recover</button>
-            <button style={{...buttonStyle, backgroundColor: 'transparent', color: '#854d0e', border: '1px solid #854d0e'}} onClick={() => { clearAutosave(); setShowRecover(false) }}>Discard</button>
+            <button
+              type="button"
+              style={buttonStyle}
+              onClick={() => {
+                setCodeToLoad(autosave!)
+                setShowRecover(false)
+              }}
+            >
+              Recover
+            </button>
+            <button
+              type="button"
+              style={{
+                ...buttonStyle,
+                backgroundColor: 'transparent',
+                color: '#854d0e',
+                border: '1px solid #854d0e',
+              }}
+              onClick={() => {
+                clearAutosave()
+                setShowRecover(false)
+              }}
+            >
+              Discard
+            </button>
           </Box>
         </Box>
       )}
 
       {showHistory && (
-        <Box css={{ display: 'flex', flexDirection: 'column', padding: '8px', backgroundColor: '#eee', borderBottom: '1px solid #ccc', maxHeight: '200px', overflowY: 'auto', flexShrink: 0, zIndex: 10 }}>
+        <Box
+          css={{
+            display: 'flex',
+            flexDirection: 'column',
+            padding: '8px',
+            backgroundColor: '#eee',
+            borderBottom: '1px solid #ccc',
+            maxHeight: '200px',
+            overflowY: 'auto',
+            flexShrink: 0,
+            zIndex: 10,
+          }}
+        >
           <Text css={{ fontWeight: 'bold', marginBottom: '4px' }}>Revision History</Text>
           {history.length === 0 ? (
             <Text css={{ color: '#666' }}>No history yet. Save to create a revision.</Text>
           ) : (
             history.map((rev, i) => (
-              <Box key={rev.timestamp} css={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '4px 0', borderBottom: '1px solid #ddd' }}>
+              <Box
+                key={rev.timestamp}
+                css={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '4px 0',
+                  borderBottom: '1px solid #ddd',
+                }}
+              >
                 <Text>{new Date(rev.timestamp).toLocaleString()}</Text>
-                <button style={{...secondaryButtonStyle, padding: '4px 8px', fontSize: '12px'}} onClick={() => {
-                  setCodeToLoad(rev.code)
-                  setShowHistory(false)
-                }}>
+                <button
+                  type="button"
+                  style={{ ...secondaryButtonStyle, padding: '4px 8px', fontSize: '12px' }}
+                  onClick={() => {
+                    setCodeToLoad(rev.code)
+                    setShowHistory(false)
+                  }}
+                >
                   Restore
                 </button>
               </Box>

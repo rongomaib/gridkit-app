@@ -45,7 +45,10 @@ export function ProductProvider(props: PropsWithChildren<ProductOptions>) {
 function useProductEntry(options: ProductOptions): ProductEntry {
   const { productPath, workspacePath } = options
 
-  const productMetaQuery = useGetProductMetaQuery({ productPath, workspacePath: workspacePath || '' })
+  const productMetaQuery = useGetProductMetaQuery({
+    productPath,
+    workspacePath: workspacePath || '',
+  })
 
   const productExportsQuery = useGetProductFileQuery(
     {

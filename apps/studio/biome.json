@@ -2,5 +2,8 @@
   "extends": ["../../biome.json"],
   "vcs": {
     "root": "../../"
+  },
+  "files": {
+    "ignore": ["dev-dist/**"]
   }
 }

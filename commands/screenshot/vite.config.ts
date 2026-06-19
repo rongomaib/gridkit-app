@@ -1,6 +1,6 @@
 import { readFile, readdir, realpath } from 'node:fs/promises'
-import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
 import { reverse, sortBy } from 'lodash-es'
 import { defineConfig } from 'vite'

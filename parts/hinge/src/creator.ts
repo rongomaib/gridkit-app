@@ -1,11 +1,11 @@
 import { changeOfBasisTransform } from '@villagekit/math'
 import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
 import type { HingeType } from './types'
-import { hingeVariants } from './variants'
+import type { hingeVariants } from './variants'
 
 const getDefaultVariantId = (): keyof typeof hingeVariants => 'HeavyDuty_62x63'
 
-const GRID_UNIT = 0.04    // 40mm in metres
+const GRID_UNIT = 0.04 // 40mm in metres
 const LEAF_THICKNESS = 0.004 // plate thickness (same as gl.tsx)
 const BEAM_HALF_WIDTH = GRID_UNIT / 2 // 20mm — half of 40×40 mm gridbeam
 
@@ -40,9 +40,7 @@ export class HingeSpec extends BasePartSpec<HingeType> {
 
   equals(other: this): boolean {
     return (
-      this.type === other.type &&
-      this.variantId === other.variantId &&
-      this.angle === other.angle
+      this.type === other.type && this.variantId === other.variantId && this.angle === other.angle
     )
   }
 

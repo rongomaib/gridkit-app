@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from 'react'
-import { get, set } from 'idb-keyval'
-import { parse } from 'smol-toml'
 import type { ProductMeta } from '@villagekit/product'
+import { get, set } from 'idb-keyval'
+import { useCallback, useEffect, useState } from 'react'
+import { parse } from 'smol-toml'
 import type { ProductIndex } from './context/workspace'
 import type { Workspace } from './context/workspaces'
 
@@ -28,6 +28,7 @@ export function useQuery<TResult>(options: {
 
   const queryKeyStr = JSON.stringify(queryKey)
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: queryKeyStr is the stable serialised form of queryKey; using it avoids re-subscribing on every render when the array reference changes
   useEffect(() => {
     const handleInvalidate = (e: Event) => {
       const customEvent = e as CustomEvent
@@ -43,6 +44,7 @@ export function useQuery<TResult>(options: {
     return () => window.removeEventListener('invalidate-query', handleInvalidate)
   }, [queryKeyStr])
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: queryFn is omitted intentionally — callers pass inline functions and including it would cause infinite fetch loops; queryKeyStr + trigger drive re-fetches
   useEffect(() => {
     if (!enabled) return
 
@@ -81,24 +83,27 @@ export function useMutation<TResult, TError = Error, TVariables = void>(options:
   const [isSuccess, setIsSuccess] = useState(false)
   const [error, setError] = useState<TError | null>(null)
 
-  const mutate = useCallback((variables: TVariables) => {
-    setIsLoading(true)
-    setIsSuccess(false)
-    mutationFn(variables)
-      .then((res) => {
-        setIsSuccess(true)
-        setIsLoading(false)
-        setError(null)
-        if (onSuccess) {
-          void onSuccess(res)
-        }
-      })
-      .catch((err) => {
-        setError(err)
-        setIsLoading(false)
-        setIsSuccess(false)
-      })
-  }, [mutationFn, onSuccess])
+  const mutate = useCallback(
+    (variables: TVariables) => {
+      setIsLoading(true)
+      setIsSuccess(false)
+      mutationFn(variables)
+        .then((res) => {
+          setIsSuccess(true)
+          setIsLoading(false)
+          setError(null)
+          if (onSuccess) {
+            void onSuccess(res)
+          }
+        })
+        .catch((err) => {
+          setError(err)
+          setIsLoading(false)
+          setIsSuccess(false)
+        })
+    },
+    [mutationFn, onSuccess],
+  )
 
   return { mutate, isLoading, isSuccess, error }
 }
@@ -106,8 +111,10 @@ export function useMutation<TResult, TError = Error, TVariables = void>(options:
 export function useQueryClient() {
   return {
     invalidateQueries: (options: { queryKey: any[] }) => {
-      window.dispatchEvent(new CustomEvent('invalidate-query', { detail: { queryKey: options.queryKey } }))
-    }
+      window.dispatchEvent(
+        new CustomEvent('invalidate-query', { detail: { queryKey: options.queryKey } }),
+      )
+    },
   }
 }
 
@@ -157,7 +164,7 @@ export function useAddWorkspaceMutation(
 ) {
   return useMutation<void, Error, AddWorkspaceArgs>({
     mutationFn: async () => {
-       // Handled directly in useOpenWorkspaceMutation for PWA
+      // Handled directly in useOpenWorkspaceMutation for PWA
     },
     ...options,
   })
@@ -235,7 +242,7 @@ export function useGetProductMetaQuery(
 
       const productsDir = await handle.getDirectoryHandle('products')
       const productDir = await productsDir.getDirectoryHandle(args.productPath)
-      let fileHandle
+      let fileHandle: FileSystemFileHandle
       try {
         fileHandle = await productDir.getFileHandle('villagekit.toml')
       } catch (err) {
@@ -271,28 +278,33 @@ export function useGetProductFileQuery(
   return useQuery({
     queryKey: ['get_product_file', args],
     queryFn: async () => {
-      if (!args.workspacePath || !args.productPath || !args.fileName) throw new Error('Missing args')
+      if (!args.workspacePath || !args.productPath || !args.fileName)
+        throw new Error('Missing args')
       const handles = (await get<any[]>(WORKSPACES_STORE_KEY)) || []
       const handle = handles.find((h) => h.name === args.workspacePath)
       if (!handle) throw new Error('Workspace not found')
 
       const productsDir = await handle.getDirectoryHandle('products')
       const productDir = await productsDir.getDirectoryHandle(args.productPath)
-      
+
       const cleanName = args.fileName.replace(/^\.\//, '').trim()
       const parts = cleanName.split('/').filter(Boolean)
-      if (parts.length === 0) throw new Error(`Resolved file name is empty for args.fileName: "${args.fileName}"`)
+      if (parts.length === 0)
+        throw new Error(`Resolved file name is empty for args.fileName: "${args.fileName}"`)
       const fileName = parts.pop()!
       let currentDir = productDir
       for (const part of parts) {
         currentDir = await currentDir.getDirectoryHandle(part)
       }
-      
-      let fileHandle
+
+      let fileHandle: FileSystemFileHandle
       try {
         fileHandle = await currentDir.getFileHandle(fileName)
       } catch (err) {
-        console.error(`Failed to get file handle for fileName: "${fileName}", original args.fileName: "${args.fileName}"`, err)
+        console.error(
+          `Failed to get file handle for fileName: "${fileName}", original args.fileName: "${args.fileName}"`,
+          err,
+        )
         throw err
       }
       const file = await fileHandle.getFile()
@@ -314,31 +326,33 @@ export function useUpdateProductFileMutation(
 ) {
   return useMutation<void, Error, UpdateProductFileArgs>({
     mutationFn: async (args) => {
-      if (!args.workspacePath || !args.productPath || !args.fileName) throw new Error('Missing args')
+      if (!args.workspacePath || !args.productPath || !args.fileName)
+        throw new Error('Missing args')
       const handles = (await get<any[]>(WORKSPACES_STORE_KEY)) || []
       const handle = handles.find((h) => h.name === args.workspacePath)
       if (!handle) throw new Error('Workspace not found')
 
       const productsDir = await handle.getDirectoryHandle('products')
       const productDir = await productsDir.getDirectoryHandle(args.productPath)
-      
+
       const cleanName = args.fileName.replace(/^\.\//, '').trim()
       const parts = cleanName.split('/').filter(Boolean)
-      if (parts.length === 0) throw new Error(`Resolved file name is empty for args.fileName: "${args.fileName}"`)
+      if (parts.length === 0)
+        throw new Error(`Resolved file name is empty for args.fileName: "${args.fileName}"`)
       const fileName = parts.pop()!
       let currentDir = productDir
       for (const part of parts) {
         currentDir = await currentDir.getDirectoryHandle(part)
       }
-      
-      let fileHandle
+
+      let fileHandle: FileSystemFileHandle
       try {
         fileHandle = await currentDir.getFileHandle(fileName, { create: true })
       } catch (err) {
         console.error(`Failed to get file handle for saving: "${fileName}"`, err)
         throw err
       }
-      
+
       const writable = await (fileHandle as any).createWritable()
       await writable.write(args.content)
       await writable.close()

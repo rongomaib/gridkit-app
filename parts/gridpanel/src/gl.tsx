@@ -16,7 +16,9 @@ import {
 import { getEveryHolePosition } from './helpers'
 import type { GridPanelGlValue, GridPanelHoles, GridPanelSpecHoleVariant } from './types'
 
-export function PartsGl(props: PartsGlProps<GridPanelGlValue> & { onPartClick?: (id: string) => void }) {
+export function PartsGl(
+  props: PartsGlProps<GridPanelGlValue> & { onPartClick?: (id: string) => void },
+) {
   const { parts, onPartClick, ...restProps } = props
 
   return (
@@ -56,10 +58,14 @@ export function PartGl(props: PartGlProps) {
   }
 
   return (
+    // biome-ignore lint/a11y/useKeyWithClickEvents: Three.js canvas object, not a DOM element
     <group
       name={`gridpanel-container-${id}`}
       userData={{ partId: id, partType: 'gridpanel' }}
-      onClick={(e) => { e.stopPropagation(); onPartClick?.(id) }}
+      onClick={(e) => {
+        e.stopPropagation()
+        onPartClick?.(id)
+      }}
     >
       <Panel
         id={id}

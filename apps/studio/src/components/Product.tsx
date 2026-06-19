@@ -9,9 +9,9 @@ import {
   useProductMeta,
 } from '@villagekit/product'
 import { Box, Flex, Heading, Tabs } from '@villagekit/ui'
+import { useRef, useState } from 'react'
 import { Loading } from './Loading'
 import { ProductEditor } from './ProductEditor'
-import { useState, useRef } from 'react'
 
 export default function Product() {
   const hasProduct = useHasProduct()
@@ -24,7 +24,15 @@ export default function Product() {
 
   return (
     <Flex css={{ width: '100%', height: '100%', flexDirection: 'row' }}>
-      <Box css={{ width: `${leftWidth}px`, height: '100%', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+      <Box
+        css={{
+          width: `${leftWidth}px`,
+          height: '100%',
+          overflow: 'hidden',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
+      >
         <ProductControls />
       </Box>
       <Box
@@ -78,7 +86,17 @@ function ProductControls() {
         <Tabs.Trigger value="code">Code</Tabs.Trigger>
         {showParamControls && <Tabs.Trigger value="parameters">Parameters</Tabs.Trigger>}
       </Tabs.List>
-      <Tabs.Content value="code" css={{ flex: 1, minHeight: 0, padding: 0, position: 'relative', width: '100%', height: '100%' }}>
+      <Tabs.Content
+        value="code"
+        css={{
+          flex: 1,
+          minHeight: 0,
+          padding: 0,
+          position: 'relative',
+          width: '100%',
+          height: '100%',
+        }}
+      >
         <ProductEditor />
       </Tabs.Content>
       {showParamControls && (

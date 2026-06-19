@@ -2,7 +2,15 @@ import { useFrame, useThree } from '@react-three/fiber'
 import { useActorRef } from '@xstate/react'
 import type CameraControlsType from 'camera-controls'
 import CameraControlsImpl from 'camera-controls'
-import { forwardRef, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react'
+import {
+  forwardRef,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import {
   Box3,
   MOUSE,
@@ -69,7 +77,7 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
     const actor = useActorRef(actorMachine)
 
     const [isControlEnabled, setIsControlEnabled] = useState(true)
-    
+
     useEffect(() => {
       const handler = (e: any) => setIsControlEnabled(!e.detail)
       window.addEventListener('transform-dragging', handler)

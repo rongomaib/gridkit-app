@@ -19,10 +19,16 @@ const PART_LABELS: Record<string, string> = {
 function formatPartId(id: string) {
   const parts = id.split('__')
   if (parts.length === 2) {
-    const name = parts[1].split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+    const name = parts[1]!
+      .split('-')
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(' ')
     return `${name} (${parts[0]})`
   }
-  return id.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')
+  return id
+    .split('-')
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
 }
 
 export function ProductKitInfo(_props: ProductKitInfoProps) {
@@ -165,31 +171,31 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
 
   const { selectedPartId, partValues, setSelectedPartId } = useProductKitContext()
   const selectedPart = selectedPartId != null ? parts.find((p) => p.id === selectedPartId) : null
-  const selectedPartGlValue = selectedPartId != null ? partValues.find((p: any) => p.id === selectedPartId) : null
+  const selectedPartGlValue =
+    selectedPartId != null ? partValues.find((p: any) => p.id === selectedPartId) : null
 
   if (selectedPart != null && selectedPartGlValue != null) {
     const partType = (selectedPart as any).spec.type as string
     const partId = selectedPart.id
 
-    const dispatchUpdate = (property: string, value: number, mode: 'start' | 'end' | 'shift' = 'shift') => {
+    const dispatchUpdate = (
+      property: string,
+      value: number,
+      mode: 'start' | 'end' | 'shift' = 'shift',
+    ) => {
       window.dispatchEvent(
         new CustomEvent('update-part-property', {
-          detail: { id: partId, type: partType, property, value, mode }
-        })
+          detail: { id: partId, type: partType, property, value, mode },
+        }),
       )
     }
 
     return (
-      <VStack
-        as="section"
-        aria-label="Part Inspector"
-        gap="4"
-        css={{ width: '100%', padding: 4 }}
-      >
+      <VStack as="section" aria-label="Part Inspector" gap="4" css={{ width: '100%', padding: 4 }}>
         <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
           <Text css={{ fontWeight: 'bold', fontSize: 'lg' }}>Inspector</Text>
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={() => setSelectedPartId(null)}
             style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '18px' }}
           >
@@ -218,7 +224,8 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
             <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
               <Text css={{ color: 'gray.600' }}>Size</Text>
               <Text>
-                {(selectedPartGlValue as any).sizeInGrids[0]} × {(selectedPartGlValue as any).sizeInGrids[1]} grids
+                {(selectedPartGlValue as any).sizeInGrids[0]} ×{' '}
+                {(selectedPartGlValue as any).sizeInGrids[1]} grids
               </Text>
             </HStack>
           )}
@@ -226,18 +233,27 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
 
         <VStack gap="2" css={{ width: '100%', marginTop: '8px' }}>
           <Text css={{ fontWeight: 'bold' }}>Translate (Grid Units)</Text>
-          <div style={{ display: 'grid', gridTemplateColumns: '20px 1fr 1fr 1fr', columnGap: '24px', rowGap: '8px', width: '100%', alignItems: 'center' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '20px 1fr 1fr 1fr',
+              columnGap: '24px',
+              rowGap: '8px',
+              width: '100%',
+              alignItems: 'center',
+            }}
+          >
             <div />
             <Text css={{ fontSize: 'xs', color: 'gray.500', textAlign: 'center' }}>Start</Text>
             <Text css={{ fontSize: 'xs', color: 'gray.500', textAlign: 'center' }}>End</Text>
             <Text css={{ fontSize: 'xs', color: 'gray.500', textAlign: 'center' }}>Shift</Text>
-            
+
             {['x', 'y', 'z'].map((axis) => {
               const specVal = (selectedPart as any).spec[axis]
               let startVal: React.ReactNode = ''
               let endVal: React.ReactNode = ''
               let shiftVal: React.ReactNode = ''
-              
+
               if (Array.isArray(specVal)) {
                 startVal = specVal[0]
                 endVal = specVal[1]
@@ -247,15 +263,31 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
 
               const renderControl = (val: React.ReactNode, mode: 'start' | 'end' | 'shift') => (
                 <HStack gap="1" css={{ justifyContent: 'center' }}>
-                  <button type="button" style={btnStyleSmall} onClick={() => dispatchUpdate(axis, -1, mode)}>-</button>
-                  {val !== '' && <Text css={{ fontSize: 'sm', width: '24px', textAlign: 'center' }}>{val}</Text>}
-                  <button type="button" style={btnStyleSmall} onClick={() => dispatchUpdate(axis, 1, mode)}>+</button>
+                  <button
+                    type="button"
+                    style={btnStyleSmall}
+                    onClick={() => dispatchUpdate(axis, -1, mode)}
+                  >
+                    -
+                  </button>
+                  {val !== '' && (
+                    <Text css={{ fontSize: 'sm', width: '24px', textAlign: 'center' }}>{val}</Text>
+                  )}
+                  <button
+                    type="button"
+                    style={btnStyleSmall}
+                    onClick={() => dispatchUpdate(axis, 1, mode)}
+                  >
+                    +
+                  </button>
                 </HStack>
               )
 
               return (
                 <Fragment key={axis}>
-                  <Text css={{ color: 'gray.600', fontWeight: 'bold', textTransform: 'uppercase' }}>{axis}</Text>
+                  <Text css={{ color: 'gray.600', fontWeight: 'bold', textTransform: 'uppercase' }}>
+                    {axis}
+                  </Text>
                   {renderControl(startVal, 'start')}
                   {renderControl(endVal, 'end')}
                   {renderControl(shiftVal, 'shift')}
@@ -264,21 +296,11 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
             })}
           </div>
         </VStack>
-
       </VStack>
     )
   }
 
   return defaultInfo
-}
-
-const btnStyle = {
-  padding: '4px 8px',
-  backgroundColor: '#e2e8f0',
-  border: '1px solid #cbd5e1',
-  borderRadius: '4px',
-  cursor: 'pointer',
-  fontWeight: 'bold',
 }
 
 const btnStyleSmall = {
@@ -288,5 +310,5 @@ const btnStyleSmall = {
   borderRadius: '4px',
   cursor: 'pointer',
   fontWeight: 'bold',
-  fontSize: '12px'
+  fontSize: '12px',
 }

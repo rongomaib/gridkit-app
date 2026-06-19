@@ -1,13 +1,23 @@
 import { useWorkspaceContext } from '@/context/workspace'
 import { type Workspace, useWorkspacesContext } from '@/context/workspaces'
-import { Box, Button, Flex, HStack, Heading, List, Tooltip, VStack, IconButton, Icon } from '@villagekit/ui'
+import {
+  Box,
+  Button,
+  Flex,
+  HStack,
+  Heading,
+  Icon,
+  IconButton,
+  List,
+  Tooltip,
+  VStack,
+} from '@villagekit/ui'
 import { useMemo, useState } from 'react'
 import { FaBars, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 
 interface WorkspaceLayoutProps {
   children: React.ReactNode
 }
-
 
 export function WorkspaceLayout(props: WorkspaceLayoutProps) {
   const { children } = props
@@ -88,7 +98,9 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
           <Box css={{ flexGrow: 1 }} />
         </VStack>
       ) : (
-        <Box css={{ borderRight: '1px solid', borderColor: 'gray.200', padding: 2, height: '100%' }}>
+        <Box
+          css={{ borderRight: '1px solid', borderColor: 'gray.200', padding: 2, height: '100%' }}
+        >
           <IconButton
             aria-label="Expand sidebar"
             title="Expand sidebar"

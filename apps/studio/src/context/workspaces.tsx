@@ -2,8 +2,8 @@ import {
   useAddWorkspaceMutation,
   useListWorkspacesQuery,
   useOpenWorkspaceMutation,
-  useRemoveWorkspaceMutation,
   useQueryClient,
+  useRemoveWorkspaceMutation,
 } from '@/client'
 import { createContext, useCallback, useContext, useMemo, useState } from 'react'
 
