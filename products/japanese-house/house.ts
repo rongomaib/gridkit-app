@@ -5,10 +5,10 @@ import { PanelBrace } from '@villagekit/part-panel-brace/creator'
 //
 // Layout (grid units, 1 gu = 40 mm):
 //   X: 0, 60, 120  — three post lines at 2400 mm centres (house width 4800 mm)
-//   Y: 0 = back wall (high eave), 60 = front wall, 90 = engawa outer (low eave)
+//   Y: 0 = back wall (high eave), 60 = front wall, ENGAWA_Y = engawa outer (low eave)
 //
 // Monopitch: engawa eave fixed at 65 gu (2600 mm). Pitch angle drives back and
-// mid post heights via tan(pitch) × 90 gu Y-span.
+// mid post heights via tan(pitch) × ENGAWA_Y span.
 
 export const parameters = {
   pitchDeg: {
@@ -38,21 +38,31 @@ export const parameters = {
 }
 
 export const presets = [
-  { id: 'default', label: 'Default (14°)', values: { pitchDeg: 14 } },
-  { id: 'flat',    label: 'Flat (0°)',     values: { pitchDeg: 0  } },
-  { id: 'steep',   label: 'Steep (25°)',   values: { pitchDeg: 25 } },
+  { id: 'default',      label: 'Default (14°)',    values: { pitchDeg: 14, floorHeightGu: 9, engawaWidthGu: 30 } },
+  { id: 'flat',         label: 'Flat (0°)',         values: { pitchDeg: 0,  floorHeightGu: 9, engawaWidthGu: 30 } },
+  { id: 'steep',        label: 'Steep (25°)',       values: { pitchDeg: 25, floorHeightGu: 9, engawaWidthGu: 30 } },
+  { id: 'deep-engawa',  label: 'Deep engawa',       values: { pitchDeg: 14, floorHeightGu: 9, engawaWidthGu: 45 } },
+  { id: 'raised-floor', label: 'Raised floor',      values: { pitchDeg: 14, floorHeightGu: 4, engawaWidthGu: 30 } },
 ]
 
-export const parts = ({ pitchDeg }: { pitchDeg: number }) => {
-  const FLOOR_Z    = 9
-  const ENGAWA_Y   = 90
+export const parts = ({
+  pitchDeg,
+  floorHeightGu,
+  engawaWidthGu,
+}: {
+  pitchDeg: number
+  floorHeightGu: number
+  engawaWidthGu: number
+}) => {
+  const FLOOR_Z  = floorHeightGu
+  const ENGAWA_Y = 60 + engawaWidthGu
   const POST_H_LOW = 65  // engawa eave — fixed low side
 
-  // Height difference across the full 90-gu Y span
-  const heightDiff  = Math.round(Math.tan((pitchDeg * Math.PI) / 180) * 90)
+  // Height difference across the full ENGAWA_Y span — preserves pitch angle as engawa width changes
+  const heightDiff  = Math.round(Math.tan((pitchDeg * Math.PI) / 180) * ENGAWA_Y)
   const POST_H_BACK = POST_H_LOW + heightDiff
-  // Front wall (y=60) is 30 gu from engawa (y=90), so 30/90 of the total rise
-  const POST_H_MID  = POST_H_LOW + Math.round(heightDiff * (30 / 90))
+  // Front wall at y=60 interpolates linearly along the roof slope
+  const POST_H_MID  = POST_H_LOW + Math.round(heightDiff * (ENGAWA_Y - 60) / ENGAWA_Y)
 
   // Purlin bottom sits 3 gu (120 mm) below each post top
   const TOP_BACK = POST_H_BACK - 3
