@@ -22,22 +22,33 @@ const mirrorYTransform = mirrorTransform('y')
 export class PanelBraceSpec extends BasePartSpec<PanelBraceType> {
   variantId: keyof typeof panelBraceVariants
   lengthInGrids: number
+  heightInGrids: number
+  depthInGrids: number
 
-  constructor(lengthInGrids: number, variantId?: keyof typeof panelBraceVariants) {
+  constructor(
+    lengthInGrids: number,
+    variantId?: keyof typeof panelBraceVariants,
+    heightInGrids?: number,
+    depthInGrids?: number,
+  ) {
     super('panel-brace')
     this.variantId = variantId ?? getDefaultVariantId()
     this.lengthInGrids = lengthInGrids
+    this.heightInGrids = heightInGrids ?? 20
+    this.depthInGrids = depthInGrids ?? 3
   }
 
   id(): string {
-    return `PanelBrace_Length${this.lengthInGrids}gu_${this.variantId}`
+    return `PanelBrace_${this.lengthInGrids}x${this.heightInGrids}x${this.depthInGrids}gu_${this.variantId}`
   }
 
   equals(other: this): boolean {
     return (
       this.type === other.type &&
       this.variantId === other.variantId &&
-      this.lengthInGrids === other.lengthInGrids
+      this.lengthInGrids === other.lengthInGrids &&
+      this.heightInGrids === other.heightInGrids &&
+      this.depthInGrids === other.depthInGrids
     )
   }
 
@@ -50,27 +61,29 @@ export type PanelBraceSpecSerialized = {
   type: PanelBraceType
   variantId: keyof typeof panelBraceVariants
   lengthInGrids: number
+  heightInGrids: number
+  depthInGrids: number
 }
 function serializeSpec(instance: PanelBraceSpec): PanelBraceSpecSerialized {
-  const { variantId, lengthInGrids } = instance
-  return { type: 'panel-brace', variantId, lengthInGrids }
+  const { variantId, lengthInGrids, heightInGrids, depthInGrids } = instance
+  return { type: 'panel-brace', variantId, lengthInGrids, heightInGrids, depthInGrids }
 }
 function deserializeSpec(object: PanelBraceSpecSerialized): PanelBraceSpec {
-  const { variantId, lengthInGrids } = object
-  return new PanelBraceSpec(lengthInGrids, variantId)
+  const { variantId, lengthInGrids, heightInGrids, depthInGrids } = object
+  return new PanelBraceSpec(lengthInGrids, variantId, heightInGrids, depthInGrids)
 }
 
 export class PanelBrace extends BasePartCreator<PanelBraceSpec> {
   static create(options: PanelBraceOptions) {
-    const { variantId, lengthInGrids, id } = options
-    const spec = new PanelBraceSpec(lengthInGrids, variantId)
+    const { variantId, lengthInGrids, heightInGrids, depthInGrids, id } = options
+    const spec = new PanelBraceSpec(lengthInGrids, variantId, heightInGrids, depthInGrids)
     return new PanelBrace(spec, id)
   }
 
-  // Horizontal panel spanning X axis; height (800mm) rises in Z; depth (120mm) in Y.
+  // Horizontal panel spanning X axis; height rises in Z; depth in Y.
   // z is the bottom-of-panel grid position.
   static X(options: PanelBraceXOptions) {
-    const { id, x, y, z, variantId = getDefaultVariantId() } = options
+    const { id, x, y, z, variantId = getDefaultVariantId(), heightInGrids, depthInGrids } = options
 
     const gridUnit = getGridLengthInMeters(variantId)
 
@@ -82,6 +95,8 @@ export class PanelBrace extends BasePartCreator<PanelBraceSpec> {
       id,
       variantId,
       lengthInGrids: Math.abs(safeX[0] - safeX[1]),
+      heightInGrids,
+      depthInGrids,
     }).applyTransform(xSpanTransform)
 
     if (safeX[0] > safeX[1]) {
@@ -91,10 +106,10 @@ export class PanelBrace extends BasePartCreator<PanelBraceSpec> {
     return panel.translate([safeX[0] * gridUnit, safeY * gridUnit, safeZ * gridUnit])
   }
 
-  // Horizontal panel spanning Y axis; height (800mm) rises in Z; depth (120mm) in X.
+  // Horizontal panel spanning Y axis; height rises in Z; depth in X.
   // z is the bottom-of-panel grid position.
   static Y(options: PanelBraceYOptions) {
-    const { id, x, y, z, variantId = getDefaultVariantId() } = options
+    const { id, x, y, z, variantId = getDefaultVariantId(), heightInGrids, depthInGrids } = options
 
     const gridUnit = getGridLengthInMeters(variantId)
 
@@ -106,6 +121,8 @@ export class PanelBrace extends BasePartCreator<PanelBraceSpec> {
       id,
       variantId,
       lengthInGrids: Math.abs(safeY[0] - safeY[1]),
+      heightInGrids,
+      depthInGrids,
     }).applyTransform(ySpanTransform)
 
     if (safeY[0] > safeY[1]) {
@@ -119,6 +136,8 @@ export class PanelBrace extends BasePartCreator<PanelBraceSpec> {
 interface PanelBraceSpecOptions {
   variantId: keyof typeof panelBraceVariants
   lengthInGrids: number
+  heightInGrids?: number
+  depthInGrids?: number
 }
 
 interface BaseCreatorOptions {
@@ -132,6 +151,8 @@ interface PanelBraceXOptions extends BaseCreatorOptions {
   x: [number, number]
   y: number
   z: number
+  heightInGrids?: number
+  depthInGrids?: number
 }
 
 interface PanelBraceYOptions extends BaseCreatorOptions {
@@ -139,6 +160,8 @@ interface PanelBraceYOptions extends BaseCreatorOptions {
   x: number
   y: [number, number]
   z: number
+  heightInGrids?: number
+  depthInGrids?: number
 }
 
 function getGridLengthInMeters(variantId: string): number {

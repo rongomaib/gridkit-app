@@ -56,7 +56,7 @@ function useProductEntry(options: ProductOptions): ProductEntry {
     {
       workspacePath: workspacePath || '',
       productPath,
-      fileName: productMetaQuery.isSuccess ? productMetaQuery.data.exports : '',
+      fileName: productMetaQuery.isSuccess ? productMetaQuery.data!.exports : '',
     },
     { enabled: productMetaQuery.isSuccess },
   )
@@ -65,14 +65,14 @@ function useProductEntry(options: ProductOptions): ProductEntry {
 
   useEffect(() => {
     if (!productExportsQuery.isSuccess) return
-    setEditorCode(productExportsQuery.data)
+    setEditorCode(productExportsQuery.data!)
   }, [productExportsQuery.isSuccess, productExportsQuery.data, setEditorCode])
 
   if (!productMetaQuery.isSuccess) return null
   if (!productExportsQuery.isSuccess) return null
 
   return {
-    meta: productMetaQuery.data,
+    meta: productMetaQuery.data!,
     code: editorCode,
   }
 }

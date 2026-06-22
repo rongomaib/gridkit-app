@@ -4,9 +4,9 @@ import { useWorkspaceContext } from '@/context/workspace'
 import { useWorkspacesContext } from '@/context/workspaces'
 import { getTypeScriptExtensions } from '@/editor/typescript'
 import { useProductMeta } from '@villagekit/product'
-import { Box, HStack, Text, VStack } from '@villagekit/ui'
+import { Box, Text } from '@villagekit/ui'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { type Revision, useProductHistory } from './useProductHistory'
+import { useProductHistory } from './useProductHistory'
 
 interface ProductEditorProps {}
 
@@ -101,7 +101,7 @@ export function ProductEditor(_props: ProductEditorProps) {
       let searchId = id
       if (searchId.includes('__')) {
         const segments = searchId.split('__')
-        const firstNonNumericIdx = segments.findIndex((s) => !/^\d+$/.test(s))
+        const firstNonNumericIdx = segments.findIndex((s: string) => !/^\d+$/.test(s))
         searchId = firstNonNumericIdx === -1 ? '' : segments.slice(firstNonNumericIdx).join('__')
       }
 
@@ -117,7 +117,7 @@ export function ProductEditor(_props: ProductEditorProps) {
       // 1b. If exact match fails, use a robust word-overlap scoring system
       if (exactIndex === -1) {
         // Extract meaningful words from the ID (ignoring numbers, hyphens, and engine suffixes)
-        const searchWords = searchId.split(/[^a-zA-Z]+/).filter((w) => w.length > 2)
+        const searchWords = searchId.split(/[^a-zA-Z]+/).filter((w: string) => w.length > 2)
 
         let bestScore = 0
         let bestIndex = -1
@@ -181,7 +181,7 @@ export function ProductEditor(_props: ProductEditorProps) {
 
   useEffect(() => {
     const handleUpdateProperty = (e: any) => {
-      const { id, type, property, value, mode = 'shift' } = e.detail
+      const { id, property, value, mode = 'shift' } = e.detail
       const currentCode = codeRef.current
 
       let searchIdStripped = id
@@ -462,7 +462,7 @@ export function ProductEditor(_props: ProductEditorProps) {
           {history.length === 0 ? (
             <Text css={{ color: '#666' }}>No history yet. Save to create a revision.</Text>
           ) : (
-            history.map((rev, i) => (
+            history.map((rev) => (
               <Box
                 key={rev.timestamp}
                 css={{

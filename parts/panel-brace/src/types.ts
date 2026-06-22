@@ -21,6 +21,8 @@ export type PanelBraceGlValue = {
   depthInMeters: number
   heightInMeters: number
   lengthInGrids: number
+  heightInGrids: number
+  depthInGrids: number
   lengthInMeters: number
   position: Vector3
   quaternion: Quaternion

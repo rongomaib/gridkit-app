@@ -24,7 +24,7 @@ function useWorkspaces(): WorkspacesState {
   const queryClient = useQueryClient()
 
   const listWorkspacesQuery = useListWorkspacesQuery()
-  const workspaces = listWorkspacesQuery.isSuccess ? listWorkspacesQuery.data : null
+  const workspaces = listWorkspacesQuery.isSuccess ? (listWorkspacesQuery.data ?? null) : null
 
   const openWorkspaceMutation = useOpenWorkspaceMutation({
     onSuccess(selectedDirectory) {

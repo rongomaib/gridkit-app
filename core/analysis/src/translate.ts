@@ -26,8 +26,9 @@ import type {
 // 40 mm universal grid: 1 grid unit = 0.04 m
 const GRID_UNIT_M = 0.04
 
-// Ply_120x800 panel height (fixed by variant - 800 mm)
-const PANEL_HEIGHT_M = 0.8
+// Default panel height when spec doesn't carry heightInGrids (20 grids = 800 mm)
+const DEFAULT_PANEL_HEIGHT_GRIDS = 20
+const DEFAULT_PANEL_DEPTH_GRIDS = 3
 
 // Node deduplication tolerance: 1 mm
 const TOL = 0.001
@@ -45,18 +46,22 @@ const TIMBER_SECTION: Section = {
   J: 2.92e-5,
 }
 
-// Ply_120x800 - equivalent deep-beam properties for a solid 120 mm x 800 mm rectangle.
-// For a horizontal panel spanning world X: local y = world Z (vertical, 800mm dim),
-// local z = world -Y (out-of-plane, 120mm dim).
-//
-// Iy = I about local y = (dim_along_lz)^3 * (dim_along_ly) / 12 = 0.12^3 * 0.80 / 12 = 1.152e-4 m^4 (weak, out-of-plane)
-// Iz = I about local z = (dim_along_ly)^3 * (dim_along_lz) / 12 = 0.80^3 * 0.12 / 12 = 5.12e-3 m^4  (strong, gravity)
-// J  approx (b^3h/3)(1 - 0.63 b/h + ...) for b=0.12, h=0.80  approx 4.17e-4 m^4
-const PANEL_SECTION: Section = {
-  A: 0.096,
-  Iy: 1.152e-4,
-  Iz: 5.12e-3,
-  J: 4.17e-4,
+// Compute panel section properties from actual dimensions.
+// local y = world Z (height dim), local z = world -Y (depth dim).
+// Iy = weak (out-of-plane): d^3 * h / 12
+// Iz = strong (in-plane):   h^3 * d / 12
+// J  ≈ b^3 * a / 3 * (1 - 0.63*b/a) for rectangle b<=a
+function panelSection(heightM: number, depthM: number): Section {
+  const h = heightM
+  const d = depthM
+  const b = Math.min(h, d)
+  const a = Math.max(h, d)
+  return {
+    A: h * d,
+    Iy: (d * d * d * h) / 12,
+    Iz: (h * h * h * d) / 12,
+    J: ((b * b * b * a) / 3) * (1 - 0.63 * (b / a)),
+  }
 }
 
 // -- Material properties (SI: Pa) -----------------------------------------------
@@ -80,7 +85,7 @@ const RIGID: MemberEndReleases = { start: NO_RELEASE, end: NO_RELEASE }
 // -- Input type (structural duck-typing) ----------------------------------------
 
 type AnyCreator = {
-  spec: { type: string; lengthInGrids: number }
+  spec: { type: string; lengthInGrids: number; heightInGrids?: number; depthInGrids?: number }
   id?: string
   transform: number[]
 }
@@ -122,9 +127,9 @@ function getMemberAxis(transform: number[]): Vec3 {
   // matrices with det=-1 (reflections). Three.js decompose flips scale_x for
   // det<0, corrupting the quaternion and yielding the wrong axis direction.
   const e = new Matrix4().fromArray(transform).elements
-  const len = Math.hypot(e[0], e[1], e[2])
+  const len = Math.hypot(e[0]!, e[1]!, e[2]!)
   if (len < 1e-10) return { x: 1, y: 0, z: 0 }
-  return { x: e[0] / len, y: e[1] / len, z: e[2] / len }
+  return { x: e[0]! / len, y: e[1]! / len, z: e[2]! / len }
 }
 
 function posKey(v: Vec3): string {
@@ -210,11 +215,15 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
     snappedStartXyKey: string
     snappedEndXyKey: string
     bottomZ: number // world Z of panel bottom edge (= start.z)
+    heightM: number // panel height in metres (from spec.heightInGrids)
+    depthM: number  // panel depth in metres (from spec.depthInGrids)
   }
   const panelData: PanelData[] = panels.map((p) => {
     const [start, end] = getEndpoints(p)
     const snappedStart = snapXyToPost(start)
     const snappedEnd = snapXyToPost(end)
+    const heightM = (p.spec.heightInGrids ?? DEFAULT_PANEL_HEIGHT_GRIDS) * GRID_UNIT_M
+    const depthM = (p.spec.depthInGrids ?? DEFAULT_PANEL_DEPTH_GRIDS) * GRID_UNIT_M
     return {
       creator: p,
       start,
@@ -226,6 +235,8 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
       snappedStartXyKey: xyKey(snappedStart),
       snappedEndXyKey: xyKey(snappedEnd),
       bottomZ: roundTo(start.z),
+      heightM,
+      depthM,
     }
   })
 
@@ -286,7 +297,7 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
           junctionZSet.add(pd.bottomZ)
         }
         // Also add the panel top (bottomZ + height) if it falls within the post range
-        const topZ = roundTo(pd.bottomZ + PANEL_HEIGHT_M)
+        const topZ = roundTo(pd.bottomZ + pd.heightM)
         if (topZ >= zMin && topZ <= zMax) {
           junctionZSet.add(topZ)
         }
@@ -339,7 +350,7 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
       type: 'panel-brace',
       startNodeId: startNode.id,
       endNodeId: endNode.id,
-      section: PANEL_SECTION,
+      section: panelSection(pd.heightM, pd.depthM),
       material: PANEL_MATERIAL,
       endReleases: RIGID,
     })
@@ -381,7 +392,7 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
   const deadDistLoads: MemberDistLoad[] = members.map((m) => {
     const isPanel = m.type === 'panel-brace'
     const density = isPanel ? PLY_DENSITY : TIMBER_DENSITY
-    const area = isPanel ? PANEL_SECTION.A : TIMBER_SECTION.A
+    const area = m.section.A
     const wSelf = -(density * GRAVITY * area) // N/m, downward (-Z)
     return { memberId: m.id, direction: 'Fz' as const, w1: wSelf, w2: wSelf }
   })
@@ -400,9 +411,9 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
 
   // 4b. Live - imposed floor load on horizontal panel-brace members.
   // Q = 1.5 kPa (NZS 1170.1 Table 3.1, residential floor).
-  // Tributary width assumed = panel depth (800 mm) - engineer must confirm.
+  // Tributary width = panel height (acting as deep floor beam) - engineer must confirm.
   const LIVE_kPa = 1.5
-  const LIVE_w = LIVE_kPa * 1e3 * PANEL_HEIGHT_M // N/m = 1 200 N/m
+  const panelHeightByPartId = new Map(panelData.map((pd) => [pd.creator.id ?? '', pd.heightM]))
 
   const liveDistLoads: MemberDistLoad[] = []
   for (const m of members) {
@@ -411,7 +422,9 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
     const en = nodeById.get(m.endNodeId)
     if (!sn || !en) continue
     if (Math.abs(en.z - sn.z) > TOL) continue // horizontal panels only
-    liveDistLoads.push({ memberId: m.id, direction: 'Fz', w1: -LIVE_w, w2: -LIVE_w })
+    const heightM = panelHeightByPartId.get(m.partId) ?? DEFAULT_PANEL_HEIGHT_GRIDS * GRID_UNIT_M
+    const liveW = LIVE_kPa * 1e3 * heightM
+    liveDistLoads.push({ memberId: m.id, direction: 'Fz', w1: -liveW, w2: -liveW })
   }
 
   // 4c. Lateral load helpers
@@ -419,7 +432,7 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
   const panelJunctionZs = Array.from(
     new Set([
       ...panelData.map((pd) => pd.bottomZ),
-      ...panelData.map((pd) => roundTo(pd.bottomZ + PANEL_HEIGHT_M)),
+      ...panelData.map((pd) => roundTo(pd.bottomZ + pd.heightM)),
     ]),
   )
     .filter((z) => Math.abs(z - baseZ) > TOL)

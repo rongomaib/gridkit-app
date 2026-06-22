@@ -9,7 +9,7 @@ export function calculateGlValue(creator: WithRequiredId<PanelBrace>): PanelBrac
   const {
     type,
     id,
-    spec: { variantId, lengthInGrids },
+    spec: { variantId, lengthInGrids, heightInGrids, depthInGrids },
     transform,
   } = creator
 
@@ -23,9 +23,9 @@ export function calculateGlValue(creator: WithRequiredId<PanelBrace>): PanelBrac
   matrix.decompose(position, quaternion, scale)
 
   const gridLengthInMeters = convert(variant.gridLength, meter).value
-  const depthInMeters = convert(variant.depth, meter).value
-  const heightInMeters = convert(variant.height, meter).value
   const lengthInMeters = lengthInGrids * gridLengthInMeters
+  const heightInMeters = heightInGrids * gridLengthInMeters
+  const depthInMeters = depthInGrids * gridLengthInMeters
 
   return {
     type,
@@ -35,6 +35,8 @@ export function calculateGlValue(creator: WithRequiredId<PanelBrace>): PanelBrac
     depthInMeters,
     heightInMeters,
     lengthInGrids,
+    heightInGrids,
+    depthInGrids,
     lengthInMeters,
     position,
     quaternion,
@@ -44,7 +46,7 @@ export function calculateGlValue(creator: WithRequiredId<PanelBrace>): PanelBrac
 
 export function calculateBoundingBox(creator: PanelBrace): Box3 {
   const {
-    spec: { variantId, lengthInGrids },
+    spec: { variantId, lengthInGrids, heightInGrids, depthInGrids },
     transform,
   } = creator
 
@@ -52,12 +54,13 @@ export function calculateBoundingBox(creator: PanelBrace): Box3 {
   if (variant == null) throw new Error(`Unknown panel-brace variant: ${variantId}`)
 
   const gridUnit = convert(variant.gridLength, meter).value
-  const halfDepth = convert(variant.depth, meter).value / 2
-  const height = convert(variant.height, meter).value
+  const length = lengthInGrids * gridUnit
+  const height = heightInGrids * gridUnit
+  const halfDepth = (depthInGrids * gridUnit) / 2
 
   const box = new Box3(
     new Vector3(0, 0, -halfDepth),
-    new Vector3(lengthInGrids * gridUnit, height, halfDepth),
+    new Vector3(length, height, halfDepth),
   )
 
   box.applyMatrix4(new Matrix4().fromArray(transform))

@@ -187,7 +187,9 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
     const partType = (selectedPart as any).spec.type as string
     const partId = selectedPart.id
 
-    const dispatchUpdate = (
+    const GRID_MM = 40
+
+  const dispatchUpdate = (
       property: string,
       value: number,
       mode: 'start' | 'end' | 'shift' = 'shift',
@@ -222,22 +224,47 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
             <Text>{PART_LABELS[partType] ?? partType}</Text>
           </HStack>
 
-          {partType === 'gridbeam' && (
-            <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
-              <Text css={{ color: 'gray.600' }}>Length</Text>
-              <Text>{(selectedPartGlValue as any).lengthInGrids} grids</Text>
-            </HStack>
-          )}
+          {partType === 'gridbeam' && (() => {
+            const grids = (selectedPartGlValue as any).lengthInGrids as number
+            return (
+              <>
+                <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                  <Text css={{ color: 'gray.600' }}>Length</Text>
+                  <Text>{grids} grids</Text>
+                </HStack>
+                <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                  <Text css={{ color: 'gray.600' }}>Dimensions</Text>
+                  <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>40 × 40 × {grids * GRID_MM} mm</Text>
+                </HStack>
+              </>
+            )
+          })()}
 
-          {partType === 'gridpanel' && (
-            <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
-              <Text css={{ color: 'gray.600' }}>Size</Text>
-              <Text>
-                {(selectedPartGlValue as any).sizeInGrids[0]} ×{' '}
-                {(selectedPartGlValue as any).sizeInGrids[1]} grids
-              </Text>
-            </HStack>
-          )}
+          {partType === 'gridpanel' && (() => {
+            const [wg, hg] = (selectedPartGlValue as any).sizeInGrids as [number, number]
+            return (
+              <>
+                <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                  <Text css={{ color: 'gray.600' }}>Size</Text>
+                  <Text>{wg} × {hg} grids</Text>
+                </HStack>
+                <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                  <Text css={{ color: 'gray.600' }}>Dimensions</Text>
+                  <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>{wg * GRID_MM} × {hg * GRID_MM} mm</Text>
+                </HStack>
+              </>
+            )
+          })()}
+
+          {partType === 'timber' && (() => {
+            const lenMm = (selectedPart as any).spec.lengthInGrids as number * GRID_MM
+            return (
+              <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                <Text css={{ color: 'gray.600' }}>Dimensions</Text>
+                <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>120 × 120 × {lenMm} mm</Text>
+              </HStack>
+            )
+          })()}
 
           {partType === 'timber' && selectedMemberResult != null && (
             <>
@@ -269,6 +296,18 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
               </HStack>
             </>
           )}
+
+          {partType === 'panel-brace' && (() => {
+            const spanMm = (selectedPart as any).spec.lengthInGrids as number * GRID_MM
+            const hMm = (selectedPart as any).spec.heightInGrids as number * GRID_MM
+            const dMm = (selectedPart as any).spec.depthInGrids as number * GRID_MM
+            return (
+              <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                <Text css={{ color: 'gray.600' }}>Dimensions</Text>
+                <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>{spanMm} × {hMm} × {dMm} mm</Text>
+              </HStack>
+            )
+          })()}
 
           {partType === 'panel-brace' && selectedMemberResult != null && (
             <>

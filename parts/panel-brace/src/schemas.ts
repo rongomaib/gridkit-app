@@ -5,6 +5,8 @@ const panelBraceXSchema = z.object({
   x: z.tuple([z.number(), z.number()]),
   y: z.number(),
   z: z.number(),
+  heightInGrids: z.number().optional(),
+  depthInGrids: z.number().optional(),
 })
 
 const panelBraceYSchema = z.object({
@@ -12,6 +14,8 @@ const panelBraceYSchema = z.object({
   x: z.number(),
   y: z.tuple([z.number(), z.number()]),
   z: z.number(),
+  heightInGrids: z.number().optional(),
+  depthInGrids: z.number().optional(),
 })
 
 export const panelBraceSchemas = [panelBraceXSchema, panelBraceYSchema]

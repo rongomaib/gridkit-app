@@ -5,12 +5,12 @@ import { parse } from 'smol-toml'
 import type { ProductIndex } from './context/workspace'
 import type { Workspace } from './context/workspaces'
 
-export type UseQueryOptions<TResult, TError = Error> = {
+export type UseQueryOptions = {
   enabled?: boolean
 }
-type ExtendedQueryOptions<TResult> = UseQueryOptions<TResult, Error>
+type ExtendedQueryOptions = UseQueryOptions
 
-export type UseMutationOptions<TResult, TError = Error, TVariables = void> = {
+export type UseMutationOptions<TResult> = {
   onSuccess?: (data: TResult) => void | Promise<void>
 }
 
@@ -122,7 +122,7 @@ const WORKSPACES_STORE_KEY = 'gridkit-workspaces'
 
 export type ListWorkspacesArgs = {}
 export type ListWorkspacesResult = Array<Workspace>
-export function useListWorkspacesQuery(options?: ExtendedQueryOptions<ListWorkspacesResult>) {
+export function useListWorkspacesQuery(options?: ExtendedQueryOptions) {
   return useQuery({
     queryKey: ['list_workspaces'],
     queryFn: async () => {
@@ -137,7 +137,7 @@ export function useListWorkspacesQuery(options?: ExtendedQueryOptions<ListWorksp
 export type OpenWorkspaceArgs = {}
 export type OpenWorkspaceResult = string | null
 export function useOpenWorkspaceMutation(
-  options: UseMutationOptions<OpenWorkspaceResult, Error, OpenWorkspaceArgs>,
+  options: UseMutationOptions<OpenWorkspaceResult>,
 ) {
   return useMutation<OpenWorkspaceResult, Error, OpenWorkspaceArgs>({
     mutationFn: async () => {
@@ -160,7 +160,7 @@ export function useOpenWorkspaceMutation(
 
 export type AddWorkspaceArgs = { workspace: Workspace }
 export function useAddWorkspaceMutation(
-  options: UseMutationOptions<void, Error, AddWorkspaceArgs>,
+  options: UseMutationOptions<void>,
 ) {
   return useMutation<void, Error, AddWorkspaceArgs>({
     mutationFn: async () => {
@@ -172,7 +172,7 @@ export function useAddWorkspaceMutation(
 
 export type RemoveWorkspaceArgs = { workspacePath: string }
 export function useRemoveWorkspaceMutation(
-  options: UseMutationOptions<void, Error, RemoveWorkspaceArgs>,
+  options: UseMutationOptions<void>,
 ) {
   return useMutation<void, Error, RemoveWorkspaceArgs>({
     mutationFn: async ({ workspacePath }) => {
@@ -190,7 +190,7 @@ export type ListProductsArgs = {
 export type ListProductsResult = Array<ProductIndex>
 export function useListProductsQuery(
   args: ListProductsArgs,
-  options?: ExtendedQueryOptions<ListProductsResult>,
+  options?: ExtendedQueryOptions,
 ) {
   return useQuery({
     queryKey: ['list_products', args],
@@ -230,7 +230,7 @@ export type GetProductMetaArgs = {
 export type GetProductMetaResult = ProductMeta
 export function useGetProductMetaQuery(
   args: GetProductMetaArgs,
-  options?: ExtendedQueryOptions<GetProductMetaResult>,
+  options?: ExtendedQueryOptions,
 ) {
   return useQuery({
     queryKey: ['get_product_meta', args],
@@ -273,7 +273,7 @@ export type GetProductFileArgs = {
 export type GetProductFileResult = string
 export function useGetProductFileQuery(
   args: GetProductFileArgs,
-  options?: ExtendedQueryOptions<GetProductFileResult>,
+  options?: ExtendedQueryOptions,
 ) {
   return useQuery({
     queryKey: ['get_product_file', args],
@@ -322,7 +322,7 @@ export type UpdateProductFileArgs = {
   content: string
 }
 export function useUpdateProductFileMutation(
-  options?: UseMutationOptions<void, Error, UpdateProductFileArgs>,
+  options?: UseMutationOptions<void>,
 ) {
   return useMutation<void, Error, UpdateProductFileArgs>({
     mutationFn: async (args) => {

@@ -1,5 +1,5 @@
 ﻿/*
- * gridkit-solver â€” linear elastic 3D direct-stiffness frame solver
+ * gridkit-solver — linear elastic 3D direct-stiffness frame solver
  * EUPL-1.2  (c) 2026 rongomaib / gridkit-app contributors
  *
  * Implements the classical 12-DOF Timoshenko/Euler-Bernoulli space-frame element.
@@ -11,7 +11,7 @@
 use serde::{Deserialize, Serialize};
 use wasm_bindgen::prelude::*;
 
-// â”€â”€ Input types (mirror @villagekit/analysis StructuralModel) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- Input types (mirror @villagekit/analysis StructuralModel) ---------------
 
 #[derive(Deserialize)]
 struct InputNode {
@@ -139,7 +139,7 @@ struct InputModel {
     load_cases: Vec<InputLoadCase>,
 }
 
-// â”€â”€ Output types â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- Output types -------------------------------------------------------------
 
 #[derive(Serialize)]
 pub struct NodeDisplacement {
@@ -222,7 +222,7 @@ pub struct SolverResult {
     pub load_case_results: Vec<LoadCaseResult>,
 }
 
-// â”€â”€ Dense matrix helpers (column-major, row-index first) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- Dense matrix helpers (column-major, row-index first) ---------------------
 
 struct Mat {
     rows: usize,
@@ -245,7 +245,7 @@ impl Mat {
 
 }
 
-// â”€â”€ 3D rotation matrix (3Ã—3) for member local â†’ global â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- 3D rotation matrix (3×3) for member local → global -----------------------
 //
 // Local x-axis = member axis direction.
 // We need a consistent choice of local y and z.
@@ -266,7 +266,7 @@ fn rotation_matrix(xi: f64, yi: f64, zi: f64, xj: f64, yj: f64, zj: f64) -> [[f6
         [0.0, 0.0, 1.0] // otherwise: use world Z
     };
 
-    // local z = lx Ã— ref_v, then local y = lz Ã— lx
+    // local z = lx × ref_v, then local y = lz × lx
     let lz = cross(lx, ref_v);
     let lz_len = (lz[0] * lz[0] + lz[1] * lz[1] + lz[2] * lz[2]).sqrt();
     let lz = [lz[0] / lz_len, lz[1] / lz_len, lz[2] / lz_len];
@@ -283,7 +283,7 @@ fn cross(a: [f64; 3], b: [f64; 3]) -> [f64; 3] {
     ]
 }
 
-// Build 12Ã—12 transformation matrix T (local â†’ global, expanded for 2 nodes Ã— 6 DOF)
+// Build 12×12 transformation matrix T (local → global, expanded for 2 nodes × 6 DOF)
 fn build_transform(rot: [[f64; 3]; 3]) -> Mat {
     let mut t = Mat::zeros(12, 12);
     for block in 0..4 {
@@ -297,9 +297,9 @@ fn build_transform(rot: [[f64; 3]; 3]) -> Mat {
     t
 }
 
-// â”€â”€ 12Ã—12 local element stiffness (Euler-Bernoulli 3D frame) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- 12×12 local element stiffness (Euler-Bernoulli 3D frame) -----------------
 //
-// DOF order per node: [u, v, w, Î¸x, Î¸y, Î¸z] (axial, shear-y, shear-z, torsion, bend-y, bend-z)
+// DOF order per node: [u, v, w, θx, θy, θz] (axial, shear-y, shear-z, torsion, bend-y, bend-z)
 // For the full 12-DOF element, nodes i=0..5, j=6..11.
 
 fn local_stiffness(
@@ -326,7 +326,7 @@ fn local_stiffness(
     k.set(3, 3, gj_l); k.set(3, 9, -gj_l);
     k.set(9, 3, -gj_l); k.set(9, 9, gj_l);
 
-    // Bending about local z (v shear, Î¸z rotation) â€” DOF 1,5,7,11
+    // Bending about local z (v shear, θz rotation) — DOF 1,5,7,11
     // EIz bending: shear in local y (DOF 1,7), moment about local z (DOF 5,11)
     let eiz = e * iz;
     k.set(1, 1,  12.0 * eiz / l3); k.set(1, 5,   6.0 * eiz / l2);
@@ -341,7 +341,7 @@ fn local_stiffness(
     k.set(11, 1,  6.0 * eiz / l2); k.set(11, 5,  2.0 * eiz / l);
     k.set(11, 7, -6.0 * eiz / l2); k.set(11, 11, 4.0 * eiz / l);
 
-    // Bending about local y (w shear, Î¸y rotation) â€” DOF 2,4,8,10
+    // Bending about local y (w shear, θy rotation) — DOF 2,4,8,10
     // EIy bending: shear in local z (DOF 2,8), moment about local y (DOF 4,10)
     let eiy = e * iy;
     k.set(2, 2,  12.0 * eiy / l3); k.set(2, 4,  -6.0 * eiy / l2);
@@ -359,7 +359,7 @@ fn local_stiffness(
     k
 }
 
-// â”€â”€ Matrix multiply A * B â†’ C â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- Matrix multiply A * B → C -------------------------------------------------
 
 fn mat_mul(a: &Mat, b: &Mat) -> Mat {
     assert_eq!(a.cols, b.rows);
@@ -394,19 +394,19 @@ fn mat_mul_at_b(a: &Mat, b: &Mat) -> Mat {
     c
 }
 
-// â”€â”€ Consistent nodal loads for uniform distributed load â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- Consistent nodal loads for uniform distributed load -----------------------
 //
 // For a uniform distributed load w (N/m) in local direction d (0=x,1=y,2=z),
 // the consistent fixed-end forces are:
 //   axial (d=0): each end gets wL/2
-//   transverse-y (d=1): shears wL/2 at each end, moments Â±wLÂ²/12
-//   transverse-z (d=2): shears wL/2 at each end, moments âˆ“wLÂ²/12
+//   transverse-y (d=1): shears wL/2 at each end, moments Â±wL²/12
+//   transverse-z (d=2): shears wL/2 at each end, moments ∓wL²/12
 
 fn fixed_end_loads_uniform(dir: usize, w: f64, l: f64) -> [f64; 12] {
     let mut f = [0.0f64; 12];
     match dir {
         0 => {
-            // axial â€” distributed axial load â†’ equal end forces
+            // axial — distributed axial load → equal end forces
             f[0] = w * l / 2.0;
             f[6] = w * l / 2.0;
         }
@@ -429,16 +429,16 @@ fn fixed_end_loads_uniform(dir: usize, w: f64, l: f64) -> [f64; 12] {
     f
 }
 
-// â”€â”€ Cholesky decomposition (upper triangular, in-place on symmetric K) â”€â”€â”€â”€â”€â”€â”€â”€
+// -- Cholesky decomposition (upper triangular, in-place on symmetric K) --------
 //
 // Solves K x = f for symmetric positive-definite K.
 // Returns Err if K is not positive-definite (structural mechanism).
 
 fn cholesky_solve(k: &mut Vec<f64>, f: &mut Vec<f64>, n: usize) -> Result<(), String> {
-    // Tikhonov regularisation: shift all diagonal entries by max_diag Ã— 1e-10.
-    // For physical modes (stiffness â‰¥ 1e4 NÂ·m/rad), the relative error is < 1e-6.
+    // Tikhonov regularisation: shift all diagonal entries by max_diag × 1e-10.
+    // For physical modes (stiffness ≥ 1e4 N·m/rad), the relative error is < 1e-6.
     // For near-zero modes that arise from floating-point accumulation in dense Cholesky
-    // (the pivot s â‰ˆ âˆ’3e-8 seen in practice), the shift moves them to a small positive
+    // (the pivot s ≈ −3e-8 seen in practice), the shift moves them to a small positive
     // value. Those modes carry no gravity load, so their displaced contribution is ~0.
     let max_diag = (0..n).fold(0.0f64, |acc, i| acc.max(k[i * n + i]));
     let reg = max_diag * 1e-10;
@@ -485,13 +485,13 @@ fn cholesky_solve(k: &mut Vec<f64>, f: &mut Vec<f64>, n: usize) -> Result<(), St
     Ok(())
 }
 
-// â”€â”€ Main solver â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- Main solver ---------------------------------------------------------------
 
 fn solve_model(model: &InputModel) -> Result<Vec<LoadCaseResult>, String> {
     let n_nodes = model.nodes.len();
     let n_dof = n_nodes * 6;
 
-    // Map node id â†’ index
+    // Map node id → index
     let node_idx: std::collections::HashMap<&str, usize> = model
         .nodes
         .iter()
@@ -514,7 +514,7 @@ fn solve_model(model: &InputModel) -> Result<Vec<LoadCaseResult>, String> {
         if sup.rz { constrained[base + 5] = true; }
     }
 
-    // Free DOF mapping: global â†’ reduced, and reverse
+    // Free DOF mapping: global → reduced, and reverse
     let free_dofs: Vec<usize> = (0..n_dof).filter(|&d| !constrained[d]).collect();
     let n_free = free_dofs.len();
     let mut global_to_free = vec![usize::MAX; n_dof];
@@ -532,7 +532,7 @@ fn solve_model(model: &InputModel) -> Result<Vec<LoadCaseResult>, String> {
 
     let mut member_data: Vec<MemberData> = Vec::with_capacity(model.members.len());
 
-    // Assemble global stiffness (reduced â€” free DOFs only)
+    // Assemble global stiffness (reduced — free DOFs only)
     let mut kg_global = vec![0.0f64; n_free * n_free];
 
     for mem in &model.members {
@@ -615,7 +615,7 @@ fn solve_model(model: &InputModel) -> Result<Vec<LoadCaseResult>, String> {
             }
         }
 
-        // Distributed member loads â†’ consistent nodal loads
+        // Distributed member loads → consistent nodal loads
         for dl in &lc.member_dist_loads {
             let mem_idx = model
                 .members
@@ -625,7 +625,7 @@ fn solve_model(model: &InputModel) -> Result<Vec<LoadCaseResult>, String> {
 
             let md = &member_data[mem_idx];
             let len = md.len;
-            // Use average load magnitude (w1 â‰ˆ w2 for uniform loads; linear variation not implemented)
+            // Use average load magnitude (w1 ≈ w2 for uniform loads; linear variation not implemented)
             let w_avg = (dl.w1 + dl.w2) / 2.0;
 
             // Direction is in global coordinates; transform to local frame components.
@@ -651,7 +651,7 @@ fn solve_model(model: &InputModel) -> Result<Vec<LoadCaseResult>, String> {
 
             let t = build_transform(rot);
 
-            // f_global = T^T * f_local  (T^T is globalâ†’local^T = localâ†’global for orthogonal T)
+            // f_global = T^T * f_local  (T^T is global→local^T = local→global for orthogonal T)
             let mut f_global = [0.0f64; 12];
             for i in 0..12 {
                 for j in 0..12 {
@@ -836,7 +836,7 @@ fn solve_model(model: &InputModel) -> Result<Vec<LoadCaseResult>, String> {
     Ok(results)
 }
 
-// â”€â”€ WASM entry point â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- WASM entry point ----------------------------------------------------------
 
 #[wasm_bindgen]
 pub fn solve(model_json: &str) -> String {
@@ -864,7 +864,7 @@ pub fn solve(model_json: &str) -> String {
     })
 }
 
-// â”€â”€ Tests â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// -- Tests ---------------------------------------------------------------------
 
 #[cfg(test)]
 mod tests {
@@ -889,7 +889,7 @@ mod tests {
 
     /// Cantilever beam: 1m long, pinned at i, tip load at j.
     /// E=200e9, A=0.01, Iy=Iz=1e-5, J=2e-5, G=80e9
-    /// Tip deflection under FZ=1000 N: Î´ = PLÂ³/3EI = 1000Ã—1Â³/(3Ã—200e9Ã—1e-5) = 1.667e-4 m
+    /// Tip deflection under FZ=1000 N: Î´ = PLÂ³/3EI = 1000×1Â³/(3×200e9×1e-5) = 1.667e-4 m
     #[test]
     fn test_cantilever_tip_deflection() {
         let model_json = r#"{

@@ -1,4 +1,4 @@
-// Phase 5+6 â€” 3D analysis results overlay.
+// Phase 5+6 — 3D analysis results overlay.
 // Modes: heat (stress tubes), joints (moment bulges), ground (foundation footprint).
 // Deflected shape is a permanent underlay when analysis is active.
 import { Html } from '@react-three/drei'
@@ -31,7 +31,7 @@ export function AnalysisOverlay({ activeModes, deflectionScale }: OverlayProps) 
   )
 }
 
-// â”€â”€â”€ Shared tooltip style â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Shared tooltip style ------------------------------------------------------
 
 const TIP: React.CSSProperties = {
   pointerEvents: 'none',
@@ -45,8 +45,8 @@ const TIP: React.CSSProperties = {
   boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
 }
 
-// â”€â”€â”€ Ember color ramp â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// cold dark blue â†’ warm blue â†’ amber â†’ fire red â†’ white-hot
+// --- Ember color ramp ----------------------------------------------------------
+// cold dark blue → warm blue → amber → fire red → white-hot
 
 const EMBER: Array<[number, number, number, number]> = [
   [0.0, 0x1e, 0x2a, 0x4a],
@@ -72,7 +72,7 @@ function emberHex(t: number): string {
   return 'rgb(255,255,255)'
 }
 
-// â”€â”€â”€ Quaternion: align cylinder Y-axis with a given direction â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Quaternion: align cylinder Y-axis with a given direction ------------------
 
 function dirToQuaternionTuple(
   sx: number,
@@ -96,11 +96,11 @@ function dirToQuaternionTuple(
   return [q.x, q.y, q.z, q.w]
 }
 
-// â”€â”€â”€ Shared prop type â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Shared prop type ----------------------------------------------------------
 
 type LineProps = { model: StructuralModel; lcr: LoadCaseResult }
 
-// â”€â”€â”€ Mode 1: Heat tubes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Mode 1: Heat tubes --------------------------------------------------------
 
 const TUBE_R = 0.06
 
@@ -156,11 +156,11 @@ function HeatTubes({ model, lcr }: LineProps) {
         if (m.type === 'timber') {
           const force = Math.max(Math.abs(res.forces.fx_start), Math.abs(res.forces.fx_end))
           demand = force / maxTimber
-          tip = `Post: â‰ˆ${Math.round(force / 9.81)} kg axial  (${Math.round(demand * 100)}% of peak)`
+          tip = `Post: ≈${Math.round(force / 9.81)} kg axial  (${Math.round(demand * 100)}% of peak)`
         } else {
           const moment = Math.max(Math.abs(res.forces.mz_start), Math.abs(res.forces.mz_end))
           demand = moment / maxPanel
-          tip = `Panel: â‰ˆ${Math.round(moment / 9.81)} kgÂ·m bending  (${Math.round(demand * 100)}% of peak)`
+          tip = `Panel: ≈${Math.round(moment / 9.81)} kg·m bending  (${Math.round(demand * 100)}% of peak)`
         }
       }
 
@@ -214,7 +214,7 @@ function HeatTubes({ model, lcr }: LineProps) {
   )
 }
 
-// â”€â”€â”€ Mode 2: Moment bulges â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Mode 2: Moment bulges -----------------------------------------------------
 
 const MAX_BLOB_R = 0.04
 
@@ -270,7 +270,7 @@ function MomentBulges({ model, lcr }: LineProps) {
           y: pos.y,
           z: pos.z,
           r: rStart,
-          tip: `Joint: â‰ˆ${Math.round(mStart / 9.81)} kgÂ·m twisting force`,
+          tip: `Joint: ≈${Math.round(mStart / 9.81)} kg·m twisting force`,
         })
       }
 
@@ -285,7 +285,7 @@ function MomentBulges({ model, lcr }: LineProps) {
           y: pos.y,
           z: pos.z,
           r: rEnd,
-          tip: `Joint: â‰ˆ${Math.round(mEnd / 9.81)} kgÂ·m twisting force`,
+          tip: `Joint: ≈${Math.round(mEnd / 9.81)} kg·m twisting force`,
         })
       }
     }
@@ -317,7 +317,7 @@ function MomentBulges({ model, lcr }: LineProps) {
   )
 }
 
-// â”€â”€â”€ Deflected shape (permanent underlay) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Deflected shape (permanent underlay) -------------------------------------
 
 type DeflectedProps = { model: StructuralModel; lcr: LoadCaseResult; scale: number }
 
@@ -360,7 +360,7 @@ function DeflectedShapeLines({ model, lcr, scale }: DeflectedProps) {
   )
 }
 
-// â”€â”€â”€ Mode 3: Foundation footprint â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// --- Mode 3: Foundation footprint ---------------------------------------------
 
 type DiscItem = {
   nodeId: string
@@ -404,10 +404,10 @@ function FoundationFootprint({ model, lcr }: LineProps) {
       const horiz = Math.sqrt(r.FX ** 2 + r.FY ** 2)
       let tip: string
       if (isUplift) {
-        tip = `WARNING: post pulls UP â€” ${Math.round(Math.abs(r.FZ) / 9.81)} kg on anchor bolt`
+        tip = `WARNING: post pulls UP — ${Math.round(Math.abs(r.FZ) / 9.81)} kg on anchor bolt`
       } else {
-        tip = `Post pushes down â‰ˆ${Math.round(r.FZ / 9.81)} kg`
-        if (horiz > maxFZ * 0.05) tip += `  |  sideways â‰ˆ${Math.round(horiz / 9.81)} kg`
+        tip = `Post pushes down ≈${Math.round(r.FZ / 9.81)} kg`
+        if (horiz > maxFZ * 0.05) tip += `  |  sideways ≈${Math.round(horiz / 9.81)} kg`
       }
 
       discs.push({ nodeId: r.nodeId, x: node.x, y: node.y, z: node.z, radius, color, tip })
