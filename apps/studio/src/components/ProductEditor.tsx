@@ -446,6 +446,112 @@ export function ProductEditor(_props: ProductEditorProps) {
     return () => window.removeEventListener('update-part-position', handleUpdatePosition)
   }, [setCodeToLoad, workspacePath, productPath, fileName, updateFile])
 
+  useEffect(() => {
+    const handleSetProperty = (e: any) => {
+      const { id, property, value } = e.detail
+      const currentCode = codeRef.current
+
+      let searchIdStripped = id
+      if (id.includes('__')) {
+        const segments = id.split('__')
+        const firstNonNumericIdx = segments.findIndex((s: string) => !/^\d+$/.test(s))
+        searchIdStripped =
+          firstNonNumericIdx === -1 ? '' : segments.slice(firstNonNumericIdx).join('__')
+      }
+
+      const lines = currentCode.split('\n')
+
+      const idRegex = new RegExp(`\\bid\\s*:\\s*(['"\`])${id}\\1`)
+      const strippedIdRegex = new RegExp(`\\bid\\s*:\\s*(['"\`])${searchIdStripped}\\1`)
+
+      let startIndex = lines.findIndex((l: string) => idRegex.test(l))
+
+      if (startIndex === -1 && searchIdStripped !== id) {
+        startIndex = lines.findIndex((l: string) => strippedIdRegex.test(l))
+      }
+
+      if (startIndex === -1) {
+        const searchWords = searchIdStripped.split(/[^a-zA-Z]+/).filter((w: string) => w.length > 2)
+        let bestScore = 0
+        let bestIndex = -1
+
+        for (let i = 0; i < lines.length; i++) {
+          const l = lines[i]
+          if (l.includes('id:')) {
+            let score = 0
+            for (const w of searchWords) {
+              if (l.includes(w)) score++
+            }
+            if (score > bestScore) {
+              bestScore = score
+              bestIndex = i
+            }
+          }
+        }
+
+        if (bestScore > 0) startIndex = bestIndex
+      }
+
+      if (startIndex === -1) {
+        console.warn('handleSetProperty: Could not find part block for', id)
+        return
+      }
+
+      let blockStartIndex = -1
+      for (let i = startIndex; i >= 0; i--) {
+        const strippedLine = lines[i].replace(/\$\{[^}]+\}/g, 'x')
+        if (strippedLine.includes('{')) {
+          blockStartIndex = i
+          break
+        }
+      }
+
+      if (blockStartIndex === -1) {
+        console.warn('handleSetProperty: Could not find { before line', startIndex)
+        return
+      }
+
+      let openBraces = 0
+      let closingLineIndex = -1
+      let propertyFound = false
+
+      for (let i = blockStartIndex; i < lines.length; i++) {
+        const stripped = lines[i].replace(/\$\{[^}]+\}/g, 'x')
+        openBraces += (stripped.match(/\{/g) || []).length
+        openBraces -= (stripped.match(/\}/g) || []).length
+
+        if (openBraces === 0 && i !== blockStartIndex) {
+          closingLineIndex = i
+          break
+        }
+
+        const strPropRegex = new RegExp('\\b' + property + "\\s*:\\s*(['\"`])[^'\"\\`]*\\1")
+        if (strPropRegex.test(lines[i]!)) {
+          lines[i] = lines[i]!.replace(strPropRegex, property + ": '" + value + "'")
+          propertyFound = true
+          break
+        }
+      }
+
+      if (!propertyFound && closingLineIndex >= 0) {
+        const indent = (lines[blockStartIndex]?.match(/^(\s*)/)?.[1] ?? '') + '  '
+        lines.splice(closingLineIndex, 0, `${indent}${property}: '${value}',`)
+      } else if (!propertyFound) {
+        console.warn('handleSetProperty: Could not find closing brace for block at', blockStartIndex)
+        return
+      }
+
+      const newCode = lines.join('\n')
+      setCodeToLoad(newCode)
+      if (workspacePath && productPath && fileName) {
+        updateFile.mutate({ workspacePath, productPath, fileName, content: newCode })
+      }
+    }
+
+    window.addEventListener('set-part-property', handleSetProperty)
+    return () => window.removeEventListener('set-part-property', handleSetProperty)
+  }, [setCodeToLoad, workspacePath, productPath, fileName, updateFile])
+
   const buttonStyle = {
     padding: '6px 12px',
     backgroundColor: '#000',

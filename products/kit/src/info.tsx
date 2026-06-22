@@ -1,4 +1,5 @@
 import type { MemberResult } from '@villagekit/analysis'
+import { getPartMaterialEntry, getMaterialsByCategory } from '@villagekit/materials'
 import { usePricingContext } from '@villagekit/part'
 import { HStack, InfoTooltip, Text, VStack } from '@villagekit/ui'
 import { convert, meter, millimeter } from '@villagekit/units'
@@ -201,6 +202,14 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
       )
     }
 
+    const dispatchSetProperty = (property: string, value: string) => {
+      window.dispatchEvent(
+        new CustomEvent('set-part-property', {
+          detail: { id: partId, type: partType, property, value },
+        }),
+      )
+    }
+
     return (
       <VStack as="section" aria-label="Part Inspector" gap="4" css={{ width: '100%', padding: 4 }}>
         <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
@@ -337,6 +346,27 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
               </HStack>
             </>
           )}
+
+          {(() => {
+            const entry = getPartMaterialEntry(partType)
+            if (entry == null) return null
+            const options = getMaterialsByCategory(entry.category)
+            const currentId = (selectedPart as any).spec.materialId ?? entry.defaultId
+            return (
+              <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                <Text css={{ color: 'gray.600' }}>Grade</Text>
+                <select
+                  value={currentId}
+                  onChange={(e) => dispatchSetProperty('materialId', e.target.value)}
+                  style={{ fontSize: '13px', padding: '2px 4px' }}
+                >
+                  {options.map((m) => (
+                    <option key={m.id} value={m.id}>{m.label}</option>
+                  ))}
+                </select>
+              </HStack>
+            )
+          })()}
 
           {(partType === 'timber' || partType === 'panel-brace') &&
             selectedMemberResult == null && (

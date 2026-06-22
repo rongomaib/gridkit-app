@@ -343,6 +343,9 @@ importers:
 
   core/analysis:
     dependencies:
+      '@villagekit/materials':
+        specifier: workspace:*
+        version: link:../materials
       gridkit-solver:
         specifier: workspace:*
         version: link:../../solver/pkg
@@ -380,6 +383,8 @@ importers:
       '@villagekit/product-kit':
         specifier: workspace:*
         version: link:../../products/kit
+
+  core/materials: {}
 
   core/parameters:
     dependencies:
@@ -761,6 +766,9 @@ importers:
       '@villagekit/analysis':
         specifier: workspace:*
         version: link:../../core/analysis
+      '@villagekit/materials':
+        specifier: workspace:*
+        version: link:../../core/materials
       '@villagekit/parameters':
         specifier: workspace:*
         version: link:../../core/parameters
@@ -6669,6 +6677,7 @@ packages:
   tsconfck@3.0.3:
     resolution: {integrity: sha512-4t0noZX9t6GcPTfBAbIbbIU4pfpCwh0ueq3S4O/5qXI1VwK1outmxhe9dOiEWqMz3MW2LKgDTpqWV+37IWuVbA==}
     engines: {node: ^18 || >=20}
+    deprecated: unmaintained
     hasBin: true
     peerDependencies:
       typescript: ^5.0.0

@@ -1,8 +1,8 @@
+import { getMaterial } from '@villagekit/materials'
 import { Matrix4, Quaternion, Vector3 } from 'three'
 import type {
   EndRelease,
   LoadCase,
-  Material,
   MemberDistLoad,
   MemberEndReleases,
   ModelMember,
@@ -64,18 +64,8 @@ function panelSection(heightM: number, depthM: number): Section {
   }
 }
 
-// -- Material properties (SI: Pa) -----------------------------------------------
-
-// NZ/AS 1720.1 SG8 structural timber: E0 = 8000 MPa, G = 500 MPa
-const TIMBER_MATERIAL: Material = { E: 8e9, G: 5e8 }
-
-// Structural plywood (face grain): E0 = 9500 MPa, G = 3800 MPa
-const PANEL_MATERIAL: Material = { E: 9.5e9, G: 3.8e9 }
-
-// -- Self-weight densities (kg/m3) -----------------------------------------------
+// -- Self-weight ----------------------------------------------------------------
 const GRAVITY = 9.81 // m/s^2
-const TIMBER_DENSITY = 500 // kg/m^3 SG8
-const PLY_DENSITY = 600 // kg/m^3 structural ply
 
 // -- End-release helpers --------------------------------------------------------
 
@@ -85,7 +75,7 @@ const RIGID: MemberEndReleases = { start: NO_RELEASE, end: NO_RELEASE }
 // -- Input type (structural duck-typing) ----------------------------------------
 
 type AnyCreator = {
-  spec: { type: string; lengthInGrids: number; heightInGrids?: number; depthInGrids?: number }
+  spec: { type: string; lengthInGrids: number; heightInGrids?: number; depthInGrids?: number; materialId?: string }
   id?: string
   transform: number[]
 }
@@ -242,6 +232,7 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
 
   const nodeMap = new Map<string, ModelNode>()
   const members: ModelMember[] = []
+  const memberDensity = new Map<string, number>()
   let nodeCount = 0
   let memberCount = 0
 
@@ -271,16 +262,19 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
       const [start, end] = getEndpoints(timber)
       const startNode = getOrCreate(start)
       const endNode = getOrCreate(end)
+      const timberMat = getMaterial(timber.spec.materialId, 'SG8')
+      const memberId = `m${memberCount++}`
       members.push({
-        id: `m${memberCount++}`,
+        id: memberId,
         partId: timber.id ?? `timber-${memberCount}`,
         type: 'timber',
         startNodeId: startNode.id,
         endNodeId: endNode.id,
         section: TIMBER_SECTION,
-        material: TIMBER_MATERIAL,
+        material: { E: timberMat.E, G: timberMat.G },
         endReleases: RIGID,
       })
+      memberDensity.set(memberId, timberMat.density)
       continue
     }
 
@@ -319,22 +313,26 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
       postNodeIds.push(node.id)
     }
 
+    const postMat = getMaterial(timber.spec.materialId, 'SG8')
+
     // Create one timber segment per adjacent pair of nodes
     for (let i = 0; i < postNodeIds.length - 1; i++) {
       const startId = postNodeIds[i]
       const endId = postNodeIds[i + 1]
       if (startId == null || endId == null) continue
+      const memberId = `m${memberCount++}`
       members.push({
-        id: `m${memberCount++}`,
+        id: memberId,
         partId: timber.id ?? `timber-${memberCount}`,
         type: 'timber',
         startNodeId: startId,
         endNodeId: endId,
         section: TIMBER_SECTION,
-        material: TIMBER_MATERIAL,
+        material: { E: postMat.E, G: postMat.G },
         // All post segments are rigidly connected - the post is continuous.
         endReleases: RIGID,
       })
+      memberDensity.set(memberId, postMat.density)
     }
   }
 
@@ -344,16 +342,19 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
   for (const pd of panelData) {
     const startNode = getOrCreate(pd.snappedStart)
     const endNode = getOrCreate(pd.snappedEnd)
+    const panelMat = getMaterial(pd.creator.spec.materialId, 'F14')
+    const memberId = `m${memberCount++}`
     members.push({
-      id: `m${memberCount++}`,
+      id: memberId,
       partId: pd.creator.id ?? `panel-brace-${memberCount}`,
       type: 'panel-brace',
       startNodeId: startNode.id,
       endNodeId: endNode.id,
       section: panelSection(pd.heightM, pd.depthM),
-      material: PANEL_MATERIAL,
+      material: { E: panelMat.E, G: panelMat.G },
       endReleases: RIGID,
     })
+    memberDensity.set(memberId, panelMat.density)
   }
 
   // Step 3 - Supports: idealised pin (DX DY DZ restrained, rotations free)
@@ -390,8 +391,7 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
 
   // 4a. Dead - self-weight UDL on all members
   const deadDistLoads: MemberDistLoad[] = members.map((m) => {
-    const isPanel = m.type === 'panel-brace'
-    const density = isPanel ? PLY_DENSITY : TIMBER_DENSITY
+    const density = memberDensity.get(m.id) ?? 500
     const area = m.section.A
     const wSelf = -(density * GRAVITY * area) // N/m, downward (-Z)
     return { memberId: m.id, direction: 'Fz' as const, w1: wSelf, w2: wSelf }

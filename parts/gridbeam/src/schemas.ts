@@ -5,6 +5,7 @@ const gridBeamXSchema = z.object({
   x: z.tuple([z.number(), z.number()]),
   y: z.number(),
   z: z.number(),
+  materialId: z.string().optional(),
 })
 
 const gridBeamYSchema = z.object({
@@ -12,6 +13,7 @@ const gridBeamYSchema = z.object({
   x: z.number(),
   y: z.tuple([z.number(), z.number()]),
   z: z.number(),
+  materialId: z.string().optional(),
 })
 
 const gridBeamZSchema = z.object({
@@ -19,6 +21,7 @@ const gridBeamZSchema = z.object({
   x: z.number(),
   y: z.number(),
   z: z.tuple([z.number(), z.number()]),
+  materialId: z.string().optional(),
 })
 
 export const gridBeamSchemas = [gridBeamXSchema, gridBeamYSchema, gridBeamZSchema]

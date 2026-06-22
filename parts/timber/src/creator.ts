@@ -20,22 +20,29 @@ const mirrorZTransform = mirrorTransform('z')
 export class TimberSpec extends BasePartSpec<TimberType> {
   variantId: keyof typeof timberVariants
   lengthInGrids: number
+  materialId: string
 
-  constructor(lengthInGrids: number, variantId?: keyof typeof timberVariants) {
+  constructor(
+    lengthInGrids: number,
+    variantId?: keyof typeof timberVariants,
+    materialId = 'SG8',
+  ) {
     super('timber')
     this.variantId = variantId ?? getDefaultVariantId()
     this.lengthInGrids = lengthInGrids
+    this.materialId = materialId
   }
 
   id(): string {
-    return `Timber_Length${this.lengthInGrids}gu_${this.variantId}`
+    return `Timber_Length${this.lengthInGrids}gu_${this.variantId}_${this.materialId}`
   }
 
   equals(other: this): boolean {
     return (
       this.type === other.type &&
       this.variantId === other.variantId &&
-      this.lengthInGrids === other.lengthInGrids
+      this.lengthInGrids === other.lengthInGrids &&
+      this.materialId === other.materialId
     )
   }
 
@@ -48,25 +55,26 @@ export type TimberSpecSerialized = {
   type: TimberType
   variantId: keyof typeof timberVariants
   lengthInGrids: number
+  materialId: string
 }
 function serializeSpec(instance: TimberSpec): TimberSpecSerialized {
-  const { variantId, lengthInGrids } = instance
-  return { type: 'timber', variantId, lengthInGrids }
+  const { variantId, lengthInGrids, materialId } = instance
+  return { type: 'timber', variantId, lengthInGrids, materialId }
 }
 function deserializeSpec(object: TimberSpecSerialized): TimberSpec {
-  const { variantId, lengthInGrids } = object
-  return new TimberSpec(lengthInGrids, variantId)
+  const { variantId, lengthInGrids, materialId } = object
+  return new TimberSpec(lengthInGrids, variantId, materialId as string | undefined)
 }
 
 export class Timber extends BasePartCreator<TimberSpec> {
   static create(options: TimberOptions) {
-    const { variantId, lengthInGrids, id } = options
-    const spec = new TimberSpec(lengthInGrids, variantId)
+    const { variantId, lengthInGrids, id, materialId } = options
+    const spec = new TimberSpec(lengthInGrids, variantId, materialId)
     return new Timber(spec, id)
   }
 
   static X(options: TimberXOptions) {
-    const { id, x, y, z, variantId = getDefaultVariantId() } = options
+    const { id, x, y, z, variantId = getDefaultVariantId(), materialId } = options
 
     const gridUnit = getGridLengthInMeters(variantId)
 
@@ -78,6 +86,7 @@ export class Timber extends BasePartCreator<TimberSpec> {
       id,
       variantId,
       lengthInGrids: Math.abs(safeX[0] - safeX[1]),
+      materialId,
     })
 
     if (safeX[0] > safeX[1]) {
@@ -88,7 +97,7 @@ export class Timber extends BasePartCreator<TimberSpec> {
   }
 
   static Y(options: TimberYOptions) {
-    const { id, x, y, z, variantId = getDefaultVariantId() } = options
+    const { id, x, y, z, variantId = getDefaultVariantId(), materialId } = options
 
     const gridUnit = getGridLengthInMeters(variantId)
 
@@ -100,6 +109,7 @@ export class Timber extends BasePartCreator<TimberSpec> {
       id,
       variantId,
       lengthInGrids: Math.abs(safeY[0] - safeY[1]),
+      materialId,
     }).applyTransform(xToYTransform)
 
     if (safeY[0] > safeY[1]) {
@@ -110,7 +120,7 @@ export class Timber extends BasePartCreator<TimberSpec> {
   }
 
   static Z(options: TimberZOptions) {
-    const { id, x, y, z, variantId = getDefaultVariantId() } = options
+    const { id, x, y, z, variantId = getDefaultVariantId(), materialId } = options
 
     const gridUnit = getGridLengthInMeters(variantId)
 
@@ -122,6 +132,7 @@ export class Timber extends BasePartCreator<TimberSpec> {
       id,
       variantId,
       lengthInGrids: Math.abs(safeZ[0] - safeZ[1]),
+      materialId,
     }).applyTransform(xToZTransform)
 
     if (safeZ[0] > safeZ[1]) {
@@ -135,6 +146,7 @@ export class Timber extends BasePartCreator<TimberSpec> {
 interface TimberSpecOptions {
   variantId: keyof typeof timberVariants
   lengthInGrids: number
+  materialId?: string
 }
 
 interface BaseCreatorOptions {
@@ -148,6 +160,7 @@ interface TimberXOptions extends BaseCreatorOptions {
   x: [number, number]
   y: number
   z: number
+  materialId?: string
 }
 
 interface TimberYOptions extends BaseCreatorOptions {
@@ -155,6 +168,7 @@ interface TimberYOptions extends BaseCreatorOptions {
   x: number
   y: [number, number]
   z: number
+  materialId?: string
 }
 
 interface TimberZOptions extends BaseCreatorOptions {
@@ -162,6 +176,7 @@ interface TimberZOptions extends BaseCreatorOptions {
   x: number
   y: number
   z: [number, number]
+  materialId?: string
 }
 
 function getGridLengthInMeters(variantId: string): number {

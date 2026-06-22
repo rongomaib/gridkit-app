@@ -7,6 +7,7 @@ const panelBraceXSchema = z.object({
   z: z.number(),
   heightInGrids: z.number().optional(),
   depthInGrids: z.number().optional(),
+  materialId: z.string().optional(),
 })
 
 const panelBraceYSchema = z.object({
@@ -16,6 +17,7 @@ const panelBraceYSchema = z.object({
   z: z.number(),
   heightInGrids: z.number().optional(),
   depthInGrids: z.number().optional(),
+  materialId: z.string().optional(),
 })
 
 export const panelBraceSchemas = [panelBraceXSchema, panelBraceYSchema]

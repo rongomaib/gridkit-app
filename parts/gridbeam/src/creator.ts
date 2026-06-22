@@ -21,22 +21,29 @@ const mirrorZTransform = mirrorTransform('z')
 export class GridBeamSpec extends BasePartSpec<GridBeamType> {
   variantId: keyof typeof gridBeamVariants
   lengthInGrids: number
+  materialId: string
 
-  constructor(lengthInGrids: number, variantId?: keyof typeof gridBeamVariants) {
+  constructor(
+    lengthInGrids: number,
+    variantId?: keyof typeof gridBeamVariants,
+    materialId = 'S275',
+  ) {
     super('gridbeam')
     this.variantId = variantId ?? getDefaultVariantId()
     this.lengthInGrids = lengthInGrids
+    this.materialId = materialId
   }
 
   id(): string {
-    return `GridBeam_Length${this.lengthInGrids}gu_${this.variantId}`
+    return `GridBeam_Length${this.lengthInGrids}gu_${this.variantId}_${this.materialId}`
   }
 
   equals(other: this): boolean {
     return (
       this.type === other.type &&
       this.variantId === other.variantId &&
-      this.lengthInGrids === other.lengthInGrids
+      this.lengthInGrids === other.lengthInGrids &&
+      this.materialId === other.materialId
     )
   }
 
@@ -49,25 +56,26 @@ export type GridBeamSpecSerialized = {
   type: GridBeamType
   variantId: keyof typeof gridBeamVariants
   lengthInGrids: number
+  materialId: string
 }
 function serializeSpec(instance: GridBeamSpec): GridBeamSpecSerialized {
-  const { variantId, lengthInGrids } = instance
-  return { type: 'gridbeam', variantId, lengthInGrids }
+  const { variantId, lengthInGrids, materialId } = instance
+  return { type: 'gridbeam', variantId, lengthInGrids, materialId }
 }
 function deserializeSpec(object: GridBeamSpecSerialized): GridBeamSpec {
-  const { variantId, lengthInGrids } = object
-  return new GridBeamSpec(lengthInGrids, variantId)
+  const { variantId, lengthInGrids, materialId } = object
+  return new GridBeamSpec(lengthInGrids, variantId, materialId as string | undefined)
 }
 
 export class GridBeam extends BasePartCreator<GridBeamSpec> {
   static create(options: GridBeamOptions) {
-    const { variantId, lengthInGrids, id } = options
-    const spec = new GridBeamSpec(lengthInGrids, variantId)
+    const { variantId, lengthInGrids, id, materialId } = options
+    const spec = new GridBeamSpec(lengthInGrids, variantId, materialId)
     return new GridBeam(spec, id)
   }
 
   static X(options: GridBeamXOptions) {
-    const { id, x, y, z, variantId = getDefaultVariantId() } = options
+    const { id, x, y, z, variantId = getDefaultVariantId(), materialId } = options
 
     const gridUnit = getGridLengthInMeters(variantId)
 
@@ -79,6 +87,7 @@ export class GridBeam extends BasePartCreator<GridBeamSpec> {
       id,
       variantId,
       lengthInGrids: Math.abs(safeX[0] - safeX[1]),
+      materialId,
     })
 
     if (safeX[0] > safeX[1]) {
@@ -89,7 +98,7 @@ export class GridBeam extends BasePartCreator<GridBeamSpec> {
   }
 
   static Y(options: GridBeamYOptions) {
-    const { id, x, y, z, variantId = getDefaultVariantId() } = options
+    const { id, x, y, z, variantId = getDefaultVariantId(), materialId } = options
 
     const gridUnit = getGridLengthInMeters(variantId)
 
@@ -101,6 +110,7 @@ export class GridBeam extends BasePartCreator<GridBeamSpec> {
       id,
       variantId,
       lengthInGrids: Math.abs(safeY[0] - safeY[1]),
+      materialId,
     }).applyTransform(xToYTransform)
 
     if (safeY[0] > safeY[1]) {
@@ -111,7 +121,7 @@ export class GridBeam extends BasePartCreator<GridBeamSpec> {
   }
 
   static Z(options: GridBeamZOptions) {
-    const { id, x, y, z, variantId = getDefaultVariantId() } = options
+    const { id, x, y, z, variantId = getDefaultVariantId(), materialId } = options
 
     const gridUnit = getGridLengthInMeters(variantId)
 
@@ -123,6 +133,7 @@ export class GridBeam extends BasePartCreator<GridBeamSpec> {
       id,
       variantId,
       lengthInGrids: Math.abs(safeZ[0] - safeZ[1]),
+      materialId,
     }).applyTransform(xToZTransform)
 
     if (safeZ[0] > safeZ[1]) {
@@ -136,6 +147,7 @@ export class GridBeam extends BasePartCreator<GridBeamSpec> {
 interface GridBeamSpecOptions {
   variantId: keyof typeof gridBeamVariants
   lengthInGrids: number
+  materialId?: string
 }
 
 interface BaseCreatorOptions {
@@ -149,6 +161,7 @@ interface GridBeamXOptions extends BaseCreatorOptions {
   x: [number, number]
   y: number
   z: number
+  materialId?: string
 }
 
 interface GridBeamYOptions extends BaseCreatorOptions {
@@ -156,6 +169,7 @@ interface GridBeamYOptions extends BaseCreatorOptions {
   x: number
   y: [number, number]
   z: number
+  materialId?: string
 }
 
 interface GridBeamZOptions extends BaseCreatorOptions {
@@ -163,6 +177,7 @@ interface GridBeamZOptions extends BaseCreatorOptions {
   x: number
   y: number
   z: [number, number]
+  materialId?: string
 }
 
 function getGridLengthInMeters(variantId: string): number {
