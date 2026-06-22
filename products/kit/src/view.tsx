@@ -25,6 +25,7 @@ export function ProductKitView(props: ProductViewProps) {
 
   const [activeModes, setActiveModes] = useState<Set<VisualizationMode>>(new Set(['heat']))
   const [deflectionScale, setDeflectionScale] = useState(100)
+  const [showModel, setShowModel] = useState(true)
 
   // Track Shift key for multi-select without causing re-renders
   const shiftHeld = useRef(false)
@@ -73,7 +74,7 @@ export function ProductKitView(props: ProductViewProps) {
           <SelectionHighlighter />
           <AnalysisOverlay activeModes={activeModes} deflectionScale={deflectionScale} />
           {/* Clear selection when clicking the background */}
-          <group onPointerMissed={() => setSelectedPartIds(new Set())}>
+          <group visible={showModel} onPointerMissed={() => setSelectedPartIds(new Set())}>
             <PartsGlForAll
               partGlValues={partGlValues}
               onPartClick={(id) => {
@@ -132,6 +133,26 @@ export function ProductKitView(props: ProductViewProps) {
           {isAnalysing && (
             <span style={{ fontSize: '11px', color: '#888', marginRight: '4px' }}>analysing…</span>
           )}
+          <button
+            type="button"
+            onClick={() => setShowModel((v) => !v)}
+            style={{
+              padding: '3px 10px',
+              borderRadius: '16px',
+              border: '1px solid',
+              borderColor: showModel ? '#2d3748' : '#cbd5e0',
+              cursor: 'pointer',
+              backgroundColor: showModel ? '#2d3748' : 'transparent',
+              color: showModel ? 'white' : '#4a5568',
+              fontSize: '11px',
+              fontWeight: 600,
+              textTransform: 'uppercase',
+              letterSpacing: '0.06em',
+            }}
+          >
+            MODEL
+          </button>
+          <span style={{ width: '1px', height: '16px', background: '#e2e8f0', margin: '0 2px' }} />
           {(['heat', 'joints', 'ground'] as VisualizationMode[]).map((mode) => (
             <button
               key={mode}
@@ -215,7 +236,7 @@ const TransformControls = TransformControlsDrei as any
 import { Box3, Group } from 'three'
 
 function SelectionHighlighter() {
-  const { selectedPartIds, selectedPartId, partValues: partGlValues } = useProductKitContext()
+  const { selectedPartIds, selectedPartId } = useProductKitContext()
   const { scene } = useThree()
   const [ghostGroup, setGhostGroup] = useState<any>(null)
 
@@ -281,7 +302,7 @@ function SelectionHighlighter() {
     } else {
       setGhostGroup(null)
     }
-  }, [selectedPartIds, scene, partGlValues])
+  }, [selectedPartIds, scene])
 
   return ghostGroup ? (
     <>

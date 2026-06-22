@@ -534,8 +534,22 @@ export function ProductEditor(_props: ProductEditorProps) {
       }
 
       if (!propertyFound && closingLineIndex >= 0) {
-        const indent = (lines[blockStartIndex]?.match(/^(\s*)/)?.[1] ?? '') + '  '
-        lines.splice(closingLineIndex, 0, `${indent}${property}: '${value}',`)
+        // Detect single-line objects (e.g. `PanelBrace.X({ ... })`).
+        // For those, the block line itself balanced openBraces to 0, so closingLineIndex
+        // points to the *next* line — splicing there puts the property outside the object.
+        // Instead, insert inline before the last } on the block line.
+        const blockLine = lines[blockStartIndex]!
+        const blockStripped = blockLine.replace(/\$\{[^}]+\}/g, 'x')
+        const blockOpen = (blockStripped.match(/\{/g) || []).length
+        const blockClose = (blockStripped.match(/\}/g) || []).length
+        if (blockOpen > 0 && blockOpen === blockClose) {
+          const lastBrace = blockLine.lastIndexOf('}')
+          lines[blockStartIndex] =
+            blockLine.slice(0, lastBrace) + `, ${property}: '${value}'` + blockLine.slice(lastBrace)
+        } else {
+          const indent = (lines[blockStartIndex]?.match(/^(\s*)/)?.[1] ?? '') + '  '
+          lines.splice(closingLineIndex, 0, `${indent}${property}: '${value}',`)
+        }
       } else if (!propertyFound) {
         console.warn('handleSetProperty: Could not find closing brace for block at', blockStartIndex)
         return
