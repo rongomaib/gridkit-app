@@ -215,7 +215,7 @@ const TransformControls = TransformControlsDrei as any
 import { Box3, Group } from 'three'
 
 function SelectionHighlighter() {
-  const { selectedPartIds, selectedPartId } = useProductKitContext()
+  const { selectedPartIds, selectedPartId, partValues: partGlValues } = useProductKitContext()
   const { scene } = useThree()
   const [ghostGroup, setGhostGroup] = useState<any>(null)
 
@@ -281,7 +281,7 @@ function SelectionHighlighter() {
     } else {
       setGhostGroup(null)
     }
-  }, [selectedPartIds, scene])
+  }, [selectedPartIds, scene, partGlValues])
 
   return ghostGroup ? (
     <>
@@ -364,24 +364,16 @@ function SelectionHighlighter() {
 
             const partType = originalGroup.userData.partType
 
-            if (gridX !== 0) {
+            if (gridX !== 0 || gridY !== 0 || gridZ !== 0) {
               window.dispatchEvent(
-                new CustomEvent('update-part-property', {
-                  detail: { id: selectedPartId, type: partType, property: 'x', value: gridX },
-                }),
-              )
-            }
-            if (gridY !== 0) {
-              window.dispatchEvent(
-                new CustomEvent('update-part-property', {
-                  detail: { id: selectedPartId, type: partType, property: 'y', value: gridY },
-                }),
-              )
-            }
-            if (gridZ !== 0) {
-              window.dispatchEvent(
-                new CustomEvent('update-part-property', {
-                  detail: { id: selectedPartId, type: partType, property: 'z', value: gridZ },
+                new CustomEvent('update-part-position', {
+                  detail: {
+                    id: selectedPartId,
+                    type: partType,
+                    dx: gridX,
+                    dy: gridY,
+                    dz: gridZ,
+                  },
                 }),
               )
             }

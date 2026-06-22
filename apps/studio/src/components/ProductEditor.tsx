@@ -345,6 +345,107 @@ export function ProductEditor(_props: ProductEditorProps) {
     return () => window.removeEventListener('update-part-property', handleUpdateProperty)
   }, [setCodeToLoad, workspacePath, productPath, fileName, updateFile])
 
+  // Handles the single combined gizmo drag-end event (all three axis deltas at once).
+  useEffect(() => {
+    const handleUpdatePosition = (e: any) => {
+      const { id, dx, dy, dz } = e.detail
+      if (dx === 0 && dy === 0 && dz === 0) return
+
+      const currentCode = codeRef.current
+
+      let searchId = id
+      if (id.includes('__')) {
+        const segments = id.split('__')
+        const firstNonNumericIdx = segments.findIndex((s: string) => !/^\d+$/.test(s))
+        searchId = firstNonNumericIdx === -1 ? '' : segments.slice(firstNonNumericIdx).join('__')
+      }
+
+      const lines = currentCode.split('\n')
+
+      const idRegex = new RegExp(`\\bid\\s*:\\s*(['"\`])${id}\\1`)
+      const strippedIdRegex = new RegExp(`\\bid\\s*:\\s*(['"\`])${searchId}\\1`)
+
+      let startIndex = lines.findIndex((l: string) => idRegex.test(l))
+      if (startIndex === -1 && searchId !== id) {
+        startIndex = lines.findIndex((l: string) => strippedIdRegex.test(l))
+      }
+
+      if (startIndex === -1) {
+        console.warn('handleUpdatePosition: Could not find part block for', id)
+        return
+      }
+
+      let blockStartIndex = -1
+      for (let i = startIndex; i >= 0; i--) {
+        if (lines[i].replace(/\$\{[^}]+\}/g, 'x').includes('{')) {
+          blockStartIndex = i
+          break
+        }
+      }
+      if (blockStartIndex === -1) return
+
+      const shiftExpr = (expr: string, val: number): string => {
+        const trimmed = expr.trim()
+        if (val === 0) return trimmed
+        const num = Number(trimmed)
+        if (!Number.isNaN(num)) return String(num + val)
+        const match = trimmed.match(/^(.*?)(?:\s*([+-])\s*)(\d+)$/)
+        if (match) {
+          const base = match[1].trim()
+          const operator = match[2] === '+' ? 1 : -1
+          const existingNum = Number.parseInt(match[3])
+          const newTotal = operator * existingNum + val
+          if (base === '') return String(newTotal)
+          if (newTotal === 0) return base
+          if (newTotal > 0) return `${base} + ${newTotal}`
+          return `${base} - ${Math.abs(newTotal)}`
+        }
+        return val > 0 ? `${trimmed} + ${val}` : `${trimmed} - ${Math.abs(val)}`
+      }
+
+      const applyDelta = (prop: string, delta: number) => {
+        if (delta === 0) return
+        let openBraces = 0
+        for (let i = blockStartIndex; i < lines.length; i++) {
+          const strippedLine = lines[i].replace(/\$\{[^}]+\}/g, 'x')
+          openBraces += (strippedLine.match(/\{/g) || []).length
+          openBraces -= (strippedLine.match(/\}/g) || []).length
+          if (openBraces === 0 && i !== blockStartIndex) break
+
+          const arrayPropRegex = new RegExp(`\\b${prop}\\s*:\\s*\\[\\s*(.+?)\\s*,\\s*(.+?)\\s*\\]`)
+          const numPropRegex = new RegExp(`\\b${prop}\\s*:\\s*([^,}\\n]+)`)
+          const arrayMatch = lines[i].match(arrayPropRegex)
+          const numMatch = lines[i].match(numPropRegex)
+
+          if (arrayMatch) {
+            const startStr = shiftExpr(arrayMatch[1], delta)
+            const endStr = shiftExpr(arrayMatch[2], delta)
+            lines[i] = lines[i].replace(arrayPropRegex, `${prop}: [${startStr}, ${endStr}]`)
+            return
+          }
+          if (numMatch) {
+            const numStr = shiftExpr(numMatch[1], delta)
+            lines[i] = lines[i].replace(numPropRegex, `${prop}: ${numStr}`)
+            return
+          }
+        }
+      }
+
+      applyDelta('x', dx)
+      applyDelta('y', dy)
+      applyDelta('z', dz)
+
+      const newCode = lines.join('\n')
+      setCodeToLoad(newCode)
+      if (workspacePath && productPath && fileName) {
+        updateFile.mutate({ workspacePath, productPath, fileName, content: newCode })
+      }
+    }
+
+    window.addEventListener('update-part-position', handleUpdatePosition)
+    return () => window.removeEventListener('update-part-position', handleUpdatePosition)
+  }, [setCodeToLoad, workspacePath, productPath, fileName, updateFile])
+
   const buttonStyle = {
     padding: '6px 12px',
     backgroundColor: '#000',
