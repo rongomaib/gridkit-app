@@ -21,22 +21,35 @@ import type {
 import { map, uniq } from 'lodash-es'
 import pDebounce from 'p-debounce'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import type { Box3 } from 'three'
+import { Box3 } from 'three'
 import { getPartCreatorsFromKitParts } from './helpers'
 import { generatePartsForPlugins, getPlugin } from './plugins'
 import { useRender } from './renders/index'
 // import { partsSchema } from './schema'
 import type { Parts, ProductKitRender } from './types'
 
+import type { SolverResult, StructuralModel } from '@villagekit/analysis'
+import { useAnalysis } from './analysis'
 import type { Plugin } from './plugin'
+
+export type DragMode = 'start' | 'shift' | 'end'
 
 type ProductKitState = {
   boundingBox: Box3
   isLoading: boolean
   partValues: Array<PartGlValue>
   parts: Array<WithRequiredId<PartCreator>>
+  selectedPartIds: Set<string>
+  setSelectedPartIds: (ids: Set<string>) => void
+  // Derived: first part in the set, or null. Used by the drag widget (single-part only).
   selectedPartId: string | null
   setSelectedPartId: (id: string | null) => void
+  // Controls which endpoint the single drag gizmo moves
+  dragMode: DragMode
+  setDragMode: (mode: DragMode) => void
+  structuralModel: StructuralModel | null
+  solverResult: SolverResult | null
+  isAnalysing: boolean
 }
 
 function useProductKit(): ProductKitState {
@@ -50,27 +63,46 @@ function useProductKit(): ProductKitState {
       clearParams()
     } else {
       const { parameters: params, presets } = render
-      updateParams(params, presets)
+      if (params == null) {
+        clearParams()
+      } else {
+        updateParams(params, presets)
+      }
     }
   }, [render, clearParams, updateParams])
 
   const paramsValues = useParamsValues()
 
   // @ts-ignore
-  const { isLoading, parts } = useParts({ render, paramsValues })
+  const { isLoading, parts, kitParts } = useParts({ render, paramsValues })
 
   const partValues = usePartValues(parts)
   const boundingBox = useBoundingBox(parts)
 
-  const [selectedPartId, setSelectedPartId] = useState<string | null>(null)
+  const [selectedPartIds, setSelectedPartIds] = useState<Set<string>>(new Set())
+  const selectedPartId = [...selectedPartIds][0] ?? null
+  const setSelectedPartId = (id: string | null) => {
+    setSelectedPartIds(id == null ? new Set() : new Set([id]))
+  }
+
+  const [dragMode, setDragMode] = useState<DragMode>('shift')
+
+  const { structuralModel, solverResult, isAnalysing } = useAnalysis(kitParts)
 
   return {
     boundingBox,
     isLoading,
     partValues,
     parts,
+    selectedPartIds,
+    setSelectedPartIds,
     selectedPartId,
     setSelectedPartId,
+    dragMode,
+    setDragMode,
+    structuralModel,
+    solverResult,
+    isAnalysing,
   }
 }
 
@@ -96,7 +128,7 @@ type UsePartsOptions<Ps extends Params> = {
   updateProductError: (error: ProductError) => void
 }
 
-type UsePartsValue = Pick<ProductKitState, 'isLoading' | 'parts'>
+type UsePartsValue = Pick<ProductKitState, 'isLoading' | 'parts'> & { kitParts: Parts }
 
 function useParts<Ps extends Params>(options: UsePartsOptions<Ps>): UsePartsValue {
   const { render, paramsValues } = options
@@ -122,6 +154,7 @@ function useParts<Ps extends Params>(options: UsePartsOptions<Ps>): UsePartsValu
     }
 
     function validateThenSet(parts: Parts) {
+      console.log('[kit] validateThenSet received', parts?.length, 'parts', parts)
       setKitParts(parts)
       // TODO fix
       /*
@@ -162,6 +195,7 @@ function useParts<Ps extends Params>(options: UsePartsOptions<Ps>): UsePartsValu
 
   useEffect(() => {
     const kitPartCreators = getPartCreatorsFromKitParts(kitParts)
+    console.log('[kit] getPartCreatorsFromKitParts output', kitPartCreators.length)
     setPartCreators(kitPartCreators)
 
     let isCancelled = false
@@ -194,7 +228,7 @@ function useParts<Ps extends Params>(options: UsePartsOptions<Ps>): UsePartsValu
     }
   }, [partCreators])
 
-  return { isLoading, parts: partCreators }
+  return { isLoading, parts: partCreators, kitParts }
 }
 
 function usePartValues(partCreators: Array<WithRequiredId<PartCreator>>): Array<PartGlValue> {
@@ -205,7 +239,12 @@ function usePartValues(partCreators: Array<WithRequiredId<PartCreator>>): Array<
 
 function useBoundingBox(partCreators: Array<PartCreator>): Box3 {
   return useMemo(() => {
-    return calculateBoundingBoxForAll(partCreators)
+    try {
+      return calculateBoundingBoxForAll(partCreators)
+    } catch (err) {
+      console.error('[kit] calculateBoundingBoxForAll threw', err)
+      return new Box3()
+    }
   }, [partCreators])
 }
 

@@ -19,7 +19,7 @@ import { fileURLToPath } from 'node:url'
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const ROOT = join(__dirname, '..')
 
-// ── Build the house model JSON using the analysis package directly ────────────
+// â”€â”€ Build the house model JSON using the analysis package directly â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 // We run a tiny inline script via tsx so we can import TypeScript source.
 
 const modelScript = `
@@ -42,9 +42,9 @@ const model = JSON.parse(modelJson)
 console.log(`Nodes: ${model.nodes.length}  Members: ${model.members.length}  Supports: ${model.supports.length}`)
 console.log(`Load cases: ${model.loadCases.map((lc) => lc.id).join(', ')}`)
 
-// ── Validate via PyNite (if available) ───────────────────────────────────────
+// â”€â”€ Validate via PyNite (if available) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 console.log('\nTo validate with PyNite:')
 console.log('  pip install PyNite')
 console.log(`  python scripts/validate-pynite.py scripts/house-model.json`)
 
-console.log('\nPhase 4 model contract OK — JSON written for WASM regression check.')
+console.log('\nPhase 4 model contract OK â€” JSON written for WASM regression check.')

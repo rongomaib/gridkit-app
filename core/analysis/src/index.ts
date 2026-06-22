@@ -25,3 +25,13 @@ export type {
   Reaction,
   SolverResult,
 } from './results'
+
+export { generateBomReport, CONNECTOR_SPECS, ULS_COMBINATIONS } from './capacity'
+export type {
+  BomReport,
+  BaseConnectionDemand,
+  ConnectorSpec,
+  ConnectorType,
+  PanelConnectionDemand,
+  UlsCombination,
+} from './capacity'

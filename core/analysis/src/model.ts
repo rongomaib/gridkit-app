@@ -9,10 +9,10 @@ export type ModelNode = {
 }
 
 export type Section = {
-  A: number // cross-sectional area [m²]
-  Iy: number // second moment of area about local y [m⁴]
-  Iz: number // second moment of area about local z [m⁴]
-  J: number // St-Venant torsion constant [m⁴]
+  A: number // cross-sectional area [mÂ²]
+  Iy: number // second moment of area about local y [mâ´]
+  Iz: number // second moment of area about local z [mâ´]
+  J: number // St-Venant torsion constant [mâ´]
 }
 
 export type Material = {
@@ -20,7 +20,7 @@ export type Material = {
   G: number // shear modulus [Pa]
 }
 
-// True → the rotational DOF at that member end is released (internal hinge).
+// True â†’ the rotational DOF at that member end is released (internal hinge).
 // Post-to-panel connections must have all releases false (moment-resisting per CLAUDE.md).
 export type EndRelease = {
   Mxx: boolean // torsion about member axis

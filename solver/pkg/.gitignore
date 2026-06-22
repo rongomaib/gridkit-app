@@ -1,2 +1,1 @@
-# wasm-pack generated this file with `*` — we override it to commit the WASM bundle.
-# The browser app loads solver/pkg at runtime; publishing to npm is not needed.
+*

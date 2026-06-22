@@ -346,9 +346,13 @@ importers:
       gridkit-solver:
         specifier: workspace:*
         version: link:../../solver/pkg
+    devDependencies:
       three:
         specifier: ^0.165.0
         version: 0.165.0
+      vitest:
+        specifier: ^1.6.0
+        version: 1.6.0(@types/node@20.16.2)(terser@5.48.0)
 
   core/design:
     dependencies:
@@ -754,6 +758,9 @@ importers:
       '@swc/wasm-web':
         specifier: ^1.5.26
         version: 1.5.26
+      '@villagekit/analysis':
+        specifier: workspace:*
+        version: link:../../core/analysis
       '@villagekit/parameters':
         specifier: workspace:*
         version: link:../../core/parameters
@@ -772,6 +779,12 @@ importers:
       '@villagekit/part-hinge':
         specifier: workspace:*
         version: link:../../parts/hinge
+      '@villagekit/part-panel-brace':
+        specifier: workspace:*
+        version: link:../../parts/panel-brace
+      '@villagekit/part-timber':
+        specifier: workspace:*
+        version: link:../../parts/timber
       '@villagekit/product':
         specifier: workspace:*
         version: link:../../core/product

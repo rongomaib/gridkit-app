@@ -1,3 +1,4 @@
+import type { MemberResult } from '@villagekit/analysis'
 import { usePricingContext } from '@villagekit/part'
 import { HStack, InfoTooltip, Text, VStack } from '@villagekit/ui'
 import { convert, meter, millimeter } from '@villagekit/units'
@@ -169,10 +170,18 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
     </VStack>
   )
 
-  const { selectedPartId, partValues, setSelectedPartId } = useProductKitContext()
+  const { selectedPartId, partValues, setSelectedPartId, solverResult } = useProductKitContext()
   const selectedPart = selectedPartId != null ? parts.find((p) => p.id === selectedPartId) : null
   const selectedPartGlValue =
     selectedPartId != null ? partValues.find((p: any) => p.id === selectedPartId) : null
+
+  // Find member result for selected structural part
+  const selectedMemberResult = useMemo<MemberResult | null>(() => {
+    if (selectedPartId == null || !solverResult?.ok) return null
+    const lcr = solverResult.loadCaseResults[0]
+    if (lcr == null) return null
+    return lcr.memberResults.find((r) => r.partId === selectedPartId) ?? null
+  }, [selectedPartId, solverResult])
 
   if (selectedPart != null && selectedPartGlValue != null) {
     const partType = (selectedPart as any).spec.type as string
@@ -229,6 +238,75 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
               </Text>
             </HStack>
           )}
+
+          {partType === 'timber' && selectedMemberResult != null && (
+            <>
+              <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                <Text css={{ color: 'gray.600' }}>Axial (peak)</Text>
+                <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>
+                  {Math.round(
+                    Math.max(
+                      Math.abs(selectedMemberResult.forces.fx_start),
+                      Math.abs(selectedMemberResult.forces.fx_end),
+                    ) / 9.81,
+                  )}{' '}
+                  kg
+                </Text>
+              </HStack>
+              <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                <Text css={{ color: 'gray.600' }}>Shear (peak)</Text>
+                <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>
+                  {Math.round(
+                    Math.max(
+                      Math.abs(selectedMemberResult.forces.fy_start),
+                      Math.abs(selectedMemberResult.forces.fy_end),
+                      Math.abs(selectedMemberResult.forces.fz_start),
+                      Math.abs(selectedMemberResult.forces.fz_end),
+                    ) / 9.81,
+                  )}{' '}
+                  kg
+                </Text>
+              </HStack>
+            </>
+          )}
+
+          {partType === 'panel-brace' && selectedMemberResult != null && (
+            <>
+              <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                <Text css={{ color: 'gray.600' }}>Bending (peak)</Text>
+                <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>
+                  {Math.round(
+                    Math.max(
+                      Math.abs(selectedMemberResult.forces.mz_start),
+                      Math.abs(selectedMemberResult.forces.mz_end),
+                    ) / 9.81,
+                  )}{' '}
+                  kg·m
+                </Text>
+              </HStack>
+              <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                <Text css={{ color: 'gray.600' }}>Shear (peak)</Text>
+                <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>
+                  {Math.round(
+                    Math.max(
+                      Math.abs(selectedMemberResult.forces.fy_start),
+                      Math.abs(selectedMemberResult.forces.fy_end),
+                    ) / 9.81,
+                  )}{' '}
+                  kg
+                </Text>
+              </HStack>
+            </>
+          )}
+
+          {(partType === 'timber' || partType === 'panel-brace') &&
+            selectedMemberResult == null && (
+              <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                <Text css={{ color: 'gray.500', fontStyle: 'italic', fontSize: 'sm' }}>
+                  {solverResult == null ? 'Analysing…' : 'No force data'}
+                </Text>
+              </HStack>
+            )}
         </VStack>
 
         <VStack gap="2" css={{ width: '100%', marginTop: '8px' }}>

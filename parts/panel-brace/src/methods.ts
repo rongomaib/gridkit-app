@@ -56,8 +56,8 @@ export function calculateBoundingBox(creator: PanelBrace): Box3 {
   const height = convert(variant.height, meter).value
 
   const box = new Box3(
-    new Vector3(0, -halfDepth, 0),
-    new Vector3(lengthInGrids * gridUnit, halfDepth, height),
+    new Vector3(0, 0, -halfDepth),
+    new Vector3(lengthInGrids * gridUnit, height, halfDepth),
   )
 
   box.applyMatrix4(new Matrix4().fromArray(transform))

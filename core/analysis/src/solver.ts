@@ -2,7 +2,7 @@ import type { StructuralModel } from './model'
 import type { SolverResult } from './results'
 
 // The WASM module is loaded lazily on first call and cached.
-// Vite handles the .wasm asset via ?url import — the URL is passed to wasm-bindgen's init().
+// Vite handles the .wasm asset via ?url import â€” the URL is passed to wasm-bindgen's init().
 // We import the JS glue from the gridkit-solver package (which the pnpm workspace links).
 
 let wasmReady: Promise<void> | null = null
@@ -28,7 +28,7 @@ async function ensureWasm(): Promise<void> {
  * Run the in-browser WASM solver against a StructuralModel.
  *
  * Returns a SolverResult.  When ok === false the error field describes the problem.
- * This function never throws — solver errors are reported via result.ok / result.error.
+ * This function never throws â€” solver errors are reported via result.ok / result.error.
  */
 export async function runSolver(model: StructuralModel): Promise<SolverResult> {
   try {

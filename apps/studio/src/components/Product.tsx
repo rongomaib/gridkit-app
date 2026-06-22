@@ -8,6 +8,7 @@ import {
   useProductError,
   useProductMeta,
 } from '@villagekit/product'
+import { AnalysisPanel, BomPanel } from '@villagekit/product-kit'
 import { Box, Flex, Heading, Tabs } from '@villagekit/ui'
 import { useRef, useState } from 'react'
 import { Loading } from './Loading'
@@ -126,6 +127,7 @@ function ProductViewer() {
         <Tabs.Trigger value="view">View</Tabs.Trigger>
         <Tabs.Trigger value="parts">Parts</Tabs.Trigger>
         <Tabs.Trigger value="info">Info</Tabs.Trigger>
+        <Tabs.Trigger value="analysis">Analysis</Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content
         value="view"
@@ -136,6 +138,7 @@ function ProductViewer() {
           <Box css={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}>
             <ProductView showParamControls={showParamControls} shouldDisplayAxes />
           </Box>
+          <BomPanel />
         </Box>
       </Tabs.Content>
       <Tabs.Content value="parts">
@@ -143,6 +146,9 @@ function ProductViewer() {
       </Tabs.Content>
       <Tabs.Content value="info">
         <ProductInfo />
+      </Tabs.Content>
+      <Tabs.Content value="analysis" css={{ flex: 1, minHeight: 0 }}>
+        <AnalysisPanel />
       </Tabs.Content>
     </Tabs.Root>
   )

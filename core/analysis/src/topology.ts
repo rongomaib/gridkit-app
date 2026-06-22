@@ -39,6 +39,9 @@ function getEndpoints(creator: AnyCreator): [Vec3, Vec3] {
 
   const lengthInMeters = creator.spec.lengthInGrids * GRID_UNIT_M
   const direction = new Vector3(1, 0, 0).applyQuaternion(quaternion)
+  // Timber.Z is built from a reflected transform (det = -1); negate so vertical
+  // members always point world +Z (base â†’ tip), matching real-world geometry.
+  if (Math.abs(Math.abs(direction.z) - 1) < 0.01 && direction.z < 0) direction.negate()
 
   const start: Vec3 = { x: position.x, y: position.y, z: position.z }
   const end: Vec3 = {

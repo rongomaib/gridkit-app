@@ -77,8 +77,8 @@ async function run() {
     const productCodePath = join(productDir, productMeta.exports)
     const productCode = await readFile(productCodePath, 'utf8')
 
-    const qs = `meta=${encodeURIComponent(btoa(JSON.stringify(productMeta)))}`
-    const hash = btoa(productCode)
+    const qs = `meta=${encodeURIComponent(Buffer.from(JSON.stringify(productMeta), 'utf8').toString('base64'))}`
+    const hash = Buffer.from(productCode, 'utf8').toString('base64')
     const page = await browser.newPage()
     await page.setViewport({ width: 1600, height: 1200, deviceScaleFactor: 1 })
     await page.goto(`http://localhost:${PORT}?${qs}#${hash}`)

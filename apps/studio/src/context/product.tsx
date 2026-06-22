@@ -2,6 +2,8 @@ import '@villagekit/part-gridbeam'
 import '@villagekit/part-gridpanel'
 import '@villagekit/part-fastener'
 import '@villagekit/part-hinge'
+import '@villagekit/part-timber'
+import '@villagekit/part-panel-brace'
 import '@villagekit/plugin-smart-fasteners'
 
 import { useGetProductFileQuery, useGetProductMetaQuery } from '@/client'

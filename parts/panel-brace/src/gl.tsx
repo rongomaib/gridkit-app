@@ -39,9 +39,10 @@ function PartGl(props: PartGlProps) {
   } = props
 
   const geometry = useMemo(() => {
-    const geo = new BoxGeometry(lengthInMeters, depthInMeters, heightInMeters)
-    // translate so start end is at local origin, height rises in +Z
-    geo.translate(lengthInMeters / 2, 0, heightInMeters / 2)
+    // xSpanTransform maps local Y→world Z and local Z→world Y.
+    // Put height (800mm) in local Y so it becomes vertical after the transform.
+    const geo = new BoxGeometry(lengthInMeters, heightInMeters, depthInMeters)
+    geo.translate(lengthInMeters / 2, heightInMeters / 2, 0)
     return geo
   }, [lengthInMeters, depthInMeters, heightInMeters])
 

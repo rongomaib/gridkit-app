@@ -1,6 +1,7 @@
 {
   "name": "@villagekit/analysis",
   "version": "0.10.0",
+  "license": "EUPL-1.2",
   "type": "module",
   "exports": {
     ".": {
@@ -15,12 +16,17 @@
   "scripts": {
     "build:dist": "tsup src",
     "build:pkg": "pnpm run build:dist",
-    "lint": "biome check ."
+    "lint": "biome check .",
+    "test": "vitest run"
   },
   "dependencies": {
     "gridkit-solver": "workspace:*"
   },
   "peerDependencies": {
+    "three": "^0.165.0"
+  },
+  "devDependencies": {
+    "vitest": "^1.6.0",
     "three": "^0.165.0"
   }
 }

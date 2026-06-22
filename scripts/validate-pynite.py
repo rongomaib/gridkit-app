@@ -40,16 +40,16 @@ def validate(path: str) -> None:
 
     model = FEModel3D()
 
-    # ── Nodes ────────────────────────────────────────────────────────────────
+    # â”€â”€ Nodes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     for n in data["nodes"]:
         model.add_node(n["id"], n["x"], n["y"], n["z"])
 
-    # ── Materials (PyNite requires named materials) ───────────────────────────
+    # â”€â”€ Materials (PyNite requires named materials) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     # PyNite add_material signature: name, E, G, nu, rho
     model.add_material("TIMBER_SG8", 8e9, 5e8, 0.33, 500)
     model.add_material("PLY",        9.5e9, 3.8e9, 0.35, 600)
 
-    # ── Members ──────────────────────────────────────────────────────────────
+    # â”€â”€ Members â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     for m in data["members"]:
         s = m["section"]
         mat_name = "PLY" if m["type"] == "panel-brace" else "TIMBER_SG8"
@@ -76,7 +76,7 @@ def validate(path: str) -> None:
         if er["end"]["Myy"]:   model.def_releases(m["id"], False, False, False, False, True,  False)
         if er["end"]["Mzz"]:   model.def_releases(m["id"], False, False, False, False, False, True)
 
-    # ── Supports ─────────────────────────────────────────────────────────────
+    # â”€â”€ Supports â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     for sup in data["supports"]:
         model.def_support(
             sup["nodeId"],
@@ -84,7 +84,7 @@ def validate(path: str) -> None:
             sup["RX"], sup["RY"], sup["RZ"],
         )
 
-    # ── Load cases ───────────────────────────────────────────────────────────
+    # â”€â”€ Load cases â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     for lc in data["loadCases"]:
         combo_name = lc["id"]
         model.add_load_combo(combo_name, {combo_name: 1.0})
@@ -102,7 +102,7 @@ def validate(path: str) -> None:
                     model.add_node_load(nl["nodeId"], dof, val, combo_name)
 
         for dl in lc["memberDistLoads"]:
-            # direction mapping: 'Fz' → 'FZ'
+            # direction mapping: 'Fz' â†’ 'FZ'
             direction = dl["direction"].upper()
             model.add_member_dist_load(
                 dl["memberId"],
@@ -114,12 +114,12 @@ def validate(path: str) -> None:
                 combo_name,
             )
 
-    # ── Analyze ──────────────────────────────────────────────────────────────
-    print("\nRunning PyNite analysis …")
+    # â”€â”€ Analyze â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    print("\nRunning PyNite analysis â€¦")
     model.analyze(check_statics=True)
-    print("Analysis complete — no singularity errors.\n")
+    print("Analysis complete â€” no singularity errors.\n")
 
-    # ── Check displacements ──────────────────────────────────────────────────
+    # â”€â”€ Check displacements â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     print("Sample node displacements (dead load):")
     first_lc = data["loadCases"][0]["id"]
     for n in data["nodes"][:6]:
@@ -131,9 +131,9 @@ def validate(path: str) -> None:
             ok = all(isfinite(v) for v in (dx, dy, dz))
             print(f"  {nid}: DX={dx:.6f}  DY={dy:.6f}  DZ={dz:.6f}  {'OK' if ok else 'NON-FINITE!'}")
         except KeyError:
-            print(f"  {nid}: (no result — check PyNite API version)")
+            print(f"  {nid}: (no result â€” check PyNite API version)")
 
-    print("\nPhase 3 validation PASSED — model is non-singular.")
+    print("\nPhase 3 validation PASSED â€” model is non-singular.")
 
 
 if __name__ == "__main__":

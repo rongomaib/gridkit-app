@@ -1,4 +1,5 @@
 import { registerPartModule } from '@villagekit/part'
+import './creator'
 import type { PanelBrace, PanelBraceSpec } from './creator'
 import { PartsGl } from './gl'
 import {

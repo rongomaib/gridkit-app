@@ -1,5 +1,5 @@
-// Solver output types — mirrors the Rust SolverResult struct.
-// All forces in N / N·m; displacements in m / rad.
+// Solver output types â€” mirrors the Rust SolverResult struct.
+// All forces in N / NÂ·m; displacements in m / rad.
 
 export type NodeDisplacement = {
   nodeId: string

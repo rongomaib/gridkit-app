@@ -6,6 +6,8 @@ import { ProductKitView } from './view'
 
 export { ProductKitContext } from './context'
 export { registerPlugin } from './plugins'
+export { AnalysisPanel } from './analysis-panel'
+export { BomPanel } from './bom-panel'
 export type {
   Params,
   Part,

@@ -3,7 +3,8 @@ import { PartsGlForAll } from '@villagekit/part'
 import { type ProductViewProps, useProductMeta } from '@villagekit/product'
 import { Sandbox } from '@villagekit/sandbox'
 import { Box, Flex, Spinner } from '@villagekit/ui'
-import { Suspense, useEffect, useState } from 'react'
+import { Suspense, useEffect, useRef, useState } from 'react'
+import { AnalysisOverlay, type VisualizationMode } from './analysis-overlay'
 import { useProductKitContext } from './context'
 import { ProductKitInfo } from './info'
 
@@ -17,7 +18,48 @@ export function ProductKitView(props: ProductViewProps) {
     partValues: partGlValues,
     selectedPartId,
     setSelectedPartId,
+    selectedPartIds,
+    setSelectedPartIds,
+    isAnalysing,
   } = useProductKitContext()
+
+  const [activeModes, setActiveModes] = useState<Set<VisualizationMode>>(new Set(['heat']))
+  const [deflectionScale, setDeflectionScale] = useState(100)
+
+  // Track Shift key for multi-select without causing re-renders
+  const shiftHeld = useRef(false)
+  useEffect(() => {
+    const down = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') shiftHeld.current = true
+    }
+    const up = (e: KeyboardEvent) => {
+      if (e.key === 'Shift') shiftHeld.current = false
+    }
+    window.addEventListener('keydown', down)
+    window.addEventListener('keyup', up)
+    return () => {
+      window.removeEventListener('keydown', down)
+      window.removeEventListener('keyup', up)
+    }
+  }, [])
+
+  function toggleMode(mode: VisualizationMode) {
+    const next = new Set(activeModes)
+    if (next.has(mode)) next.delete(mode)
+    else next.add(mode)
+    setActiveModes(next)
+  }
+
+  function handlePartClick(id: string) {
+    if (shiftHeld.current) {
+      const next = new Set(selectedPartIds)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      setSelectedPartIds(next)
+    } else {
+      setSelectedPartId(id)
+    }
+  }
 
   return (
     <Suspense fallback={<Loading />}>
@@ -29,12 +71,13 @@ export function ProductKitView(props: ProductViewProps) {
           InfoComponent={ProductKitInfo}
         >
           <SelectionHighlighter />
+          <AnalysisOverlay activeModes={activeModes} deflectionScale={deflectionScale} />
           {/* Clear selection when clicking the background */}
-          <group onPointerMissed={() => setSelectedPartId(null)}>
+          <group onPointerMissed={() => setSelectedPartIds(new Set())}>
             <PartsGlForAll
               partGlValues={partGlValues}
               onPartClick={(id) => {
-                setSelectedPartId(id)
+                handlePartClick(id)
                 const part = partGlValues.find((p) => 'id' in p && p.id === id)
                 window.dispatchEvent(
                   new CustomEvent('inspect-part-in-code', {
@@ -45,6 +88,91 @@ export function ProductKitView(props: ProductViewProps) {
             />
           </group>
         </Sandbox>
+
+        {/* Engineering disclaimer banner (Phase 7 - required per CLAUDE.md) */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '8px',
+            left: '8px',
+            zIndex: 10,
+            background: 'rgba(255,237,213,0.95)',
+            border: '1px solid #f97316',
+            borderRadius: '8px',
+            padding: '4px 10px',
+            fontSize: '10px',
+            color: '#92400e',
+            fontWeight: 600,
+            pointerEvents: 'none',
+            userSelect: 'none',
+          }}
+        >
+          DESIGN-ITERATION AID ONLY - not a consented structural design. Final sign-off requires a
+          chartered structural engineer and PS1 (NZ Building Act).
+        </div>
+
+        {/* Analysis controls bar */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '16px',
+            left: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            zIndex: 10,
+            background: 'rgba(255,255,255,0.88)',
+            backdropFilter: 'blur(12px)',
+            borderRadius: '12px',
+            padding: '6px 12px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+            border: '1px solid rgba(226,232,240,0.7)',
+          }}
+        >
+          {isAnalysing && (
+            <span style={{ fontSize: '11px', color: '#888', marginRight: '4px' }}>analysing…</span>
+          )}
+          {(['heat', 'joints', 'ground'] as VisualizationMode[]).map((mode) => (
+            <button
+              key={mode}
+              type="button"
+              onClick={() => toggleMode(mode)}
+              style={{
+                padding: '3px 10px',
+                borderRadius: '16px',
+                border: '1px solid',
+                borderColor: activeModes.has(mode) ? '#2d3748' : '#cbd5e0',
+                cursor: 'pointer',
+                backgroundColor: activeModes.has(mode) ? '#2d3748' : 'transparent',
+                color: activeModes.has(mode) ? 'white' : '#4a5568',
+                fontSize: '11px',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+              }}
+            >
+              {mode}
+            </button>
+          ))}
+          <span style={{ fontSize: '11px', color: '#888', marginLeft: '4px' }}>δ×</span>
+          <input
+            type="range"
+            min={1}
+            max={500}
+            value={deflectionScale}
+            onChange={(e) => setDeflectionScale(Number(e.target.value))}
+            style={{ width: '72px', cursor: 'pointer' }}
+          />
+          <span style={{ fontSize: '11px', color: '#666', minWidth: '24px' }}>
+            {deflectionScale}
+          </span>
+          <span
+            title="Design-iteration aid only — not a consented structural design. Engage a chartered engineer for PS1 sign-off."
+            style={{ fontSize: '13px', cursor: 'help', marginLeft: '4px', color: '#e07000' }}
+          >
+            ⚠
+          </span>
+        </div>
 
         {/* Floating Part Inspector Overlay */}
         {selectedPartId && (
@@ -87,12 +215,12 @@ const TransformControls = TransformControlsDrei as any
 import { Box3, Group } from 'three'
 
 function SelectionHighlighter() {
-  const { selectedPartId } = useProductKitContext()
+  const { selectedPartIds, selectedPartId } = useProductKitContext()
   const { scene } = useThree()
   const [ghostGroup, setGhostGroup] = useState<any>(null)
 
   useEffect(() => {
-    // Reset all emissive
+    // Reset all emissive highlights
     scene.traverse((child: any) => {
       if (child.isMesh && child.material && child.material.emissive) {
         if (child.userData.originalEmissive == null) {
@@ -102,32 +230,34 @@ function SelectionHighlighter() {
       }
     })
 
-    if (!selectedPartId) {
+    if (selectedPartIds.size === 0) {
       setGhostGroup(null)
       return
     }
 
-    // Find selected container
-    let selectedGroup: any = null
+    // Highlight ALL selected parts
+    const selectedGroups: any[] = []
     scene.traverse((child: any) => {
-      if (child.userData?.partId === selectedPartId) {
-        selectedGroup = child
+      if (child.userData?.partId != null && selectedPartIds.has(child.userData.partId)) {
+        selectedGroups.push(child)
       }
     })
 
-    if (selectedGroup) {
-      // Highlight all meshes inside the selected group
-      selectedGroup.traverse((child: any) => {
+    for (const group of selectedGroups) {
+      group.traverse((child: any) => {
         if (child.isMesh && child.material && child.material.emissive) {
           if (!child.userData.materialCloned) {
             child.material = child.material.clone()
             child.userData.materialCloned = true
           }
-          child.material.emissive.setHex(0x5555ff) // blueish highlight
+          child.material.emissive.setHex(0x5555ff)
         }
       })
+    }
 
-      // Create ghost for manipulation
+    // TransformControls ghost only when exactly one part is selected
+    if (selectedPartIds.size === 1 && selectedGroups.length === 1) {
+      const selectedGroup = selectedGroups[0]
       const box = new Box3().setFromObject(selectedGroup)
       const min = box.isEmpty() ? selectedGroup.position.clone() : box.min.clone()
 
@@ -148,8 +278,10 @@ function SelectionHighlighter() {
 
       ghost.add(originalClone)
       setGhostGroup(ghost)
+    } else {
+      setGhostGroup(null)
     }
-  }, [selectedPartId, scene])
+  }, [selectedPartIds, scene])
 
   return ghostGroup ? (
     <>

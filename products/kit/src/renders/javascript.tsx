@@ -2,6 +2,8 @@ import '@villagekit/part-gridpanel/creator'
 import '@villagekit/part-gridbeam/creator'
 import '@villagekit/part-fastener/creator'
 import '@villagekit/part-hinge/creator'
+import '@villagekit/part-timber/creator'
+import '@villagekit/part-panel-brace/creator'
 
 import { AnyMap, type TraceMap, originalPositionFor } from '@jridgewell/trace-mapping'
 import * as Comlink from 'comlink'
@@ -84,7 +86,7 @@ export const javascriptRenderer = fromCallback<RenderEvent, RendererMachineEvent
             presets,
             parts: async (paramsValues: ParamsValues, partVariants: PartVariantsByType) => {
               try {
-                return parts(paramsValues, partVariants)
+                return await parts(paramsValues, partVariants)
               } catch (error) {
                 sendEvaluationError(error)
                 return []
