@@ -1,0 +1,6 @@
+[product]
+type = "kit"
+name = "@villagekit/product-japanese-house"
+label = "Japanese Tiny House"
+description = "Post-and-beam frame with engawa (veranda), 4.8 × 2.4 m footprint."
+exports = "house.ts"
