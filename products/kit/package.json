@@ -12,7 +12,7 @@
     "./package.json": "./package.json"
   },
   "files": ["./src", "./dist"],
-  "sideEffects": false,
+  "sideEffects": ["./src/renders/javascript.tsx", "./src/renders/javascript-worker.ts"],
   "scripts": {
     "build:pkg": "tsup src",
     "deps": "depcheck",
@@ -41,8 +41,10 @@
     "@villagekit/part-gridbeam": "workspace:*",
     "@villagekit/part-gridpanel": "workspace:*",
     "@villagekit/part-hinge": "workspace:*",
+    "@villagekit/part-beam120": "workspace:*",
     "@villagekit/part-timber": "workspace:*",
     "@villagekit/part-panel-brace": "workspace:*",
+    "@villagekit/part-wall-frame": "workspace:*",
     "@villagekit/product": "workspace:*",
     "@villagekit/sandbox": "workspace:*",
     "@villagekit/ui": "^1.1.1",

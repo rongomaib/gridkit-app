@@ -1,36 +1,40 @@
-import { Timber } from '@villagekit/part-timber/creator'
-import { PanelBrace } from '@villagekit/part-panel-brace/creator'
+import { Beam120 } from '@villagekit/part-beam120/creator'
+import { GridPanel } from '@villagekit/part-gridpanel/creator'
+import { WallFrame } from '@villagekit/part-wall-frame/creator'
 
-// Japanese tiny house with engawa — monopitch roof, parametric pitch angle.
+// Japanese tiny house with engawa — monopitch roof.
 //
-// Layout (grid units, 1 gu = 40 mm):
-//   X: 0, 60, 120  — three post lines at 2400 mm centres (house width 4800 mm)
-//   Y: 0 = back wall (high eave), 60 = front wall, ENGAWA_Y = engawa outer (low eave)
+// All posts referenced by SW corner (minimum X, minimum Y) — see ADR-0001.
 //
-// Monopitch: engawa eave fixed at 65 gu (2600 mm). Pitch angle drives back and
-// mid post heights via tan(pitch) × ENGAWA_Y span.
+// X layout (outer face to outer face): 3 + 60 + 3 + 60 + 3 = 129gu = 5160mm
+//   West post SW: x=0   Central post SW: x=63   East post SW: x=126
+//
+// Y layout (outer face to outer face): 3 + 60 + 3 + engawaWidthGu + 3
+//   Back post SW: y=0   Front post SW: y=63   Engawa post SW: y=66+engawaWidthGu
+//
+// Z: posts from z=0 (ground). Floor beam bottom face at z=FLOOR_Z.
+//   Front wall post top:  FLOOR_Z + 60 (fixed — pitch pivots here)
+//   Back wall post top:   FLOOR_Z + 60 + round(tan(pitchDeg°) × 60gu interior depth)
+//   Engawa post top:      FLOOR_Z + 60 − round(tan(pitchDeg°) × (3+engawaWidthGu))
+
+const POST_X = [0, 63, 126] as const
+const POST_Y_BACK = 0
+const POST_Y_FRONT = 63
+const FLOOR_Z = 20
 
 export const parameters = {
   pitchDeg: {
     type: 'number' as const,
     label: 'Roof pitch (°)',
-    description: 'Monopitch angle 0–25°. Low eave always on the engawa side.',
-    min: 0,
-    max: 25,
-    step: 0.5,
-  },
-  floorHeightGu: {
-    type: 'number' as const,
-    label: 'Floor height',
-    description: 'Height of floor above ground (1 gu = 40 mm)',
-    min: 0,
-    max: 15,
+    description: 'Monopitch angle in degrees. Front wall always stays at 2400mm; back wall and engawa eave heights derive from this.',
+    min: 5,
+    max: 35,
     step: 1,
   },
   engawaWidthGu: {
     type: 'number' as const,
-    label: 'Engawa width',
-    description: 'Depth of front veranda beyond the front wall (1 gu = 40 mm)',
+    label: 'Engawa width (gu)',
+    description: 'Clear depth of engawa in grid units (1 gu = 40mm). Default 30 = 1200mm.',
     min: 15,
     max: 60,
     step: 5,
@@ -38,81 +42,112 @@ export const parameters = {
 }
 
 export const presets = [
-  { id: 'default',      label: 'Default (14°)',    values: { pitchDeg: 14, floorHeightGu: 9, engawaWidthGu: 30 } },
-  { id: 'flat',         label: 'Flat (0°)',         values: { pitchDeg: 0,  floorHeightGu: 9, engawaWidthGu: 30 } },
-  { id: 'steep',        label: 'Steep (25°)',       values: { pitchDeg: 25, floorHeightGu: 9, engawaWidthGu: 30 } },
-  { id: 'deep-engawa',  label: 'Deep engawa',       values: { pitchDeg: 14, floorHeightGu: 9, engawaWidthGu: 45 } },
-  { id: 'raised-floor', label: 'Raised floor',      values: { pitchDeg: 14, floorHeightGu: 4, engawaWidthGu: 30 } },
+  { id: 'default',     label: '18° pitch',          values: { pitchDeg: 18, engawaWidthGu: 30 } },
+  { id: 'steep',       label: '27° steep pitch',    values: { pitchDeg: 27, engawaWidthGu: 30 } },
+  { id: 'deep-engawa', label: '18° / deep engawa',  values: { pitchDeg: 18, engawaWidthGu: 45 } },
 ]
 
 export const parts = ({
   pitchDeg,
-  floorHeightGu,
   engawaWidthGu,
 }: {
   pitchDeg: number
-  floorHeightGu: number
   engawaWidthGu: number
 }) => {
-  const FLOOR_Z  = floorHeightGu
-  const ENGAWA_Y = 60 + engawaWidthGu
-  const POST_H_LOW = 65  // engawa eave — fixed low side
+  const POST_Y_ENGAWA = POST_Y_FRONT + 3 + engawaWidthGu
 
-  // Height difference across the full ENGAWA_Y span — preserves pitch angle as engawa width changes
-  const heightDiff  = Math.round(Math.tan((pitchDeg * Math.PI) / 180) * ENGAWA_Y)
-  const POST_H_BACK = POST_H_LOW + heightDiff
-  // Front wall at y=60 interpolates linearly along the roof slope
-  const POST_H_MID  = POST_H_LOW + Math.round(heightDiff * (ENGAWA_Y - 60) / ENGAWA_Y)
+  // Pitch pivots at the front wall — front post top is always FLOOR_Z+60.
+  const POST_H_FRONT  = FLOOR_Z + 60
+  const riseGu        = Math.round(Math.tan(pitchDeg * Math.PI / 180) * 60)
+  const POST_H_BACK   = POST_H_FRONT + Math.max(1, riseGu)
+  const dropGu        = Math.round(Math.tan(pitchDeg * Math.PI / 180) * (3 + engawaWidthGu))
+  const POST_H_ENGAWA = Math.max(FLOOR_Z + 20, POST_H_FRONT - dropGu)
 
-  // Purlin bottom sits 3 gu (120 mm) below each post top
-  const TOP_BACK = POST_H_BACK - 3
-  const TOP_MID  = POST_H_MID  - 3
-  const TOP_LOW  = POST_H_LOW  - 3  // = 62
+  const ROOF_Z_BACK   = POST_H_BACK   - 3
+  const ROOF_Z_FRONT  = POST_H_FRONT  - 3
+  const ROOF_Z_ENGAWA = POST_H_ENGAWA - 3
+
+  const PANEL_Z = FLOOR_Z + 3
 
   return [
-    // ── Back wall posts — high eave (3 posts, y = 0) ───────────────────────
-    Timber.Z({ id: 'post-b-w', x: 0,   y: 0, z: [0, POST_H_BACK] }),
-    Timber.Z({ id: 'post-b-m', x: 60,  y: 0, z: [0, POST_H_BACK] }),
-    Timber.Z({ id: 'post-b-e', x: 120, y: 0, z: [0, POST_H_BACK] }),
+    // ── Back wall posts (y=0, 3 posts) ────────────────────────────────────
+    Beam120.Z({ id: 'post-b-w', x: POST_X[0], y: POST_Y_BACK, z: [0, POST_H_BACK] }),
+    Beam120.Z({ id: 'post-b-m', x: POST_X[1], y: POST_Y_BACK, z: [0, POST_H_BACK] }),
+    Beam120.Z({ id: 'post-b-e', x: POST_X[2], y: POST_Y_BACK, z: [0, POST_H_BACK] }),
 
-    // ── Front wall posts — mid slope (3 posts, y = 60) ─────────────────────
-    Timber.Z({ id: 'post-f-w', x: 0,   y: 60, z: [0, POST_H_MID] }),
-    Timber.Z({ id: 'post-f-m', x: 60,  y: 60, z: [0, POST_H_MID] }),
-    Timber.Z({ id: 'post-f-e', x: 120, y: 60, z: [0, POST_H_MID] }),
+    // ── Front wall posts (y=63, 3 posts) ──────────────────────────────────
+    Beam120.Z({ id: 'post-f-w', x: POST_X[0], y: POST_Y_FRONT, z: [0, POST_H_FRONT] }),
+    Beam120.Z({ id: 'post-f-m', x: POST_X[1], y: POST_Y_FRONT, z: [0, POST_H_FRONT] }),
+    Beam120.Z({ id: 'post-f-e', x: POST_X[2], y: POST_Y_FRONT, z: [0, POST_H_FRONT] }),
 
-    // ── Engawa posts — low eave (3 posts, y = 90) ──────────────────────────
-    Timber.Z({ id: 'post-e-w', x: 0,   y: ENGAWA_Y, z: [0, POST_H_LOW] }),
-    Timber.Z({ id: 'post-e-m', x: 60,  y: ENGAWA_Y, z: [0, POST_H_LOW] }),
-    Timber.Z({ id: 'post-e-e', x: 120, y: ENGAWA_Y, z: [0, POST_H_LOW] }),
+    // ── Engawa posts (y=POST_Y_ENGAWA, 3 posts) ───────────────────────────
+    Beam120.Z({ id: 'post-e-w', x: POST_X[0], y: POST_Y_ENGAWA, z: [0, POST_H_ENGAWA] }),
+    Beam120.Z({ id: 'post-e-m', x: POST_X[1], y: POST_Y_ENGAWA, z: [0, POST_H_ENGAWA] }),
+    Beam120.Z({ id: 'post-e-e', x: POST_X[2], y: POST_Y_ENGAWA, z: [0, POST_H_ENGAWA] }),
 
-    // ── Floor-level beams — X direction ────────────────────────────────────
-    Timber.X({ id: 'beam-fl-x-b', x: [0, 120], y: 0,        z: FLOOR_Z }),
-    Timber.X({ id: 'beam-fl-x-f', x: [0, 120], y: 60,       z: FLOOR_Z }),
-    Timber.X({ id: 'beam-fl-x-e', x: [0, 120], y: ENGAWA_Y, z: FLOOR_Z }),
+    // ── Floor beams — X direction ──────────────────────────────────────────
+    Beam120.X({ id: 'beam-fl-x-b', x: [POST_X[0], POST_X[2] + 3], y: POST_Y_BACK,    z: FLOOR_Z }),
+    Beam120.X({ id: 'beam-fl-x-f', x: [POST_X[0], POST_X[2] + 3], y: POST_Y_FRONT,   z: FLOOR_Z }),
+    Beam120.X({ id: 'beam-fl-x-e', x: [POST_X[0], POST_X[2] + 3], y: POST_Y_ENGAWA,  z: FLOOR_Z }),
 
-    // ── Floor-level beams — Y direction ────────────────────────────────────
-    Timber.Y({ id: 'beam-fl-y-w',  x: 0,   y: [0,  60],       z: FLOOR_Z }),
-    Timber.Y({ id: 'beam-fl-y-e',  x: 120, y: [0,  60],       z: FLOOR_Z }),
-    Timber.Y({ id: 'beam-fl-y-ew', x: 0,   y: [60, ENGAWA_Y], z: FLOOR_Z }),
-    Timber.Y({ id: 'beam-fl-y-ee', x: 120, y: [60, ENGAWA_Y], z: FLOOR_Z }),
+    // ── Floor beams — Y direction ──────────────────────────────────────────
+    Beam120.Y({ id: 'beam-fl-y-w-int', x: POST_X[0], y: [POST_Y_BACK,      POST_Y_FRONT + 3],  z: FLOOR_Z }),
+    Beam120.Y({ id: 'beam-fl-y-m-int', x: POST_X[1], y: [POST_Y_BACK,      POST_Y_FRONT + 3],  z: FLOOR_Z }),
+    Beam120.Y({ id: 'beam-fl-y-e-int', x: POST_X[2], y: [POST_Y_BACK,      POST_Y_FRONT + 3],  z: FLOOR_Z }),
+    Beam120.Y({ id: 'beam-fl-y-w-eng', x: POST_X[0], y: [POST_Y_FRONT + 3, POST_Y_ENGAWA + 3], z: FLOOR_Z }),
+    Beam120.Y({ id: 'beam-fl-y-m-eng', x: POST_X[1], y: [POST_Y_FRONT + 3, POST_Y_ENGAWA + 3], z: FLOOR_Z }),
+    Beam120.Y({ id: 'beam-fl-y-e-eng', x: POST_X[2], y: [POST_Y_FRONT + 3, POST_Y_ENGAWA + 3], z: FLOOR_Z }),
 
-    // ── Top purlins — one per post row at its own height ───────────────────
-    Timber.X({ id: 'purlin-b', x: [0, 120], y: 0,        z: TOP_BACK }),
-    Timber.X({ id: 'purlin-f', x: [0, 120], y: 60,       z: TOP_MID  }),
-    Timber.X({ id: 'purlin-e', x: [0, 120], y: ENGAWA_Y, z: TOP_LOW  }),
+    // ── Roof beams — X direction ───────────────────────────────────────────
+    Beam120.X({ id: 'roof-x-b', x: [POST_X[0], POST_X[2] + 3], y: POST_Y_BACK,   z: ROOF_Z_BACK }),
+    Beam120.X({ id: 'roof-x-f', x: [POST_X[0], POST_X[2] + 3], y: POST_Y_FRONT,  z: ROOF_Z_FRONT }),
+    Beam120.X({ id: 'roof-x-e', x: [POST_X[0], POST_X[2] + 3], y: POST_Y_ENGAWA, z: ROOF_Z_ENGAWA }),
 
-    // ── Back wall panels (y = 0, 2 spans × 2 heights) ──────────────────────
-    PanelBrace.X({ id: 'wall-b-w-lo', x: [0,  60],  y: 0, z: 10 }),
-    PanelBrace.X({ id: 'wall-b-e-lo', x: [60, 120], y: 0, z: 10 }),
-    PanelBrace.X({ id: 'wall-b-w-hi', x: [0,  60],  y: 0, z: 30 }),
-    PanelBrace.X({ id: 'wall-b-e-hi', x: [60, 120], y: 0, z: 30 }),
+    // ── Interior floor panels — 4 × 1200×2400mm ply, 4×1 layout ─────────
+    GridPanel.XY({ id: 'floor-w-1', x: [POST_X[0] + 3,  POST_X[0] + 33], y: [POST_Y_BACK + 3, POST_Y_FRONT], z: PANEL_Z, holes: false }),
+    GridPanel.XY({ id: 'floor-w-2', x: [POST_X[0] + 33, POST_X[1]],      y: [POST_Y_BACK + 3, POST_Y_FRONT], z: PANEL_Z, holes: false }),
+    GridPanel.XY({ id: 'floor-e-1', x: [POST_X[1] + 3,  POST_X[1] + 33], y: [POST_Y_BACK + 3, POST_Y_FRONT], z: PANEL_Z, holes: false }),
+    GridPanel.XY({ id: 'floor-e-2', x: [POST_X[1] + 33, POST_X[2]],      y: [POST_Y_BACK + 3, POST_Y_FRONT], z: PANEL_Z, holes: false }),
 
-    // ── Side wall panels (x = 0 and x = 120, 1 span × 2 heights) ──────────
-    PanelBrace.Y({ id: 'wall-w-lo', x: 0,   y: [0, 60], z: 10 }),
-    PanelBrace.Y({ id: 'wall-w-hi', x: 0,   y: [0, 60], z: 30 }),
-    PanelBrace.Y({ id: 'wall-e-lo', x: 120, y: [0, 60], z: 10 }),
-    PanelBrace.Y({ id: 'wall-e-hi', x: 120, y: [0, 60], z: 30 }),
+    // ── Engawa deck panels ─────────────────────────────────────────────────
+    GridPanel.XY({ id: 'engawa-1', x: [POST_X[0] + 3,  POST_X[0] + 33], y: [POST_Y_FRONT + 3, POST_Y_ENGAWA], z: PANEL_Z, holes: false }),
+    GridPanel.XY({ id: 'engawa-2', x: [POST_X[0] + 33, POST_X[1]],      y: [POST_Y_FRONT + 3, POST_Y_ENGAWA], z: PANEL_Z, holes: false }),
+    GridPanel.XY({ id: 'engawa-3', x: [POST_X[1] + 3,  POST_X[1] + 33], y: [POST_Y_FRONT + 3, POST_Y_ENGAWA], z: PANEL_Z, holes: false }),
+    GridPanel.XY({ id: 'engawa-4', x: [POST_X[1] + 33, POST_X[2]],      y: [POST_Y_FRONT + 3, POST_Y_ENGAWA], z: PANEL_Z, holes: false }),
 
-    // Front wall (y = 60) is open — engawa and shoji face.
+    // ── Back wall — 2 bays × 3 portrait panels, plus clerestory ─────────────
+    // Each panel: 20gu (800mm) wide × full-story tall — portrait orientation
+    // Bay 1 (west): standard story
+    WallFrame.XZ({ id: 'wall-b-1-a', x: [POST_X[0] + 3,  POST_X[0] + 23], y: POST_Y_BACK, z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.XZ({ id: 'wall-b-1-b', x: [POST_X[0] + 23, POST_X[0] + 43], y: POST_Y_BACK, z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.XZ({ id: 'wall-b-1-c', x: [POST_X[0] + 43, POST_X[1]],      y: POST_Y_BACK, z: [FLOOR_Z, POST_H_FRONT] }),
+    // Bay 1: clerestory
+    WallFrame.XZ({ id: 'wall-b-1-cl-a', x: [POST_X[0] + 3,  POST_X[0] + 23], y: POST_Y_BACK, z: [POST_H_FRONT, POST_H_BACK] }),
+    WallFrame.XZ({ id: 'wall-b-1-cl-b', x: [POST_X[0] + 23, POST_X[0] + 43], y: POST_Y_BACK, z: [POST_H_FRONT, POST_H_BACK] }),
+    WallFrame.XZ({ id: 'wall-b-1-cl-c', x: [POST_X[0] + 43, POST_X[1]],      y: POST_Y_BACK, z: [POST_H_FRONT, POST_H_BACK] }),
+    // Bay 2 (east): standard story
+    WallFrame.XZ({ id: 'wall-b-2-a', x: [POST_X[1] + 3,  POST_X[1] + 23], y: POST_Y_BACK, z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.XZ({ id: 'wall-b-2-b', x: [POST_X[1] + 23, POST_X[1] + 43], y: POST_Y_BACK, z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.XZ({ id: 'wall-b-2-c', x: [POST_X[1] + 43, POST_X[2]],      y: POST_Y_BACK, z: [FLOOR_Z, POST_H_FRONT] }),
+    // Bay 2: clerestory
+    WallFrame.XZ({ id: 'wall-b-2-cl-a', x: [POST_X[1] + 3,  POST_X[1] + 23], y: POST_Y_BACK, z: [POST_H_FRONT, POST_H_BACK] }),
+    WallFrame.XZ({ id: 'wall-b-2-cl-b', x: [POST_X[1] + 23, POST_X[1] + 43], y: POST_Y_BACK, z: [POST_H_FRONT, POST_H_BACK] }),
+    WallFrame.XZ({ id: 'wall-b-2-cl-c', x: [POST_X[1] + 43, POST_X[2]],      y: POST_Y_BACK, z: [POST_H_FRONT, POST_H_BACK] }),
+
+    // ── Front wall — 2 bays × 3 portrait panels ──────────────────────────────
+    WallFrame.XZ({ id: 'wall-f-1-a', x: [POST_X[0] + 3,  POST_X[0] + 23], y: POST_Y_FRONT, z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.XZ({ id: 'wall-f-1-b', x: [POST_X[0] + 23, POST_X[0] + 43], y: POST_Y_FRONT, z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.XZ({ id: 'wall-f-1-c', x: [POST_X[0] + 43, POST_X[1]],      y: POST_Y_FRONT, z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.XZ({ id: 'wall-f-2-a', x: [POST_X[1] + 3,  POST_X[1] + 23], y: POST_Y_FRONT, z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.XZ({ id: 'wall-f-2-b', x: [POST_X[1] + 23, POST_X[1] + 43], y: POST_Y_FRONT, z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.XZ({ id: 'wall-f-2-c', x: [POST_X[1] + 43, POST_X[2]],      y: POST_Y_FRONT, z: [FLOOR_Z, POST_H_FRONT] }),
+
+    // ── Side walls — 3 portrait panels per side (20gu wide × full-story tall) ─
+    WallFrame.YZ({ id: 'wall-w-a', x: POST_X[0], y: [POST_Y_BACK + 3,  POST_Y_BACK + 23], z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.YZ({ id: 'wall-w-b', x: POST_X[0], y: [POST_Y_BACK + 23, POST_Y_BACK + 43], z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.YZ({ id: 'wall-w-c', x: POST_X[0], y: [POST_Y_BACK + 43, POST_Y_FRONT],     z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.YZ({ id: 'wall-e-a', x: POST_X[2] + 3, y: [POST_Y_BACK + 3,  POST_Y_BACK + 23], z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.YZ({ id: 'wall-e-b', x: POST_X[2] + 3, y: [POST_Y_BACK + 23, POST_Y_BACK + 43], z: [FLOOR_Z, POST_H_FRONT] }),
+    WallFrame.YZ({ id: 'wall-e-c', x: POST_X[2] + 3, y: [POST_Y_BACK + 43, POST_Y_FRONT],     z: [FLOOR_Z, POST_H_FRONT] }),
   ]
 }
