@@ -69,6 +69,13 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
   }, [boundingBox])
   const sceneryCenterInMeters: [number, number] = useMemo(() => [center[0], center[1]], [center])
 
+  const floorLengthInGridUnits = useMemo(() => {
+    const size = new Vector3()
+    boundingBox.getSize(size)
+    const maxHorizontal = Math.max(size.x, size.y)
+    return Math.max(100, Math.ceil(maxHorizontal / gridLengthInMeters) + 40)
+  }, [boundingBox])
+
   if (gpu == null) return null
   const perfMax = gpu.tier / maxTiers
 
@@ -116,6 +123,7 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
         <SceneryGl
           gridLengthInMeters={gridLengthInMeters}
           centerInMeters={sceneryCenterInMeters}
+          floorLengthInGridUnits={floorLengthInGridUnits}
           mode={mode}
           shouldDisplayGrid={shouldDisplayGrid}
           shouldDisplayAxes={shouldDisplayAxes}

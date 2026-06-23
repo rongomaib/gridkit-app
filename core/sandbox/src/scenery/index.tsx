@@ -8,13 +8,21 @@ import Lights from './lights'
 interface SceneryGlProps {
   centerInMeters: [number, number]
   gridLengthInMeters: number
+  floorLengthInGridUnits: number
   mode: SandboxMode
   shouldDisplayGrid: boolean
   shouldDisplayAxes: boolean
 }
 
 export function SceneryGl(props: SceneryGlProps) {
-  const { centerInMeters, gridLengthInMeters, mode, shouldDisplayGrid, shouldDisplayAxes } = props
+  const {
+    centerInMeters,
+    gridLengthInMeters,
+    floorLengthInGridUnits,
+    mode,
+    shouldDisplayGrid,
+    shouldDisplayAxes,
+  } = props
 
   const performance = useThree((state) => state.performance.current)
 
@@ -68,6 +76,7 @@ export function SceneryGl(props: SceneryGlProps) {
         {...floor}
         centerInMeters={centerInMeters}
         gridLengthInMeters={gridLengthInMeters}
+        lengthInGridUnits={floorLengthInGridUnits}
         shouldDisplayGrid={shouldDisplayGrid && mode !== 'screenshot'}
       />
       {shouldDisplayAxes && mode !== 'screenshot' && (
