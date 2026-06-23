@@ -16,7 +16,7 @@ function Floor(props: FloorProps) {
   const {
     gridLengthInMeters = 0.04,
     centerInMeters = [0, 0],
-    lengthInGridUnits = 50,
+    lengthInGridUnits = 150,
     shouldDisplayGrid = true,
   } = props
 
