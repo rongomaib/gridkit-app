@@ -20,6 +20,7 @@
     "@emotion/react": "^11.14.0",
     "@typescript/vfs": "^1.5.3",
     "@valtown/codemirror-ts": "^2.1.1",
+    "@villagekit/analysis": "workspace:*",
     "@villagekit/design": "workspace:*",
     "@villagekit/math": "workspace:*",
     "@villagekit/parameters": "workspace:*",
