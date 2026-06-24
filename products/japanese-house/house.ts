@@ -101,10 +101,13 @@ export const parts = ({
     Beam120.Y({ id: 'beam-fl-y-m-eng', x: POST_X[1], y: [POST_Y_FRONT + 3, POST_Y_ENGAWA + 3], z: FLOOR_Z }),
     Beam120.Y({ id: 'beam-fl-y-e-eng', x: POST_X[2], y: [POST_Y_FRONT + 3, POST_Y_ENGAWA + 3], z: FLOOR_Z }),
 
-    // ── Roof beams — X direction ───────────────────────────────────────────
-    Beam120.X({ id: 'roof-x-b', x: [POST_X[0], POST_X[2] + 3], y: POST_Y_BACK,   z: ROOF_Z_BACK }),
-    Beam120.X({ id: 'roof-x-f', x: [POST_X[0], POST_X[2] + 3], y: POST_Y_FRONT,  z: ROOF_Z_FRONT }),
-    Beam120.X({ id: 'roof-x-e', x: [POST_X[0], POST_X[2] + 3], y: POST_Y_ENGAWA, z: ROOF_Z_ENGAWA }),
+    // ── Roof beams — X direction (2400mm per bay) ─────────────────────────
+    Beam120.X({ id: 'roof-x-b-1', x: [POST_X[0] + 3, POST_X[1]], y: POST_Y_BACK,   z: ROOF_Z_BACK }),
+    Beam120.X({ id: 'roof-x-b-2', x: [POST_X[1] + 3, POST_X[2]], y: POST_Y_BACK,   z: ROOF_Z_BACK }),
+    Beam120.X({ id: 'roof-x-f-1', x: [POST_X[0] + 3, POST_X[1]], y: POST_Y_FRONT,  z: ROOF_Z_FRONT }),
+    Beam120.X({ id: 'roof-x-f-2', x: [POST_X[1] + 3, POST_X[2]], y: POST_Y_FRONT,  z: ROOF_Z_FRONT }),
+    Beam120.X({ id: 'roof-x-e-1', x: [POST_X[0] + 3, POST_X[1]], y: POST_Y_ENGAWA, z: ROOF_Z_ENGAWA }),
+    Beam120.X({ id: 'roof-x-e-2', x: [POST_X[1] + 3, POST_X[2]], y: POST_Y_ENGAWA, z: ROOF_Z_ENGAWA }),
 
     // ── Interior floor panels — 4 × 1200×2400mm ply, 4×1 layout ─────────
     GridPanel.XY({ id: 'floor-w-1', x: [POST_X[0] + 3,  POST_X[0] + 33], y: [POST_Y_BACK + 3, POST_Y_FRONT], z: PANEL_Z, holes: false }),
