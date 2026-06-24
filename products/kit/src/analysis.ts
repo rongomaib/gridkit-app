@@ -16,7 +16,7 @@ function hasStructuralParts(parts: Parts): boolean {
       if (hasStructuralParts(p as Parts)) return true
     } else {
       const t = (p as any)?.spec?.type
-      if (t === 'timber' || t === 'panel-brace') return true
+      if (t === 'timber' || t === 'beam120' || t === 'panel-brace') return true
     }
   }
   return false

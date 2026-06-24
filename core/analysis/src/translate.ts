@@ -161,7 +161,7 @@ function isVertical(transform: number[]): boolean {
 
 export function buildStructuralModel(parts: AnyParts): StructuralModel {
   const flat = flattenParts(parts)
-  const timbers = flat.filter((p) => p.spec.type === 'timber')
+  const timbers = flat.filter((p) => p.spec.type === 'timber' || p.spec.type === 'beam120')
   const panels = flat.filter((p) => p.spec.type === 'panel-brace')
 
   // Collect vertical post centroid XY positions for panel-endpoint snapping.

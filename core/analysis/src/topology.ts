@@ -63,7 +63,8 @@ function positionKey(v: Vec3): string {
 export function extractTopology(parts: AnyParts): TopologyModel {
   const flat = flattenParts(parts)
   const structural = flat.filter(
-    (p): p is AnyCreator => p.spec.type === 'timber' || p.spec.type === 'panel-brace',
+    (p): p is AnyCreator =>
+      p.spec.type === 'timber' || p.spec.type === 'beam120' || p.spec.type === 'panel-brace',
   )
 
   const nodeMap = new Map<string, TopologyNode>()

@@ -22,7 +22,7 @@ export function AnalysisPanel() {
   const { structuralModel, solverResult, isAnalysing } = useProductKitContext()
 
   if (structuralModel == null) {
-    return <div style={S.panel}>No structural parts (add Timber or PanelBrace).</div>
+    return <div style={S.panel}>No structural parts (add Beam120, Timber, or PanelBrace).</div>
   }
 
   const timberCount = structuralModel.members.filter((m: ModelMember) => m.type === 'timber').length
