@@ -85,10 +85,13 @@ export const parts = ({
     Beam120.Z({ id: 'post-e-m', x: POST_X[1], y: POST_Y_ENGAWA, z: [0, POST_H_ENGAWA] }),
     Beam120.Z({ id: 'post-e-e', x: POST_X[2], y: POST_Y_ENGAWA, z: [0, POST_H_ENGAWA] }),
 
-    // ── Floor beams — X direction ──────────────────────────────────────────
-    Beam120.X({ id: 'beam-fl-x-b', x: [POST_X[0], POST_X[2] + 3], y: POST_Y_BACK,    z: FLOOR_Z }),
-    Beam120.X({ id: 'beam-fl-x-f', x: [POST_X[0], POST_X[2] + 3], y: POST_Y_FRONT,   z: FLOOR_Z }),
-    Beam120.X({ id: 'beam-fl-x-e', x: [POST_X[0], POST_X[2] + 3], y: POST_Y_ENGAWA,  z: FLOOR_Z }),
+    // ── Floor beams — X direction (2400mm per bay, not full-span) ────────
+    Beam120.X({ id: 'beam-fl-x-b-1', x: [POST_X[0] + 3, POST_X[1]], y: POST_Y_BACK,   z: FLOOR_Z }),
+    Beam120.X({ id: 'beam-fl-x-b-2', x: [POST_X[1] + 3, POST_X[2]], y: POST_Y_BACK,   z: FLOOR_Z }),
+    Beam120.X({ id: 'beam-fl-x-f-1', x: [POST_X[0] + 3, POST_X[1]], y: POST_Y_FRONT,  z: FLOOR_Z }),
+    Beam120.X({ id: 'beam-fl-x-f-2', x: [POST_X[1] + 3, POST_X[2]], y: POST_Y_FRONT,  z: FLOOR_Z }),
+    Beam120.X({ id: 'beam-fl-x-e-1', x: [POST_X[0] + 3, POST_X[1]], y: POST_Y_ENGAWA, z: FLOOR_Z }),
+    Beam120.X({ id: 'beam-fl-x-e-2', x: [POST_X[1] + 3, POST_X[2]], y: POST_Y_ENGAWA, z: FLOOR_Z }),
 
     // ── Floor beams — Y direction ──────────────────────────────────────────
     Beam120.Y({ id: 'beam-fl-y-w-int', x: POST_X[0], y: [POST_Y_BACK,      POST_Y_FRONT + 3],  z: FLOOR_Z }),
