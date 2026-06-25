@@ -194,7 +194,7 @@ function HeatTubes({ model, lcr }: LineProps) {
           }}
           onPointerOut={() => setHovered(null)}
         >
-          <cylinderGeometry args={[TUBE_R, TUBE_R, t.len, 8]} />
+          <cylinderGeometry args={[TUBE_R, TUBE_R, t.len, 8, 1, true]} />
           <meshStandardMaterial
             color={t.color}
             roughness={0.5}
