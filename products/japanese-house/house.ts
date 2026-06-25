@@ -121,24 +121,14 @@ export const parts = ({
     GridPanel.XY({ id: 'engawa-3', x: [POST_X[1] + 3,  POST_X[1] + 33], y: [POST_Y_FRONT + 3, POST_Y_ENGAWA], z: PANEL_Z, holes: false }),
     GridPanel.XY({ id: 'engawa-4', x: [POST_X[1] + 33, POST_X[2]],      y: [POST_Y_FRONT + 3, POST_Y_ENGAWA], z: PANEL_Z, holes: false }),
 
-    // ── Back wall — 2 bays × 3 portrait panels, plus clerestory ─────────────
-    // Each panel: 20gu (800mm) wide × full-story tall — portrait orientation
-    // Bay 1 (west): standard story
-    WallFrame.XZ({ id: 'wall-b-1-a', x: [POST_X[0] + 3,  POST_X[0] + 23], y: POST_Y_BACK, z: [FLOOR_Z, POST_H_FRONT] }),
-    WallFrame.XZ({ id: 'wall-b-1-b', x: [POST_X[0] + 23, POST_X[0] + 43], y: POST_Y_BACK, z: [FLOOR_Z, POST_H_FRONT] }),
-    WallFrame.XZ({ id: 'wall-b-1-c', x: [POST_X[0] + 43, POST_X[1]],      y: POST_Y_BACK, z: [FLOOR_Z, POST_H_FRONT] }),
-    // Bay 1: clerestory
-    WallFrame.XZ({ id: 'wall-b-1-cl-a', x: [POST_X[0] + 3,  POST_X[0] + 23], y: POST_Y_BACK, z: [POST_H_FRONT, POST_H_BACK] }),
-    WallFrame.XZ({ id: 'wall-b-1-cl-b', x: [POST_X[0] + 23, POST_X[0] + 43], y: POST_Y_BACK, z: [POST_H_FRONT, POST_H_BACK] }),
-    WallFrame.XZ({ id: 'wall-b-1-cl-c', x: [POST_X[0] + 43, POST_X[1]],      y: POST_Y_BACK, z: [POST_H_FRONT, POST_H_BACK] }),
-    // Bay 2 (east): standard story
-    WallFrame.XZ({ id: 'wall-b-2-a', x: [POST_X[1] + 3,  POST_X[1] + 23], y: POST_Y_BACK, z: [FLOOR_Z, POST_H_FRONT] }),
-    WallFrame.XZ({ id: 'wall-b-2-b', x: [POST_X[1] + 23, POST_X[1] + 43], y: POST_Y_BACK, z: [FLOOR_Z, POST_H_FRONT] }),
-    WallFrame.XZ({ id: 'wall-b-2-c', x: [POST_X[1] + 43, POST_X[2]],      y: POST_Y_BACK, z: [FLOOR_Z, POST_H_FRONT] }),
-    // Bay 2: clerestory
-    WallFrame.XZ({ id: 'wall-b-2-cl-a', x: [POST_X[1] + 3,  POST_X[1] + 23], y: POST_Y_BACK, z: [POST_H_FRONT, POST_H_BACK] }),
-    WallFrame.XZ({ id: 'wall-b-2-cl-b', x: [POST_X[1] + 23, POST_X[1] + 43], y: POST_Y_BACK, z: [POST_H_FRONT, POST_H_BACK] }),
-    WallFrame.XZ({ id: 'wall-b-2-cl-c', x: [POST_X[1] + 43, POST_X[2]],      y: POST_Y_BACK, z: [POST_H_FRONT, POST_H_BACK] }),
+    // ── Back wall — 2 bays × 3 portrait panels ───────────────────────────────
+    // Each panel: 20gu (800mm) wide × full post height — spans floor to back post top
+    WallFrame.XZ({ id: 'wall-b-1-a', x: [POST_X[0] + 3,  POST_X[0] + 23], y: POST_Y_BACK, z: [FLOOR_Z, POST_H_BACK] }),
+    WallFrame.XZ({ id: 'wall-b-1-b', x: [POST_X[0] + 23, POST_X[0] + 43], y: POST_Y_BACK, z: [FLOOR_Z, POST_H_BACK] }),
+    WallFrame.XZ({ id: 'wall-b-1-c', x: [POST_X[0] + 43, POST_X[1]],      y: POST_Y_BACK, z: [FLOOR_Z, POST_H_BACK] }),
+    WallFrame.XZ({ id: 'wall-b-2-a', x: [POST_X[1] + 3,  POST_X[1] + 23], y: POST_Y_BACK, z: [FLOOR_Z, POST_H_BACK] }),
+    WallFrame.XZ({ id: 'wall-b-2-b', x: [POST_X[1] + 23, POST_X[1] + 43], y: POST_Y_BACK, z: [FLOOR_Z, POST_H_BACK] }),
+    WallFrame.XZ({ id: 'wall-b-2-c', x: [POST_X[1] + 43, POST_X[2]],      y: POST_Y_BACK, z: [FLOOR_Z, POST_H_BACK] }),
 
     // ── Front wall — 2 bays × 3 portrait panels ──────────────────────────────
     WallFrame.XZ({ id: 'wall-f-1-a', x: [POST_X[0] + 3,  POST_X[0] + 23], y: POST_Y_FRONT, z: [FLOOR_Z, POST_H_FRONT] }),
