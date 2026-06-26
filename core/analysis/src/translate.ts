@@ -208,6 +208,33 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
     return postCentroids.some((pc) => Math.abs(pos.x - pc.x) < TOL && Math.abs(pos.y - pc.y) < TOL)
   }
 
+  // Returns all post centroids whose XY lies strictly along a beam's axis between
+  // start and end, sorted in travel order. Used to split beams that pass through
+  // intermediate posts (e.g. roof beams with eave overhangs).
+  function intermediatePostsOnBeam(start: Vec3, end: Vec3): Vec3[] {
+    const dx = end.x - start.x
+    const dy = end.y - start.y
+    const len = Math.hypot(dx, dy)
+    if (len < TOL) return []
+    const ax = dx / len
+    const ay = dy / len
+    const result: Vec3[] = []
+    for (const pc of postCentroids) {
+      const t = (pc.x - start.x) * ax + (pc.y - start.y) * ay
+      if (t <= TOL || t >= len - TOL) continue
+      const perpX = pc.x - start.x - t * ax
+      const perpY = pc.y - start.y - t * ay
+      if (Math.hypot(perpX, perpY) > TOL) continue
+      result.push({ x: pc.x, y: pc.y, z: start.z })
+    }
+    result.sort((a, b) => {
+      const ta = (a.x - start.x) * ax + (a.y - start.y) * ay
+      const tb = (b.x - start.x) * ax + (b.y - start.y) * ay
+      return ta - tb
+    })
+    return result
+  }
+
   // Precompute panel endpoint data for intersection checks
   type PanelData = {
     creator: AnyCreator
@@ -267,39 +294,60 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
 
   // Precompute non-vertical timber endpoint data so posts can be split at those junctions too.
   // Snap endpoints to post centroids so XY keys match the post key and beam-post junctions are detected.
-  type HorizTimberData = { start: Vec3; end: Vec3; startXyKey: string; endXyKey: string; z: number }
+  // Also store intermediate posts (posts whose XY lies on the beam's line between its endpoints)
+  // so that pass-through beams (e.g. roof beams with eave overhangs) also split those posts.
+  type HorizTimberData = {
+    start: Vec3
+    end: Vec3
+    startXyKey: string
+    endXyKey: string
+    z: number
+    intermediatePosts: Vec3[]
+  }
   const horizTimberData: HorizTimberData[] = timbers
     .filter((t) => !isVertical(t.transform))
     .map((t) => {
       const [rawStart, rawEnd] = getEndpoints(t)
       const start = snapXyToPost(rawStart)
       const end = snapXyToPost(rawEnd)
-      return { start, end, startXyKey: xyKey(start), endXyKey: xyKey(end), z: roundTo(start.z) }
+      const intermediatePosts = intermediatePostsOnBeam(start, end)
+      return {
+        start,
+        end,
+        startXyKey: xyKey(start),
+        endXyKey: xyKey(end),
+        z: roundTo(start.z),
+        intermediatePosts,
+      }
     })
 
   // Step 1 - Vertical timber posts: split at panel junction z-values
   for (const timber of timbers) {
     if (!isVertical(timber.transform)) {
-      // Non-vertical timber: emit as a single un-split member.
-      // Snap endpoints to nearest post centroid so beams share nodes with the posts they frame into.
+      // Non-vertical timber: snap endpoints and split at any intermediate posts on the beam's line.
+      // This connects beams that pass through a post (e.g. roof beams with eave overhangs) to that post.
       const [rawStart, rawEnd] = getEndpoints(timber)
       const start = snapXyToPost(rawStart)
       const end = snapXyToPost(rawEnd)
-      const startNode = getOrCreate(start)
-      const endNode = getOrCreate(end)
+      const intermediate = intermediatePostsOnBeam(start, end)
+      const splitPoints = [start, ...intermediate, end]
       const timberMat = getMaterial(timber.spec.materialId, 'SG8')
-      const memberId = `m${memberCount++}`
-      members.push({
-        id: memberId,
-        partId: timber.id ?? `timber-${memberCount}`,
-        type: 'timber',
-        startNodeId: startNode.id,
-        endNodeId: endNode.id,
-        section: TIMBER_SECTION,
-        material: { E: timberMat.E, G: timberMat.G },
-        endReleases: RIGID,
-      })
-      memberDensity.set(memberId, timberMat.density)
+      for (let i = 0; i < splitPoints.length - 1; i++) {
+        const sNode = getOrCreate(splitPoints[i]!)
+        const eNode = getOrCreate(splitPoints[i + 1]!)
+        const memberId = `m${memberCount++}`
+        members.push({
+          id: memberId,
+          partId: timber.id ?? `timber-${memberCount}`,
+          type: 'timber',
+          startNodeId: sNode.id,
+          endNodeId: eNode.id,
+          section: TIMBER_SECTION,
+          material: { E: timberMat.E, G: timberMat.G },
+          endReleases: RIGID,
+        })
+        memberDensity.set(memberId, timberMat.density)
+      }
       continue
     }
 
@@ -322,10 +370,16 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
         }
       }
     }
-    // Split post at z-heights where horizontal timbers (e.g. floor beams) connect
+    // Split post at z-heights where horizontal timbers (e.g. floor beams) connect.
+    // Also check intermediate posts: beams that pass through this post without starting/ending here.
     for (const ht of horizTimberData) {
       if (ht.startXyKey === postXy || ht.endXyKey === postXy) {
         if (ht.z >= zMin && ht.z <= zMax) junctionZSet.add(ht.z)
+      }
+      for (const ip of ht.intermediatePosts) {
+        if (xyKey(ip) === postXy && ht.z >= zMin && ht.z <= zMax) {
+          junctionZSet.add(ht.z)
+        }
       }
     }
 
