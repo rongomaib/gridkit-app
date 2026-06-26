@@ -191,13 +191,21 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
     let sy = pos.y
     for (const pc of postCentroids) {
       const d = Math.hypot(pos.x - pc.x, pos.y - pc.y)
-      if (d < best && d < POST_SNAP_M) {
+      // Use <= POST_SNAP_M + TOL so endpoints at exactly 3 gu (post face) are included.
+      if (d < best && d <= POST_SNAP_M + TOL) {
         best = d
         sx = pc.x
         sy = pc.y
       }
     }
     return { x: sx, y: sy, z: pos.z }
+  }
+
+  // Returns true when an XY position (after snapping) coincides with a known post.
+  // Used to exclude panel members whose endpoints don't reach a post — such members
+  // create free-floating nodes and produce a near-singular stiffness matrix.
+  function isAtPost(pos: Vec3): boolean {
+    return postCentroids.some((pc) => Math.abs(pos.x - pc.x) < TOL && Math.abs(pos.y - pc.y) < TOL)
   }
 
   // Precompute panel endpoint data for intersection checks
@@ -216,6 +224,7 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
     bottomZ: number // world Z of panel bottom edge (= start.z)
     heightM: number // panel height in metres (from spec.heightInGrids)
     depthM: number // panel depth in metres (from spec.depthInGrids)
+    spansPostToPost: boolean // both endpoints landed on a post after snapping
   }
   const panelData: PanelData[] = panels.map((p) => {
     const [start, end] = getEndpoints(p)
@@ -236,6 +245,7 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
       bottomZ: roundTo(start.z),
       heightM,
       depthM,
+      spansPostToPost: isAtPost(snappedStart) && isAtPost(snappedEnd),
     }
   })
 
@@ -354,7 +364,11 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
   // Step 2 - Panel brace members (fully moment-resisting at both ends, per CLAUDE.md)
   // Use snapped positions: panel endpoints are structurally at the post centroids even
   // though the visual mesh is inset. This ensures shared nodes and structural connectivity.
+  // Skip panels whose endpoints don't both reach a post — infill segments (e.g. wall-frame
+  // panels spanning within a bay rather than post-to-post) would create free-floating nodes
+  // that destabilise the stiffness matrix.
   for (const pd of panelData) {
+    if (!pd.spansPostToPost) continue
     const startNode = getOrCreate(pd.snappedStart)
     const endNode = getOrCreate(pd.snappedEnd)
     const panelMat = getMaterial(pd.creator.spec.materialId, 'F14')
