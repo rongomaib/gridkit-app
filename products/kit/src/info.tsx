@@ -1,5 +1,5 @@
 import type { MemberResult } from '@villagekit/analysis'
-import { getPartMaterialEntry, getMaterialsByCategory } from '@villagekit/materials'
+import { getMaterialsByCategory, getPartMaterialEntry } from '@villagekit/materials'
 import { usePricingContext } from '@villagekit/part'
 import { HStack, InfoTooltip, Text, VStack } from '@villagekit/ui'
 import { convert, meter, millimeter } from '@villagekit/units'
@@ -190,7 +190,7 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
 
     const GRID_MM = 40
 
-  const dispatchUpdate = (
+    const dispatchUpdate = (
       property: string,
       value: number,
       mode: 'start' | 'end' | 'shift' = 'shift',
@@ -233,47 +233,85 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
             <Text>{PART_LABELS[partType] ?? partType}</Text>
           </HStack>
 
-          {partType === 'gridbeam' && (() => {
-            const grids = (selectedPartGlValue as any).lengthInGrids as number
-            return (
-              <>
-                <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
-                  <Text css={{ color: 'gray.600' }}>Length</Text>
-                  <Text>{grids} grids</Text>
-                </HStack>
+          {partType === 'gridbeam' &&
+            (() => {
+              const grids = (selectedPartGlValue as any).lengthInGrids as number
+              return (
+                <>
+                  <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                    <Text css={{ color: 'gray.600' }}>Length</Text>
+                    <Text>{grids} grids</Text>
+                  </HStack>
+                  <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                    <Text css={{ color: 'gray.600' }}>Dimensions</Text>
+                    <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>
+                      40 × 40 × {grids * GRID_MM} mm
+                    </Text>
+                  </HStack>
+                </>
+              )
+            })()}
+
+          {partType === 'gridpanel' &&
+            (() => {
+              const [wg, hg] = (selectedPartGlValue as any).sizeInGrids as [number, number]
+              return (
+                <>
+                  <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                    <Text css={{ color: 'gray.600' }}>Size</Text>
+                    <Text>
+                      {wg} × {hg} grids
+                    </Text>
+                  </HStack>
+                  <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                    <Text css={{ color: 'gray.600' }}>Dimensions</Text>
+                    <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>
+                      {wg * GRID_MM} × {hg * GRID_MM} mm
+                    </Text>
+                  </HStack>
+                </>
+              )
+            })()}
+
+          {partType === 'timber' &&
+            (() => {
+              const lenMm = ((selectedPart as any).spec.lengthInGrids as number) * GRID_MM
+              return (
                 <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
                   <Text css={{ color: 'gray.600' }}>Dimensions</Text>
-                  <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>40 × 40 × {grids * GRID_MM} mm</Text>
+                  <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>120 × 120 × {lenMm} mm</Text>
                 </HStack>
-              </>
-            )
-          })()}
+              )
+            })()}
 
-          {partType === 'gridpanel' && (() => {
-            const [wg, hg] = (selectedPartGlValue as any).sizeInGrids as [number, number]
-            return (
-              <>
-                <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
-                  <Text css={{ color: 'gray.600' }}>Size</Text>
-                  <Text>{wg} × {hg} grids</Text>
-                </HStack>
+          {partType === 'beam120' &&
+            (() => {
+              const lenMm = ((selectedPart as any).spec.lengthInGrids as number) * GRID_MM
+              return (
                 <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
                   <Text css={{ color: 'gray.600' }}>Dimensions</Text>
-                  <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>{wg * GRID_MM} × {hg * GRID_MM} mm</Text>
+                  <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>120 × 120 × {lenMm} mm</Text>
                 </HStack>
-              </>
-            )
-          })()}
+              )
+            })()}
 
-          {partType === 'timber' && (() => {
-            const lenMm = (selectedPart as any).spec.lengthInGrids as number * GRID_MM
-            return (
-              <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
-                <Text css={{ color: 'gray.600' }}>Dimensions</Text>
-                <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>120 × 120 × {lenMm} mm</Text>
-              </HStack>
-            )
-          })()}
+          {partType === 'wall-frame' &&
+            (() => {
+              const wMm = ((selectedPart as any).spec.widthInGrids as number) * GRID_MM
+              const hMm = ((selectedPart as any).spec.heightInGrids as number) * GRID_MM
+              return (
+                <>
+                  <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                    <Text css={{ color: 'gray.600' }}>Width</Text>
+                    <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>{wMm} mm</Text>
+                  </HStack>
+                  <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                    <Text css={{ color: 'gray.600' }}>Height</Text>
+                    <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>{hMm} mm</Text>
+                  </HStack>
+                </>
+              )
+            })()}
 
           {partType === 'timber' && selectedMemberResult != null && (
             <>
@@ -306,17 +344,20 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
             </>
           )}
 
-          {partType === 'panel-brace' && (() => {
-            const spanMm = (selectedPart as any).spec.lengthInGrids as number * GRID_MM
-            const hMm = (selectedPart as any).spec.heightInGrids as number * GRID_MM
-            const dMm = (selectedPart as any).spec.depthInGrids as number * GRID_MM
-            return (
-              <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
-                <Text css={{ color: 'gray.600' }}>Dimensions</Text>
-                <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>{spanMm} × {hMm} × {dMm} mm</Text>
-              </HStack>
-            )
-          })()}
+          {partType === 'panel-brace' &&
+            (() => {
+              const spanMm = ((selectedPart as any).spec.lengthInGrids as number) * GRID_MM
+              const hMm = ((selectedPart as any).spec.heightInGrids as number) * GRID_MM
+              const dMm = ((selectedPart as any).spec.depthInGrids as number) * GRID_MM
+              return (
+                <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+                  <Text css={{ color: 'gray.600' }}>Dimensions</Text>
+                  <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>
+                    {spanMm} × {hMm} × {dMm} mm
+                  </Text>
+                </HStack>
+              )
+            })()}
 
           {partType === 'panel-brace' && selectedMemberResult != null && (
             <>
@@ -361,7 +402,9 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
                   style={{ fontSize: '13px', padding: '2px 4px' }}
                 >
                   {options.map((m) => (
-                    <option key={m.id} value={m.id}>{m.label}</option>
+                    <option key={m.id} value={m.id}>
+                      {m.label}
+                    </option>
                   ))}
                 </select>
               </HStack>
