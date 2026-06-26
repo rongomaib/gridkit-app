@@ -26,6 +26,7 @@ export function AnalysisOverlay({ activeModes, deflectionScale }: OverlayProps) 
       {activeModes.has('heat') && <HeatTubes model={structuralModel} lcr={lcr} />}
       <DeflectedShapeLines model={structuralModel} lcr={lcr} scale={deflectionScale} />
       {activeModes.has('joints') && <MomentBulges model={structuralModel} lcr={lcr} />}
+      {activeModes.has('joints') && <ConnectivityDots model={structuralModel} />}
       {activeModes.has('ground') && <FoundationFootprint model={structuralModel} lcr={lcr} />}
     </group>
   )
@@ -203,6 +204,74 @@ function HeatTubes({ model, lcr }: LineProps) {
             transparent
             opacity={0.88}
           />
+        </mesh>
+      ))}
+      {hovered != null && (
+        <Html position={[hovered.x, hovered.y, hovered.z]} center>
+          <div style={TIP}>{hovered.text}</div>
+        </Html>
+      )}
+    </>
+  )
+}
+
+// --- Connectivity dots (joints mode) ------------------------------------------
+// Rendered at each structural node. Color encodes connection status so the user
+// can spot disconnected joints at a glance:
+//   blue  = support (foundation pin)
+//   green = connected (≥2 members meet here)
+//   red   = free end (only 1 member — may be an eave tip or a topology bug)
+
+type DotItem = {
+  id: string
+  x: number
+  y: number
+  z: number
+  color: string
+  radius: number
+  tip: string
+}
+
+function ConnectivityDots({ model }: { model: StructuralModel }) {
+  const [hovered, setHovered] = useState<{ x: number; y: number; z: number; text: string } | null>(
+    null,
+  )
+
+  const dots = useMemo<DotItem[]>(() => {
+    const deg = new Map<string, number>()
+    for (const m of model.members) {
+      deg.set(m.startNodeId, (deg.get(m.startNodeId) ?? 0) + 1)
+      deg.set(m.endNodeId, (deg.get(m.endNodeId) ?? 0) + 1)
+    }
+    const supportIds = new Set(model.supports.map((s) => s.nodeId))
+    return model.nodes.map((n) => {
+      const degree = deg.get(n.id) ?? 0
+      const isSupport = supportIds.has(n.id)
+      const color = isSupport ? '#4488ff' : degree >= 2 ? '#00ff88' : '#ff4444'
+      const radius = isSupport ? 0.035 : degree >= 2 ? 0.028 : 0.02
+      const tip = isSupport
+        ? `Support node — ${degree} member${degree !== 1 ? 's' : ''}`
+        : degree >= 2
+          ? `Connected — ${degree} members meet here`
+          : `Free end — only ${degree} member attached`
+      return { id: n.id, x: n.x, y: n.y, z: n.z, color, radius, tip }
+    })
+  }, [model])
+
+  return (
+    <>
+      {dots.map((d) => (
+        <mesh
+          key={d.id}
+          position={[d.x, d.y, d.z]}
+          onPointerOver={(e) => {
+            e.stopPropagation()
+            setHovered({ x: e.point.x, y: e.point.y, z: e.point.z, text: d.tip })
+          }}
+          onPointerOut={() => setHovered(null)}
+        >
+          <sphereGeometry args={[d.radius, 8, 6]} />
+          <meshBasicMaterial color={d.color} depthTest={false} />
         </mesh>
       ))}
       {hovered != null && (
