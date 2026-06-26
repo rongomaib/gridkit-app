@@ -75,7 +75,14 @@ const RIGID: MemberEndReleases = { start: NO_RELEASE, end: NO_RELEASE }
 // -- Input type (structural duck-typing) ----------------------------------------
 
 type AnyCreator = {
-  spec: { type: string; lengthInGrids: number; heightInGrids?: number; depthInGrids?: number; materialId?: string }
+  spec: {
+    type: string
+    lengthInGrids?: number
+    widthInGrids?: number // wall-frame uses widthInGrids instead of lengthInGrids
+    heightInGrids?: number
+    depthInGrids?: number
+    materialId?: string
+  }
   id?: string
   transform: number[]
 }
@@ -136,7 +143,8 @@ function roundTo(val: number): number {
 
 function getEndpoints(creator: AnyCreator): [Vec3, Vec3] {
   const { position } = decomposeTransform(creator.transform)
-  const len = creator.spec.lengthInGrids * GRID_UNIT_M
+  const lenGrids = creator.spec.lengthInGrids ?? creator.spec.widthInGrids ?? 0
+  const len = lenGrids * GRID_UNIT_M
   // Use getMemberAxis (direct first-column read) rather than the quaternion from
   // decomposeTransform.  changeOfBasisTransform can produce det=-1 matrices (e.g.
   // xSpanTransform swaps Y↔Z), and Three.js decompose negates scale.x for det<0,
@@ -162,7 +170,8 @@ function isVertical(transform: number[]): boolean {
 export function buildStructuralModel(parts: AnyParts): StructuralModel {
   const flat = flattenParts(parts)
   const timbers = flat.filter((p) => p.spec.type === 'timber' || p.spec.type === 'beam120')
-  const panels = flat.filter((p) => p.spec.type === 'panel-brace')
+  // panel-brace = purpose-built 120×800 ply deep beam; wall-frame = framed wall panel (also provides lateral stiffness)
+  const panels = flat.filter((p) => p.spec.type === 'panel-brace' || p.spec.type === 'wall-frame')
 
   // Collect vertical post centroid XY positions for panel-endpoint snapping.
   // Panels are visually inset from post faces; the analysis model needs their endpoints
@@ -206,7 +215,7 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
     snappedEndXyKey: string
     bottomZ: number // world Z of panel bottom edge (= start.z)
     heightM: number // panel height in metres (from spec.heightInGrids)
-    depthM: number  // panel depth in metres (from spec.depthInGrids)
+    depthM: number // panel depth in metres (from spec.depthInGrids)
   }
   const panelData: PanelData[] = panels.map((p) => {
     const [start, end] = getEndpoints(p)
@@ -246,20 +255,26 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
     return node
   }
 
-  // Precompute non-vertical timber endpoint data so posts can be split at those junctions too
+  // Precompute non-vertical timber endpoint data so posts can be split at those junctions too.
+  // Snap endpoints to post centroids so XY keys match the post key and beam-post junctions are detected.
   type HorizTimberData = { start: Vec3; end: Vec3; startXyKey: string; endXyKey: string; z: number }
   const horizTimberData: HorizTimberData[] = timbers
     .filter((t) => !isVertical(t.transform))
     .map((t) => {
-      const [start, end] = getEndpoints(t)
+      const [rawStart, rawEnd] = getEndpoints(t)
+      const start = snapXyToPost(rawStart)
+      const end = snapXyToPost(rawEnd)
       return { start, end, startXyKey: xyKey(start), endXyKey: xyKey(end), z: roundTo(start.z) }
     })
 
   // Step 1 - Vertical timber posts: split at panel junction z-values
   for (const timber of timbers) {
     if (!isVertical(timber.transform)) {
-      // Non-vertical timber: emit as a single un-split member
-      const [start, end] = getEndpoints(timber)
+      // Non-vertical timber: emit as a single un-split member.
+      // Snap endpoints to nearest post centroid so beams share nodes with the posts they frame into.
+      const [rawStart, rawEnd] = getEndpoints(timber)
+      const start = snapXyToPost(rawStart)
+      const end = snapXyToPost(rawEnd)
       const startNode = getOrCreate(start)
       const endNode = getOrCreate(end)
       const timberMat = getMaterial(timber.spec.materialId, 'SG8')
