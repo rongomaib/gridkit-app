@@ -77,6 +77,7 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
     const actor = useActorRef(actorMachine)
 
     const [isControlEnabled, setIsControlEnabled] = useState(true)
+    const hasUserInteracted = useRef(false)
 
     useEffect(() => {
       const handler = (e: any) => setIsControlEnabled(!e.detail)
@@ -167,11 +168,21 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
     useAutoRotate({ controls, mode, actor, shouldAutoRotate })
 
     useEffect(() => {
-      resetControlsBox()
+      const onControlStart = () => { hasUserInteracted.current = true }
+      controls.addEventListener('controlstart', onControlStart)
+      return () => controls.removeEventListener('controlstart', onControlStart)
+    }, [controls])
+
+    useEffect(() => {
+      if (!hasUserInteracted.current) {
+        resetControlsBox()
+      }
     }, [resetControlsBox])
 
     useEffect(() => {
-      resetControlsRotation(false)
+      if (!hasUserInteracted.current) {
+        resetControlsRotation(false)
+      }
     }, [resetControlsRotation])
 
     // TODO: pull request upstream?

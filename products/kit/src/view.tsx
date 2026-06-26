@@ -3,7 +3,7 @@ import { PartsGlForAll } from '@villagekit/part'
 import { type ProductViewProps, useProductMeta } from '@villagekit/product'
 import { Sandbox } from '@villagekit/sandbox'
 import { Box, Flex, Spinner } from '@villagekit/ui'
-import { Suspense, useEffect, useRef, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { AnalysisOverlay, type VisualizationMode } from './analysis-overlay'
 import { useProductKitContext } from './context'
 import { ProductKitInfo } from './info'
@@ -26,6 +26,41 @@ export function ProductKitView(props: ProductViewProps) {
   const [activeModes, setActiveModes] = useState<Set<VisualizationMode>>(new Set(['heat']))
   const [deflectionScale, setDeflectionScale] = useState(100)
   const [showModel, setShowModel] = useState(true)
+  const [hiddenPartTypes, setHiddenPartTypes] = useState<Set<string>>(new Set())
+  const [showLayersMenu, setShowLayersMenu] = useState(false)
+  const layersMenuRef = useRef<HTMLDivElement>(null)
+
+  const partTypes = useMemo(
+    () => [...new Set(partGlValues.map((p) => (p as any).type as string))],
+    [partGlValues],
+  )
+
+  const visiblePartGlValues = useMemo(
+    () => partGlValues.filter((p) => !hiddenPartTypes.has((p as any).type)),
+    [partGlValues, hiddenPartTypes],
+  )
+
+  // Close layers menu on outside click
+  useEffect(() => {
+    if (!showLayersMenu) return
+    function handleMouseDown(e: MouseEvent) {
+      if (layersMenuRef.current && !layersMenuRef.current.contains(e.target as Node)) {
+        setShowLayersMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', handleMouseDown)
+    return () => document.removeEventListener('mousedown', handleMouseDown)
+  }, [showLayersMenu])
+
+  function togglePartType(type: string) {
+    const next = new Set(hiddenPartTypes)
+    if (next.has(type)) next.delete(type)
+    else next.add(type)
+    setHiddenPartTypes(next)
+  }
+
+  const formatPartType = (type: string) =>
+    type.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
 
   // Track Shift key for multi-select without causing re-renders
   const shiftHeld = useRef(false)
@@ -76,7 +111,7 @@ export function ProductKitView(props: ProductViewProps) {
           {/* Clear selection when clicking the background */}
           <group visible={showModel} onPointerMissed={() => setSelectedPartIds(new Set())}>
             <PartsGlForAll
-              partGlValues={partGlValues}
+              partGlValues={visiblePartGlValues}
               onPartClick={(id) => {
                 handlePartClick(id)
                 const part = partGlValues.find((p) => 'id' in p && p.id === id)
@@ -89,28 +124,6 @@ export function ProductKitView(props: ProductViewProps) {
             />
           </group>
         </Sandbox>
-
-        {/* Engineering disclaimer banner (Phase 7 - required per CLAUDE.md) */}
-        <div
-          style={{
-            position: 'absolute',
-            top: '8px',
-            left: '8px',
-            zIndex: 10,
-            background: 'rgba(255,237,213,0.95)',
-            border: '1px solid #f97316',
-            borderRadius: '8px',
-            padding: '4px 10px',
-            fontSize: '10px',
-            color: '#92400e',
-            fontWeight: 600,
-            pointerEvents: 'none',
-            userSelect: 'none',
-          }}
-        >
-          DESIGN-ITERATION AID ONLY - not a consented structural design. Final sign-off requires a
-          chartered structural engineer and PS1 (NZ Building Act).
-        </div>
 
         {/* Analysis controls bar */}
         <div
@@ -152,6 +165,73 @@ export function ProductKitView(props: ProductViewProps) {
           >
             MODEL
           </button>
+          {/* LAYERS drop-up */}
+          <div style={{ position: 'relative' }} ref={layersMenuRef}>
+            <button
+              type="button"
+              onClick={() => setShowLayersMenu((v) => !v)}
+              style={{
+                padding: '3px 10px',
+                borderRadius: '16px',
+                border: '1px solid',
+                borderColor: showLayersMenu || hiddenPartTypes.size > 0 ? '#2d3748' : '#cbd5e0',
+                cursor: 'pointer',
+                backgroundColor:
+                  showLayersMenu || hiddenPartTypes.size > 0 ? '#2d3748' : 'transparent',
+                color: showLayersMenu || hiddenPartTypes.size > 0 ? 'white' : '#4a5568',
+                fontSize: '11px',
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+              }}
+            >
+              LAYERS
+            </button>
+            {showLayersMenu && partTypes.length > 0 && (
+              <div
+                style={{
+                  position: 'absolute',
+                  bottom: 'calc(100% + 8px)',
+                  left: '0',
+                  background: 'rgba(255,255,255,0.95)',
+                  backdropFilter: 'blur(12px)',
+                  borderRadius: '8px',
+                  boxShadow: '0 4px 12px rgba(0,0,0,0.12)',
+                  border: '1px solid rgba(226,232,240,0.7)',
+                  padding: '8px',
+                  minWidth: '160px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: '6px',
+                  zIndex: 20,
+                }}
+              >
+                {partTypes.map((type) => (
+                  <label
+                    key={type}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      cursor: 'pointer',
+                      fontSize: '11px',
+                      fontWeight: 600,
+                      color: '#2d3748',
+                      userSelect: 'none',
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={!hiddenPartTypes.has(type)}
+                      onChange={() => togglePartType(type)}
+                      style={{ cursor: 'pointer', margin: 0 }}
+                    />
+                    {formatPartType(type)}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
           <span style={{ width: '1px', height: '16px', background: '#e2e8f0', margin: '0 2px' }} />
           {(['heat', 'joints', 'ground'] as VisualizationMode[]).map((mode) => (
             <button

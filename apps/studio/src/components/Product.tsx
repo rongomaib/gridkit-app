@@ -141,7 +141,7 @@ function ProductViewer() {
           <BomPanel />
         </Box>
       </Tabs.Content>
-      <Tabs.Content value="parts">
+      <Tabs.Content value="parts" css={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '8px' }}>
         <ProductSummary displayUnit="gu" groupParts />
       </Tabs.Content>
       <Tabs.Content value="info">
