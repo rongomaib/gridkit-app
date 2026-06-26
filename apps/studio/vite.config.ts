@@ -56,10 +56,12 @@ export default defineConfig(async () => ({
 
   optimizeDeps: {
     // Pre-bundle these so Vite doesn't discover them lazily at runtime and reload.
-    include: ['@typescript/vfs', 'typescript', 'es-module-lexer', '@valtown/codemirror-ts/worker'],
+    include: ['@typescript/vfs', 'typescript', '@valtown/codemirror-ts/worker'],
     // Exclude WASM packages from pre-bundling — they rely on import.meta.url
     // to locate the .wasm binary at runtime, which esbuild's pre-bundler breaks.
-    exclude: ['@swc/wasm-web', 'gridkit-solver'],
+    // es-module-lexer is already ESM and fails esbuild resolution; exclude so Vite
+    // doesn't treat it as a new discovery and reload when it's first imported.
+    exclude: ['@swc/wasm-web', 'gridkit-solver', 'es-module-lexer'],
   },
   worker: {
     format: 'es',

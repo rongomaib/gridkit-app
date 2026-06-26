@@ -6,6 +6,7 @@ import '@villagekit/part-timber'
 import '@villagekit/part-beam120'
 import '@villagekit/part-panel-brace'
 import '@villagekit/part-wall-frame'
+import '@villagekit/part-gable-panel'
 import '@villagekit/plugin-smart-fasteners'
 
 import { useGetProductFileQuery, useGetProductMetaQuery } from '@/client'

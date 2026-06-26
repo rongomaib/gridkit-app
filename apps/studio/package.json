@@ -28,6 +28,7 @@
     "@villagekit/part-beam120": "workspace:*",
     "@villagekit/part-fastener": "workspace:*",
     "@villagekit/part-wall-frame": "workspace:*",
+    "@villagekit/part-gable-panel": "workspace:*",
     "@villagekit/part-gridbeam": "workspace:*",
     "@villagekit/part-gridpanel": "workspace:*",
     "@villagekit/part-hinge": "workspace:*",

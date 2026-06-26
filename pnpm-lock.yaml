@@ -195,6 +195,9 @@ importers:
       '@villagekit/part-fastener':
         specifier: workspace:*
         version: link:../../parts/fastener
+      '@villagekit/part-gable-panel':
+        specifier: workspace:*
+        version: link:../../parts/gable-panel
       '@villagekit/part-gridbeam':
         specifier: workspace:*
         version: link:../../parts/gridbeam
@@ -648,6 +651,30 @@ importers:
         specifier: ^3.23.8
         version: 3.23.8
 
+  parts/gable-panel:
+    dependencies:
+      '@react-three/fiber':
+        specifier: ^9.0.0
+        version: 9.6.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(three@0.165.0)
+      '@villagekit/math':
+        specifier: workspace:*
+        version: link:../../util/math
+      '@villagekit/part':
+        specifier: workspace:*
+        version: link:../../core/part
+      '@villagekit/units':
+        specifier: workspace:*
+        version: link:../../util/units
+      react:
+        specifier: ^19.1.0
+        version: 19.2.6
+      three:
+        specifier: ^0.165.0
+        version: 0.165.0
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
+
   parts/gridbeam:
     dependencies:
       '@react-three/fiber':
@@ -841,6 +868,9 @@ importers:
       '@villagekit/part-fastener':
         specifier: workspace:*
         version: link:../../parts/fastener
+      '@villagekit/part-gable-panel':
+        specifier: workspace:*
+        version: link:../../parts/gable-panel
       '@villagekit/part-gridbeam':
         specifier: workspace:*
         version: link:../../parts/gridbeam
