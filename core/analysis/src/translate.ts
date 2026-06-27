@@ -728,21 +728,38 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
     return sum + Math.abs(dl.w1) * len
   }, 0)
 
-  // 4b. Live - imposed floor load on horizontal panel-brace members.
-  // Q = 1.5 kPa (NZS 1170.1 Table 3.1, residential floor).
-  // Tributary width = panel height (acting as deep floor beam) - engineer must confirm.
+  // 4b. Live - imposed floor load (NZS 1170.1 Table 3.1, residential: 1.5 kPa).
+  // Applied to horizontal floor-level timber beams as a UDL.
+  // Strategy: find the lowest non-base horizontal level (= floor), apply there only.
+  // Tributary width per beam = 800 mm (NZS residential joist spacing assumption).
+  // A chartered engineer must confirm spacing, load path, and intensity.
   const LIVE_kPa = 1.5
+  const LIVE_TRIBUTARY_M = 0.8 // m — assumed floor beam tributary width
 
-  const liveDistLoads: MemberDistLoad[] = []
+  // Find floor level: minimum Z of horizontal timber members above the base.
+  let floorLevelZ = Number.POSITIVE_INFINITY
   for (const m of members) {
-    if (m.type !== 'panel-brace') continue
+    if (m.type !== 'timber') continue
     const sn = nodeById.get(m.startNodeId)
     const en = nodeById.get(m.endNodeId)
     if (!sn || !en) continue
-    if (Math.abs(en.z - sn.z) > TOL) continue // horizontal panels only
-    const heightM = panelHeightByPartId.get(m.partId) ?? DEFAULT_PANEL_HEIGHT_GRIDS * GRID_UNIT_M
-    const liveW = LIVE_kPa * 1e3 * heightM
-    liveDistLoads.push({ memberId: m.id, direction: 'Fz', w1: -liveW, w2: -liveW })
+    if (Math.abs(en.z - sn.z) > TOL) continue // horizontal only
+    if (sn.z <= baseZ + TOL) continue // skip ground level
+    if (sn.z < floorLevelZ) floorLevelZ = sn.z
+  }
+
+  const liveDistLoads: MemberDistLoad[] = []
+  if (floorLevelZ < Number.POSITIVE_INFINITY) {
+    for (const m of members) {
+      if (m.type !== 'timber') continue
+      const sn = nodeById.get(m.startNodeId)
+      const en = nodeById.get(m.endNodeId)
+      if (!sn || !en) continue
+      if (Math.abs(en.z - sn.z) > TOL) continue // horizontal only
+      if (Math.abs(sn.z - floorLevelZ) > TOL) continue // floor level only
+      const liveW = LIVE_kPa * 1e3 * LIVE_TRIBUTARY_M // N/m
+      liveDistLoads.push({ memberId: m.id, direction: 'Fz', w1: -liveW, w2: -liveW })
+    }
   }
 
   // 4c. Lateral load helpers
