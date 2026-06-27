@@ -4,7 +4,15 @@
 import { Html } from '@react-three/drei'
 import type { LoadCaseResult, StructuralModel } from '@villagekit/analysis'
 import { useEffect, useMemo, useState } from 'react'
-import { ArrowHelper, BufferGeometry, Float32BufferAttribute, Quaternion, Vector3 } from 'three'
+import {
+  ArrowHelper,
+  BufferGeometry,
+  DoubleSide,
+  Float32BufferAttribute,
+  Matrix4,
+  Quaternion,
+  Vector3,
+} from 'three'
 import { useProductKitContext } from './context'
 
 export type VisualizationMode = 'heat' | 'joints' | 'ground'
@@ -27,6 +35,7 @@ export function AnalysisOverlay({ activeModes, deflectionScale }: OverlayProps) 
       <DeflectedShapeLines model={structuralModel} lcr={lcr} scale={deflectionScale} />
       {activeModes.has('joints') && <MomentBulges model={structuralModel} lcr={lcr} />}
       {activeModes.has('joints') && <ConnectivityDots model={structuralModel} />}
+      {activeModes.has('joints') && <PanelQuads model={structuralModel} />}
       {activeModes.has('ground') && <FoundationFootprint model={structuralModel} lcr={lcr} />}
     </group>
   )
@@ -279,6 +288,78 @@ function ConnectivityDots({ model }: { model: StructuralModel }) {
           <div style={TIP}>{hovered.text}</div>
         </Html>
       )}
+    </>
+  )
+}
+
+// --- Panel quads (joints mode) --------------------------------------------------
+// Renders a translucent quad for each structural panel-brace member so you can
+// see which shear wall planes are active in the stiffness matrix.
+
+type QuadItem = {
+  id: string
+  px: number
+  py: number
+  pz: number
+  qx: number
+  qy: number
+  qz: number
+  qw: number
+  spanLength: number
+  h: number
+}
+
+function PanelQuads({ model }: { model: StructuralModel }) {
+  const quads = useMemo<QuadItem[]>(() => {
+    const nodeById = new Map(model.nodes.map((n) => [n.id, n]))
+    const out: QuadItem[] = []
+    for (const m of model.members) {
+      if (m.type !== 'panel-brace') continue
+      const sn = nodeById.get(m.startNodeId)
+      const en = nodeById.get(m.endNodeId)
+      if (!sn || !en) continue
+      const dx = en.x - sn.x
+      const dy = en.y - sn.y
+      const spanLength = Math.hypot(dx, dy, en.z - sn.z)
+      if (spanLength < 0.001) continue
+      // Reverse panelSection(): Iz = h^3*d/12, A = h*d  →  h = sqrt(12*Iz/A)
+      const h = Math.sqrt((12 * m.section.Iz) / m.section.A)
+      // Rotation matrix: localX = member direction, localY = world +Z, localZ = normal
+      // Set() args are ROW-major: set(n11,n12,n13,n14, n21,...) where nij = row i col j
+      const wx = dx / spanLength
+      const wy = dy / spanLength
+      const m4 = new Matrix4().set(wx, 0, wy, 0, wy, 0, -wx, 0, 0, 1, 0, 0, 0, 0, 0, 1)
+      const q = new Quaternion().setFromRotationMatrix(m4)
+      out.push({
+        id: m.id,
+        px: (sn.x + en.x) / 2,
+        py: (sn.y + en.y) / 2,
+        pz: sn.z + h / 2,
+        qx: q.x,
+        qy: q.y,
+        qz: q.z,
+        qw: q.w,
+        spanLength,
+        h,
+      })
+    }
+    return out
+  }, [model])
+
+  return (
+    <>
+      {quads.map((q) => (
+        <mesh key={q.id} position={[q.px, q.py, q.pz]} quaternion={[q.qx, q.qy, q.qz, q.qw]}>
+          <planeGeometry args={[q.spanLength, q.h]} />
+          <meshBasicMaterial
+            color="#00c8b4"
+            transparent
+            opacity={0.18}
+            side={DoubleSide}
+            depthTest={false}
+          />
+        </mesh>
+      ))}
     </>
   )
 }

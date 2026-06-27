@@ -281,6 +281,9 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
   const memberDensity = new Map<string, number>()
   let nodeCount = 0
   let memberCount = 0
+  const panelHeightByPartId = new Map<string, number>(
+    panelData.map((pd) => [pd.creator.id ?? '', pd.heightM]),
+  )
 
   function getOrCreate(pos: Vec3): ModelNode {
     const key = posKey(pos)
@@ -415,6 +418,102 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
     }
   }
 
+  // Step 2b - Bay aggregation: groups of co-planar wall-frame infill panels that collectively
+  // span from post to post are emitted as a single structural panel-brace shear member.
+  // [post][panel][panel][panel][post] → one shear wall member for the bay.
+  // ENGINEERING NOTE: assumes adequate shear transfer at panel-panel and panel-post junctions.
+  // A chartered engineer must verify connection capacities before relying on these results.
+  {
+    const bayGroups = new Map<string, PanelData[]>()
+    for (const pd of panelData) {
+      if (pd.creator.spec.type !== 'wall-frame') continue
+      const dxAbs = Math.abs(pd.start.x - pd.end.x)
+      const dyAbs = Math.abs(pd.start.y - pd.end.y)
+      let direction: 'X' | 'Y'
+      let planeCoord: number
+      if (dyAbs < TOL) {
+        direction = 'X'
+        planeCoord = pd.start.y
+      } else if (dxAbs < TOL) {
+        direction = 'Y'
+        planeCoord = pd.start.x
+      } else {
+        continue
+      }
+      const zBot = pd.bottomZ
+      const zTop = Math.round((pd.bottomZ + pd.heightM) / TOL) * TOL
+      const groupKey = JSON.stringify({
+        direction,
+        planeCoord: Math.round(planeCoord / TOL),
+        zBot: Math.round(zBot / TOL),
+        zTop: Math.round(zTop / TOL),
+      })
+      const existing = bayGroups.get(groupKey)
+      if (existing) {
+        existing.push(pd)
+      } else {
+        bayGroups.set(groupKey, [pd])
+      }
+    }
+
+    for (const [keyStr, group] of bayGroups) {
+      const key = JSON.parse(keyStr) as {
+        direction: 'X' | 'Y'
+        planeCoord: number
+        zBot: number
+        zTop: number
+      }
+      const direction = key.direction
+      const planeCoord = key.planeCoord * TOL
+      const zBot = key.zBot * TOL
+
+      let spanMin = Number.POSITIVE_INFINITY
+      let spanMax = Number.NEGATIVE_INFINITY
+      for (const pd of group) {
+        const aStart = direction === 'X' ? pd.start.x : pd.start.y
+        const aEnd = direction === 'X' ? pd.end.x : pd.end.y
+        if (aStart < spanMin) spanMin = aStart
+        if (aStart > spanMax) spanMax = aStart
+        if (aEnd < spanMin) spanMin = aEnd
+        if (aEnd > spanMax) spanMax = aEnd
+      }
+
+      const minPt: Vec3 =
+        direction === 'X'
+          ? { x: spanMin, y: planeCoord, z: zBot }
+          : { x: planeCoord, y: spanMin, z: zBot }
+      const maxPt: Vec3 =
+        direction === 'X'
+          ? { x: spanMax, y: planeCoord, z: zBot }
+          : { x: planeCoord, y: spanMax, z: zBot }
+
+      const snappedMin = snapXyToPost(minPt)
+      const snappedMax = snapXyToPost(maxPt)
+      if (!isAtPost(snappedMin) || !isAtPost(snappedMax)) continue
+
+      const startNode = getOrCreate(snappedMin)
+      const endNode = getOrCreate(snappedMax)
+      const sectionH = group[0]!.heightM
+      const sectionD = DEFAULT_PANEL_DEPTH_GRIDS * GRID_UNIT_M
+      const sec = panelSection(sectionH, sectionD)
+      const panelMat = getMaterial(undefined, 'F14')
+      const syntheticId = `bay-wall-${direction}-${Math.round(planeCoord / TOL)}-${Math.round(zBot / TOL)}`
+      const memberId = `m${memberCount++}`
+      members.push({
+        id: memberId,
+        partId: syntheticId,
+        type: 'panel-brace',
+        startNodeId: startNode.id,
+        endNodeId: endNode.id,
+        section: sec,
+        material: { E: panelMat.E, G: panelMat.G },
+        endReleases: RIGID,
+      })
+      memberDensity.set(memberId, panelMat.density)
+      panelHeightByPartId.set(syntheticId, sectionH)
+    }
+  }
+
   // Step 2 - Panel brace members (fully moment-resisting at both ends, per CLAUDE.md)
   // Use snapped positions: panel endpoints are structurally at the post centroids even
   // though the visual mesh is inset. This ensures shared nodes and structural connectivity.
@@ -496,7 +595,6 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
   // Q = 1.5 kPa (NZS 1170.1 Table 3.1, residential floor).
   // Tributary width = panel height (acting as deep floor beam) - engineer must confirm.
   const LIVE_kPa = 1.5
-  const panelHeightByPartId = new Map(panelData.map((pd) => [pd.creator.id ?? '', pd.heightM]))
 
   const liveDistLoads: MemberDistLoad[] = []
   for (const m of members) {
