@@ -420,6 +420,24 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
     }
   }
 
+  // Returns the highest node already on a post (matched by XY centroid) at or
+  // below maxZ. Step 1 has already run so nodeMap contains all post junctions.
+  // Used to snap brace top-nodes to the actual roof-beam junction rather than
+  // the raw panel-top Z (which can overshoot the post top by POST_W = 3 gu).
+  function highestNodeOnPostAt(postXy: Vec3, maxZ: number): Vec3 | null {
+    let bestZ = Number.NEGATIVE_INFINITY
+    let found = false
+    for (const node of nodeMap.values()) {
+      if (Math.abs(node.x - postXy.x) > TOL || Math.abs(node.y - postXy.y) > TOL) continue
+      if (node.z > maxZ + TOL) continue
+      if (node.z > bestZ) {
+        bestZ = node.z
+        found = true
+      }
+    }
+    return found ? { x: postXy.x, y: postXy.y, z: bestZ } : null
+  }
+
   // Step 2b - Bay aggregation: groups of co-planar wall-frame infill panels that collectively
   // span from post to post are emitted as a single structural panel-brace shear member.
   // [post][panel][panel][panel][post] → one shear wall member for the bay.
@@ -499,13 +517,18 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
       const sBotMax = snapXyToPost(botMaxPt)
       if (!isAtPost(sBotMin) || !isAtPost(sBotMax)) continue
 
-      const sTopMin = { ...sBotMin, z: zTop }
-      const sTopMax = { ...sBotMax, z: zTop }
+      // Snap the brace top to the highest actual post junction at or below the
+      // panel top Z. Wall panels can overshoot the structural post top by POST_W
+      // (3 gu = 120 mm) because their Z range extends to the top of the roof
+      // beam; this query finds the roof-beam junction instead.
+      const topMinPt = highestNodeOnPostAt(sBotMin, zTop)
+      const topMaxPt = highestNodeOnPostAt(sBotMax, zTop)
+      if (!topMinPt || !topMaxPt) continue
 
       const nodeBotMin = getOrCreate(sBotMin)
       const nodeBotMax = getOrCreate(sBotMax)
-      const nodeTopMin = getOrCreate(sTopMin)
-      const nodeTopMax = getOrCreate(sTopMax)
+      const nodeTopMin = getOrCreate(topMinPt)
+      const nodeTopMax = getOrCreate(topMaxPt)
 
       const braceMat = getMaterial(undefined, 'F14')
       const syntheticId = `bay-brace-${direction}-${Math.round(planeCoord / TOL)}-${Math.round(zBot / TOL)}`
