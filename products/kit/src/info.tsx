@@ -411,6 +411,22 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
             )
           })()}
 
+          {partType === 'wall-frame' && (
+            <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+              <Text css={{ color: 'gray.600' }}>Wall module</Text>
+              <select
+                value={(selectedPart as any).spec.moduleType ?? 'solid'}
+                onChange={(e) => dispatchSetProperty('moduleType', e.target.value)}
+                style={{ fontSize: '13px', padding: '2px 4px' }}
+              >
+                <option value="solid">Solid panel</option>
+                <option value="window">Window</option>
+                <option value="door">Door</option>
+                <option value="open">Open / void</option>
+              </select>
+            </HStack>
+          )}
+
           {(partType === 'timber' || partType === 'panel-brace') &&
             selectedMemberResult == null && (
               <HStack css={{ justifyContent: 'space-between', width: '100%' }}>

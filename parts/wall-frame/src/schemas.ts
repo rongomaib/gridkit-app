@@ -6,6 +6,7 @@ const wallFrameXZSchema = z.object({
   y: z.number(),
   z: z.tuple([z.number(), z.number()]),
   materialId: z.string().optional(),
+  moduleType: z.enum(['solid', 'window', 'door', 'open']).optional(),
 })
 
 const wallFrameYZSchema = z.object({
@@ -14,6 +15,7 @@ const wallFrameYZSchema = z.object({
   y: z.tuple([z.number(), z.number()]),
   z: z.tuple([z.number(), z.number()]),
   materialId: z.string().optional(),
+  moduleType: z.enum(['solid', 'window', 'door', 'open']).optional(),
 })
 
 export const wallFrameSchemas = [wallFrameXZSchema, wallFrameYZSchema]

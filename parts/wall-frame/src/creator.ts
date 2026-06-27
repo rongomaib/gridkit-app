@@ -24,22 +24,25 @@ export class WallFrameSpec extends BasePartSpec<WallFrameType> {
   widthInGrids: number
   heightInGrids: number
   materialId: string
+  moduleType: 'solid' | 'window' | 'door' | 'open'
 
   constructor(
     widthInGrids: number,
     heightInGrids: number,
     variantId?: keyof typeof wallFrameVariants,
     materialId = 'MacrocarpaPlaster',
+    moduleType: 'solid' | 'window' | 'door' | 'open' = 'solid',
   ) {
     super('wall-frame')
     this.variantId = variantId ?? getDefaultVariantId()
     this.widthInGrids = widthInGrids
     this.heightInGrids = heightInGrids
     this.materialId = materialId
+    this.moduleType = moduleType
   }
 
   id(): string {
-    return `WallFrame_${this.widthInGrids}x${this.heightInGrids}gu_${this.variantId}_${this.materialId}`
+    return `WallFrame_${this.widthInGrids}x${this.heightInGrids}gu_${this.variantId}_${this.materialId}_${this.moduleType}`
   }
 
   equals(other: this): boolean {
@@ -48,7 +51,8 @@ export class WallFrameSpec extends BasePartSpec<WallFrameType> {
       this.variantId === other.variantId &&
       this.widthInGrids === other.widthInGrids &&
       this.heightInGrids === other.heightInGrids &&
-      this.materialId === other.materialId
+      this.materialId === other.materialId &&
+      this.moduleType === other.moduleType
     )
   }
 
@@ -65,27 +69,28 @@ export type WallFrameSpecSerialized = {
   widthInGrids: number
   heightInGrids: number
   materialId: string
+  moduleType?: 'solid' | 'window' | 'door' | 'open'
 }
 
 function serializeSpec(instance: WallFrameSpec): WallFrameSpecSerialized {
-  const { variantId, widthInGrids, heightInGrids, materialId } = instance
-  return { type: 'wall-frame', variantId, widthInGrids, heightInGrids, materialId }
+  const { variantId, widthInGrids, heightInGrids, materialId, moduleType } = instance
+  return { type: 'wall-frame', variantId, widthInGrids, heightInGrids, materialId, moduleType }
 }
 
 function deserializeSpec(object: WallFrameSpecSerialized): WallFrameSpec {
-  const { variantId, widthInGrids, heightInGrids, materialId } = object
-  return new WallFrameSpec(widthInGrids, heightInGrids, variantId, materialId)
+  const { variantId, widthInGrids, heightInGrids, materialId, moduleType } = object
+  return new WallFrameSpec(widthInGrids, heightInGrids, variantId, materialId, moduleType)
 }
 
 export class WallFrame extends BasePartCreator<WallFrameSpec> {
   static create(options: WallFrameCreateOptions) {
-    const { id, variantId, widthInGrids, heightInGrids, materialId } = options
-    const spec = new WallFrameSpec(widthInGrids, heightInGrids, variantId, materialId)
+    const { id, variantId, widthInGrids, heightInGrids, materialId, moduleType } = options
+    const spec = new WallFrameSpec(widthInGrids, heightInGrids, variantId, materialId, moduleType)
     return new WallFrame(spec, id)
   }
 
   static XZ(options: WallFrameXZOptions) {
-    const { id, variantId = getDefaultVariantId(), x, y, z, materialId } = options
+    const { id, variantId = getDefaultVariantId(), x, y, z, materialId, moduleType } = options
 
     const gridUnit = getGridLengthInMeters(variantId)
 
@@ -99,6 +104,7 @@ export class WallFrame extends BasePartCreator<WallFrameSpec> {
       widthInGrids: Math.abs(safeX[0] - safeX[1]),
       heightInGrids: Math.abs(safeZ[0] - safeZ[1]),
       materialId,
+      moduleType,
     }).applyTransform(xyToXZTransform)
 
     if (safeX[0] > safeX[1]) {
@@ -112,7 +118,7 @@ export class WallFrame extends BasePartCreator<WallFrameSpec> {
   }
 
   static YZ(options: WallFrameYZOptions) {
-    const { id, variantId = getDefaultVariantId(), x, y, z, materialId } = options
+    const { id, variantId = getDefaultVariantId(), x, y, z, materialId, moduleType } = options
 
     const gridUnit = getGridLengthInMeters(variantId)
 
@@ -126,6 +132,7 @@ export class WallFrame extends BasePartCreator<WallFrameSpec> {
       widthInGrids: Math.abs(safeY[0] - safeY[1]),
       heightInGrids: Math.abs(safeZ[0] - safeZ[1]),
       materialId,
+      moduleType,
     }).applyTransform(xyToYZTransform)
 
     if (safeY[0] > safeY[1]) {
@@ -145,6 +152,7 @@ interface WallFrameCreateOptions {
   widthInGrids: number
   heightInGrids: number
   materialId?: string
+  moduleType?: 'solid' | 'window' | 'door' | 'open'
 }
 
 interface WallFrameXZOptions {
@@ -154,6 +162,7 @@ interface WallFrameXZOptions {
   y: number
   z: [number, number]
   materialId?: string
+  moduleType?: 'solid' | 'window' | 'door' | 'open'
 }
 
 interface WallFrameYZOptions {
@@ -163,6 +172,7 @@ interface WallFrameYZOptions {
   y: [number, number]
   z: [number, number]
   materialId?: string
+  moduleType?: 'solid' | 'window' | 'door' | 'open'
 }
 
 function getGridLengthInMeters(variantId: string): number {

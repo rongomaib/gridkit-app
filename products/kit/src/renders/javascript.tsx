@@ -7,6 +7,7 @@ import '@villagekit/part-beam120/creator'
 import '@villagekit/part-panel-brace/creator'
 import '@villagekit/part-wall-frame/creator'
 import '@villagekit/part-gable-panel/creator'
+import '@villagekit/part-roof-panel/creator'
 
 import { AnyMap, type TraceMap, originalPositionFor } from '@jridgewell/trace-mapping'
 import * as Comlink from 'comlink'

@@ -1,7 +1,7 @@
 import '@react-three/fiber'
 import type { PartsGlProps } from '@villagekit/part'
 import { useMemo } from 'react'
-import { BoxGeometry, MeshLambertMaterial } from 'three'
+import { BoxGeometry, MeshBasicMaterial, MeshLambertMaterial, MeshStandardMaterial } from 'three'
 import type { WallFrameGlValue } from './types'
 
 export function PartsGl(
@@ -33,6 +33,7 @@ function PartGl(props: PartGlProps) {
       position,
       quaternion,
       scale,
+      moduleType,
       variant: { material },
     },
     onPartClick,
@@ -45,8 +46,18 @@ function PartGl(props: PartGlProps) {
   }, [widthInMeters, heightInMeters, depthInMeters])
 
   const mat = useMemo(() => {
+    if (moduleType === 'window') {
+      return new MeshBasicMaterial({ color: '#88CCFF', transparent: true, opacity: 0.15 })
+    }
+    if (moduleType === 'door') {
+      return new MeshStandardMaterial({ color: '#8B7355' })
+    }
     return new MeshLambertMaterial({ color: material.color })
-  }, [material.color])
+  }, [moduleType, material.color])
+
+  if (moduleType === 'open') {
+    return null
+  }
 
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: Three.js canvas object, not a DOM element

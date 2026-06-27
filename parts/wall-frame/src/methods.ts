@@ -9,7 +9,7 @@ export function calculateGlValue(creator: WithRequiredId<WallFrame>): WallFrameG
   const {
     type,
     id,
-    spec: { variantId, widthInGrids, heightInGrids },
+    spec: { variantId, widthInGrids, heightInGrids, moduleType },
     transform,
   } = creator
 
@@ -39,6 +39,7 @@ export function calculateGlValue(creator: WithRequiredId<WallFrame>): WallFrameG
     position,
     quaternion,
     scale,
+    moduleType,
   }
 }
 

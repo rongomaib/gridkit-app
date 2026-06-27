@@ -46,6 +46,7 @@
     "@villagekit/part-panel-brace": "workspace:*",
     "@villagekit/part-wall-frame": "workspace:*",
     "@villagekit/part-gable-panel": "workspace:*",
+    "@villagekit/part-roof-panel": "workspace:*",
     "@villagekit/product": "workspace:*",
     "@villagekit/sandbox": "workspace:*",
     "@villagekit/ui": "^1.1.1",

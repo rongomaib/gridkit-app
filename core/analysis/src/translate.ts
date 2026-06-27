@@ -84,6 +84,7 @@ type AnyCreator = {
     heightInGrids?: number
     baseInGrids?: number // gable-panel: base width (Y span) in grid units
     depthInGrids?: number
+    moduleType?: string // wall-frame: 'solid' | 'window' | 'door' | 'open' (non-solid bays carry no shear)
     materialId?: string
   }
   id?: string
@@ -174,7 +175,12 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
   const flat = flattenParts(parts)
   const timbers = flat.filter((p) => p.spec.type === 'timber' || p.spec.type === 'beam120')
   // panel-brace = purpose-built 120×800 ply deep beam; wall-frame = framed wall panel (also provides lateral stiffness)
-  const panels = flat.filter((p) => p.spec.type === 'panel-brace' || p.spec.type === 'wall-frame')
+  // roof-panel = structural ply diaphragm at roof level; included so its section properties
+  //   (heightInGrids=3 edge beam depth, widthInGrids=30 module width) reach the FEM model.
+  const panels = flat.filter(
+    (p) =>
+      p.spec.type === 'panel-brace' || p.spec.type === 'wall-frame' || p.spec.type === 'roof-panel',
+  )
 
   // Collect vertical post centroid XY positions for panel-endpoint snapping.
   // Panels are visually inset from post faces; the analysis model needs their endpoints
@@ -261,7 +267,12 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
     const snappedStart = snapXyToPost(start)
     const snappedEnd = snapXyToPost(end)
     const heightM = (p.spec.heightInGrids ?? DEFAULT_PANEL_HEIGHT_GRIDS) * GRID_UNIT_M
-    const depthM = (p.spec.depthInGrids ?? DEFAULT_PANEL_DEPTH_GRIDS) * GRID_UNIT_M
+    // roof-panel: structural depth is the module width (1200 mm), not depthInGrids.
+    // RoofPanelSpec: heightInGrids=3 (120mm edge beam), widthInGrids=30 (1200mm module width).
+    const depthM =
+      p.spec.type === 'roof-panel'
+        ? (p.spec.widthInGrids ?? DEFAULT_PANEL_DEPTH_GRIDS) * GRID_UNIT_M
+        : (p.spec.depthInGrids ?? DEFAULT_PANEL_DEPTH_GRIDS) * GRID_UNIT_M
     return {
       creator: p,
       start,
@@ -448,6 +459,9 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
     const bayGroups = new Map<string, PanelData[]>()
     for (const pd of panelData) {
       if (pd.creator.spec.type !== 'wall-frame') continue
+      // Non-solid wall bays (window / door / open) carry no in-plane shear — skip them.
+      const modType = (pd.creator.spec as any).moduleType ?? 'solid'
+      if (modType !== 'solid') continue
       const dxAbs = Math.abs(pd.start.x - pd.end.x)
       const dyAbs = Math.abs(pd.start.y - pd.end.y)
       let direction: 'X' | 'Y'

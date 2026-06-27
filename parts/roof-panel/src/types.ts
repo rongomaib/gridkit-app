@@ -1,9 +1,9 @@
 import type { Length } from '@villagekit/units'
 import type { Quaternion, Vector3 } from 'three'
 
-export type WallFrameType = 'wall-frame'
+export type RoofPanelType = 'roof-panel'
 
-export type WallFrameVariant = {
+export type RoofPanelVariant = {
   id: string
   gridLength: Length
   material: {
@@ -11,17 +11,15 @@ export type WallFrameVariant = {
   }
 }
 
-export type WallFrameGlValue = {
-  type: WallFrameType
+export type RoofPanelGlValue = {
+  type: RoofPanelType
   id: string
-  variant: WallFrameVariant
+  lengthInGrids: number
   widthInGrids: number
   heightInGrids: number
-  widthInMeters: number
-  heightInMeters: number
-  depthInMeters: number
+  pitchDeg: number
+  color: string
   position: Vector3
   quaternion: Quaternion
   scale: Vector3
-  moduleType: 'solid' | 'window' | 'door' | 'open'
 }

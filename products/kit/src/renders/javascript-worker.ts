@@ -7,6 +7,7 @@ import '@villagekit/part-beam120/creator'
 import '@villagekit/part-panel-brace/creator'
 import '@villagekit/part-wall-frame/creator'
 import '@villagekit/part-gable-panel/creator'
+import '@villagekit/part-roof-panel/creator'
 
 import * as Comlink from 'comlink'
 import { init as initModuleLexer, parse as parseModule } from 'es-module-lexer'
@@ -82,9 +83,22 @@ async function loadImports(): Promise<ImportMap> {
     import('../../../../parts/wall-frame/dist-bundles/creator.js?raw'),
     // @ts-ignore
     import('../../../../parts/gable-panel/dist-bundles/creator.js?raw'),
+    // @ts-ignore
+    import('../../../../parts/roof-panel/dist-bundles/creator.js?raw'),
   ])
   const loaded4 = modules4.map((module) => loadImport(module.default, importMap4))
-  const [partGridbeam, partGridpanel, partFastener, partHinge, partTimber, partBeam120, partPanelBrace, partWallFrame, partGablePanel] = loaded4
+  const [
+    partGridbeam,
+    partGridpanel,
+    partFastener,
+    partHinge,
+    partTimber,
+    partBeam120,
+    partPanelBrace,
+    partWallFrame,
+    partGablePanel,
+    partRoofPanel,
+  ] = loaded4
 
   return {
     ...importMap4,
@@ -97,6 +111,7 @@ async function loadImports(): Promise<ImportMap> {
     '@villagekit/part-panel-brace/creator': partPanelBrace!,
     '@villagekit/part-wall-frame/creator': partWallFrame!,
     '@villagekit/part-gable-panel/creator': partGablePanel!,
+    '@villagekit/part-roof-panel/creator': partRoofPanel!,
     '@villagekit/design/kit': loadImport(''),
   }
 }
