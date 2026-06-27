@@ -478,14 +478,20 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
         if (aEnd > spanMax) spanMax = aEnd
       }
 
+      // Place the structural node at mid-height so it doesn't overlap with floor
+      // beams (at zBot) or top-plate beams (at zTop). The post gets split here
+      // automatically by Step 1's junction detection via pd.bottomZ and topZ.
+      const sectionH = group[0]!.heightM
+      const zMid = zBot + sectionH / 2
+
       const minPt: Vec3 =
         direction === 'X'
-          ? { x: spanMin, y: planeCoord, z: zBot }
-          : { x: planeCoord, y: spanMin, z: zBot }
+          ? { x: spanMin, y: planeCoord, z: zMid }
+          : { x: planeCoord, y: spanMin, z: zMid }
       const maxPt: Vec3 =
         direction === 'X'
-          ? { x: spanMax, y: planeCoord, z: zBot }
-          : { x: planeCoord, y: spanMax, z: zBot }
+          ? { x: spanMax, y: planeCoord, z: zMid }
+          : { x: planeCoord, y: spanMax, z: zMid }
 
       const snappedMin = snapXyToPost(minPt)
       const snappedMax = snapXyToPost(maxPt)
@@ -493,7 +499,6 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
 
       const startNode = getOrCreate(snappedMin)
       const endNode = getOrCreate(snappedMax)
-      const sectionH = group[0]!.heightM
       const sectionD = DEFAULT_PANEL_DEPTH_GRIDS * GRID_UNIT_M
       const sec = panelSection(sectionH, sectionD)
       const panelMat = getMaterial(undefined, 'F14')

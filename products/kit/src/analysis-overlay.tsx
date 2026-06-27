@@ -334,7 +334,7 @@ function PanelQuads({ model }: { model: StructuralModel }) {
         id: m.id,
         px: (sn.x + en.x) / 2,
         py: (sn.y + en.y) / 2,
-        pz: sn.z + h / 2,
+        pz: sn.z,
         qx: q.x,
         qy: q.y,
         qz: q.z,
