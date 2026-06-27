@@ -82,6 +82,7 @@ type AnyCreator = {
     lengthInGrids?: number
     widthInGrids?: number // wall-frame uses widthInGrids instead of lengthInGrids
     heightInGrids?: number
+    baseInGrids?: number // gable-panel: base width (Y span) in grid units
     depthInGrids?: number
     materialId?: string
   }
@@ -558,6 +559,95 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
         endReleases: PINNED,
       })
       memberDensity.set(m2Id, braceMat.density)
+    }
+  }
+
+  // Step 2c - Gable panels: model each as a structural triangle.
+  // A GablePanel.YZ is a right triangle in the YZ plane:
+  //   A = origin (right-angle corner, bottom-back)
+  //   B = A + height * (col-1 of rotation) → apex, top-back
+  //   C = A + base  * (col-0 of rotation) → base-end, bottom-front
+  // Edge A→B is already a post segment (Step 1). Only B→C and A→C are added here.
+  // ENGINEERING NOTE: the ply gable panel is idealised as two pinned edge members;
+  // a chartered engineer must verify the actual diaphragm capacity.
+  {
+    const gablePanelParts = flat.filter((p) => p.spec.type === 'gable-panel')
+    for (const gp of gablePanelParts) {
+      const { position: posA } = decomposeTransform(gp.transform)
+      const me = new Matrix4().fromArray(gp.transform).elements
+
+      const baseInGrids = gp.spec.baseInGrids ?? 0
+      const heightInGrids = gp.spec.heightInGrids ?? 0
+      if (baseInGrids < 1 || heightInGrids < 1) continue
+
+      const baseLen = baseInGrids * GRID_UNIT_M
+      const heightLen = heightInGrids * GRID_UNIT_M
+
+      // Local axes from rotation matrix columns (unit vectors for a rotation/reflection)
+      const bAxis: Vec3 = { x: me[0]!, y: me[1]!, z: me[2]! } // col 0: base direction in world
+      const hAxis: Vec3 = { x: me[4]!, y: me[5]!, z: me[6]! } // col 1: height direction in world
+
+      const posB: Vec3 = {
+        x: posA.x + hAxis.x * heightLen,
+        y: posA.y + hAxis.y * heightLen,
+        z: posA.z + hAxis.z * heightLen,
+      }
+      const posC: Vec3 = {
+        x: posA.x + bAxis.x * baseLen,
+        y: posA.y + bAxis.y * baseLen,
+        z: posA.z + bAxis.z * baseLen,
+      }
+
+      const sA = snapXyToPost(posA)
+      const sB = snapXyToPost(posB)
+      const sC = snapXyToPost(posC)
+      if (!isAtPost(sA) || !isAtPost(sB) || !isAtPost(sC)) continue
+
+      // Snap each corner Z to the highest existing post junction at or below the raw Z.
+      // Corners B and C overshoot the post tops by POST_W (same issue as wall X-braces).
+      const snA = highestNodeOnPostAt(sA, roundTo(posA.z) + TOL)
+      const snB = highestNodeOnPostAt(sB, roundTo(posB.z) + TOL)
+      const snC = highestNodeOnPostAt(sC, roundTo(posC.z) + TOL)
+      if (!snA || !snB || !snC) continue
+
+      const nodeA = getOrCreate(snA)
+      const nodeB = getOrCreate(snB)
+      const nodeC = getOrCreate(snC)
+
+      const braceMat = getMaterial(undefined, 'F14')
+      const syntheticId = `gable-${gp.id ?? `gp-${memberCount}`}`
+
+      // B→C: sloped apex-to-front-corner (hypotenuse / rafter edge of gable)
+      if (nodeB.id !== nodeC.id) {
+        const m1Id = `m${memberCount++}`
+        members.push({
+          id: m1Id,
+          partId: `${syntheticId}-bc`,
+          type: 'brace',
+          startNodeId: nodeB.id,
+          endNodeId: nodeC.id,
+          section: TIMBER_SECTION,
+          material: { E: braceMat.E, G: braceMat.G },
+          endReleases: PINNED,
+        })
+        memberDensity.set(m1Id, braceMat.density)
+      }
+
+      // A→C: lower chord from right-angle corner to front-corner (clerestory sill level)
+      if (nodeA.id !== nodeC.id) {
+        const m2Id = `m${memberCount++}`
+        members.push({
+          id: m2Id,
+          partId: `${syntheticId}-ac`,
+          type: 'brace',
+          startNodeId: nodeA.id,
+          endNodeId: nodeC.id,
+          section: TIMBER_SECTION,
+          material: { E: braceMat.E, G: braceMat.G },
+          endReleases: PINNED,
+        })
+        memberDensity.set(m2Id, braceMat.density)
+      }
     }
   }
 
