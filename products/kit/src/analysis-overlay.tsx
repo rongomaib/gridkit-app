@@ -33,6 +33,7 @@ export function AnalysisOverlay({ activeModes, deflectionScale }: OverlayProps) 
     <group>
       {activeModes.has('heat') && <HeatTubes model={structuralModel} lcr={lcr} />}
       <DeflectedShapeLines model={structuralModel} lcr={lcr} scale={deflectionScale} />
+      <XBraceLines model={structuralModel} lcr={lcr} scale={deflectionScale} />
       {activeModes.has('joints') && <MomentBulges model={structuralModel} lcr={lcr} />}
       {activeModes.has('joints') && <ConnectivityDots model={structuralModel} />}
       {activeModes.has('joints') && <PanelQuads model={structuralModel} />}
@@ -142,7 +143,7 @@ function HeatTubes({ model, lcr }: LineProps) {
     for (const m of model.members) {
       const res = resultById.get(m.id)
       if (!res) continue
-      if (m.type === 'timber') {
+      if (m.type === 'timber' || m.type === 'brace') {
         maxTimber = Math.max(maxTimber, Math.abs(res.forces.fx_start), Math.abs(res.forces.fx_end))
       } else {
         maxPanel = Math.max(maxPanel, Math.abs(res.forces.mz_start), Math.abs(res.forces.mz_end))
@@ -163,10 +164,11 @@ function HeatTubes({ model, lcr }: LineProps) {
       let demand = 0
       let tip = 'No force data'
       if (res) {
-        if (m.type === 'timber') {
+        if (m.type === 'timber' || m.type === 'brace') {
           const force = Math.max(Math.abs(res.forces.fx_start), Math.abs(res.forces.fx_end))
           demand = force / maxTimber
-          tip = `Post: ≈${Math.round(force / 9.81)} kg axial  (${Math.round(demand * 100)}% of peak)`
+          const label = m.type === 'brace' ? 'Brace' : 'Post'
+          tip = `${label}: ≈${Math.round(force / 9.81)} kg axial  (${Math.round(demand * 100)}% of peak)`
         } else {
           const moment = Math.max(Math.abs(res.forces.mz_start), Math.abs(res.forces.mz_end))
           demand = moment / maxPanel
@@ -477,6 +479,7 @@ function DeflectedShapeLines({ model, lcr, scale }: DeflectedProps) {
     const dispById = new Map(lcr.nodeDisplacements.map((d) => [d.nodeId, d]))
     const positions: number[] = []
     for (const m of model.members) {
+      if (m.type === 'brace') continue
       const sn = nodeById.get(m.startNodeId)
       const en = nodeById.get(m.endNodeId)
       if (!sn || !en) continue
@@ -506,6 +509,47 @@ function DeflectedShapeLines({ model, lcr, scale }: DeflectedProps) {
   return (
     <lineSegments geometry={geometry}>
       <lineBasicMaterial color={0xff8800} />
+    </lineSegments>
+  )
+}
+
+// --- X-brace deflected lines (permanent underlay, purple) ---------------------
+// Renders diagonal brace members separately from orange beam lines so they are
+// visually distinct. Applies the same deflection scale as DeflectedShapeLines.
+
+function XBraceLines({ model, lcr, scale }: DeflectedProps) {
+  const geometry = useMemo(() => {
+    const nodeById = new Map(model.nodes.map((n) => [n.id, n]))
+    const dispById = new Map(lcr.nodeDisplacements.map((d) => [d.nodeId, d]))
+    const positions: number[] = []
+    const maxD = 0.005
+    const cl = (v: number) => Math.max(-maxD, Math.min(maxD, v))
+    for (const m of model.members) {
+      if (m.type !== 'brace') continue
+      const sn = nodeById.get(m.startNodeId)
+      const en = nodeById.get(m.endNodeId)
+      if (!sn || !en) continue
+      const sd = dispById.get(m.startNodeId)
+      const ed = dispById.get(m.endNodeId)
+      positions.push(
+        sn.x + cl(sd?.DX ?? 0) * scale,
+        sn.y + cl(sd?.DY ?? 0) * scale,
+        sn.z + cl(sd?.DZ ?? 0) * scale,
+        en.x + cl(ed?.DX ?? 0) * scale,
+        en.y + cl(ed?.DY ?? 0) * scale,
+        en.z + cl(ed?.DZ ?? 0) * scale,
+      )
+    }
+    const geo = new BufferGeometry()
+    geo.setAttribute('position', new Float32BufferAttribute(positions, 3))
+    return geo
+  }, [model, lcr, scale])
+
+  useEffect(() => () => geometry.dispose(), [geometry])
+
+  return (
+    <lineSegments geometry={geometry}>
+      <lineBasicMaterial color={0xcc00ff} />
     </lineSegments>
   )
 }

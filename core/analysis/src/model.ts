@@ -33,7 +33,7 @@ export type MemberEndReleases = {
   end: EndRelease
 }
 
-export type ModelMemberType = 'timber' | 'panel-brace'
+export type ModelMemberType = 'timber' | 'panel-brace' | 'brace'
 
 export type ModelMember = {
   id: string

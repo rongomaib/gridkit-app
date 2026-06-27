@@ -71,6 +71,8 @@ const GRAVITY = 9.81 // m/s^2
 
 const NO_RELEASE: EndRelease = { Mxx: false, Myy: false, Mzz: false }
 const RIGID: MemberEndReleases = { start: NO_RELEASE, end: NO_RELEASE }
+const ALL_RELEASE: EndRelease = { Mxx: true, Myy: true, Mzz: true }
+const PINNED: MemberEndReleases = { start: ALL_RELEASE, end: ALL_RELEASE }
 
 // -- Input type (structural duck-typing) ----------------------------------------
 
@@ -478,44 +480,61 @@ export function buildStructuralModel(parts: AnyParts): StructuralModel {
         if (aEnd > spanMax) spanMax = aEnd
       }
 
-      // Place the structural node at mid-height so it doesn't overlap with floor
-      // beams (at zBot) or top-plate beams (at zTop). The post gets split here
-      // automatically by Step 1's junction detection via pd.bottomZ and topZ.
+      // X-brace: two pinned diagonals crossing the bay.
+      // zBot and zTop are guaranteed junction nodes — Step 1 already split posts there
+      // via pd.bottomZ and topZ. No floating nodes, no overlap with floor beams.
       const sectionH = group[0]!.heightM
-      const zMid = zBot + sectionH / 2
+      const zTop = zBot + sectionH
 
-      const minPt: Vec3 =
+      const botMinPt: Vec3 =
         direction === 'X'
-          ? { x: spanMin, y: planeCoord, z: zMid }
-          : { x: planeCoord, y: spanMin, z: zMid }
-      const maxPt: Vec3 =
+          ? { x: spanMin, y: planeCoord, z: zBot }
+          : { x: planeCoord, y: spanMin, z: zBot }
+      const botMaxPt: Vec3 =
         direction === 'X'
-          ? { x: spanMax, y: planeCoord, z: zMid }
-          : { x: planeCoord, y: spanMax, z: zMid }
+          ? { x: spanMax, y: planeCoord, z: zBot }
+          : { x: planeCoord, y: spanMax, z: zBot }
 
-      const snappedMin = snapXyToPost(minPt)
-      const snappedMax = snapXyToPost(maxPt)
-      if (!isAtPost(snappedMin) || !isAtPost(snappedMax)) continue
+      const sBotMin = snapXyToPost(botMinPt)
+      const sBotMax = snapXyToPost(botMaxPt)
+      if (!isAtPost(sBotMin) || !isAtPost(sBotMax)) continue
 
-      const startNode = getOrCreate(snappedMin)
-      const endNode = getOrCreate(snappedMax)
-      const sectionD = DEFAULT_PANEL_DEPTH_GRIDS * GRID_UNIT_M
-      const sec = panelSection(sectionH, sectionD)
-      const panelMat = getMaterial(undefined, 'F14')
-      const syntheticId = `bay-wall-${direction}-${Math.round(planeCoord / TOL)}-${Math.round(zBot / TOL)}`
-      const memberId = `m${memberCount++}`
+      const sTopMin = { ...sBotMin, z: zTop }
+      const sTopMax = { ...sBotMax, z: zTop }
+
+      const nodeBotMin = getOrCreate(sBotMin)
+      const nodeBotMax = getOrCreate(sBotMax)
+      const nodeTopMin = getOrCreate(sTopMin)
+      const nodeTopMax = getOrCreate(sTopMax)
+
+      const braceMat = getMaterial(undefined, 'F14')
+      const syntheticId = `bay-brace-${direction}-${Math.round(planeCoord / TOL)}-${Math.round(zBot / TOL)}`
+
+      const m1Id = `m${memberCount++}`
       members.push({
-        id: memberId,
-        partId: syntheticId,
-        type: 'panel-brace',
-        startNodeId: startNode.id,
-        endNodeId: endNode.id,
-        section: sec,
-        material: { E: panelMat.E, G: panelMat.G },
-        endReleases: RIGID,
+        id: m1Id,
+        partId: `${syntheticId}-1`,
+        type: 'brace',
+        startNodeId: nodeBotMin.id,
+        endNodeId: nodeTopMax.id,
+        section: TIMBER_SECTION,
+        material: { E: braceMat.E, G: braceMat.G },
+        endReleases: PINNED,
       })
-      memberDensity.set(memberId, panelMat.density)
-      panelHeightByPartId.set(syntheticId, sectionH)
+      memberDensity.set(m1Id, braceMat.density)
+
+      const m2Id = `m${memberCount++}`
+      members.push({
+        id: m2Id,
+        partId: `${syntheticId}-2`,
+        type: 'brace',
+        startNodeId: nodeTopMin.id,
+        endNodeId: nodeBotMax.id,
+        section: TIMBER_SECTION,
+        material: { E: braceMat.E, G: braceMat.G },
+        endReleases: PINNED,
+      })
+      memberDensity.set(m2Id, braceMat.density)
     }
   }
 
