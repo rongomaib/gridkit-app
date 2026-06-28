@@ -1,4 +1,4 @@
-import { ColorModeProvider, useColorMode } from '@/context/colorMode'
+import { ColorModeProvider } from '@/context/colorMode'
 import { EditorProvider } from '@/context/editor'
 import { ProductProvider } from '@/context/product'
 import { WorkspaceProvider, useWorkspaceContext } from '@/context/workspace'
@@ -62,10 +62,8 @@ function ProductLayout({ children }: LayoutProps) {
 }
 
 function ContentLayout({ children }: LayoutProps) {
-  const { isDark } = useColorMode()
   return (
     <Flex
-      data-theme={isDark ? 'dark' : 'light'}
       css={{
         flexDirection: 'row',
         justifyContent: 'center',

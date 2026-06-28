@@ -22,7 +22,7 @@ export function ColorModeProvider({ children }: { children: React.ReactNode }) {
     try {
       localStorage.setItem('color-mode', mode)
     } catch {}
-    document.documentElement.dataset.theme = mode
+    document.documentElement.classList.toggle('dark', mode === 'dark')
   }, [mode])
 
   const toggle = () => setMode((m) => (m === 'dark' ? 'light' : 'dark'))
