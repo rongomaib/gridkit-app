@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { PartMakerSpec } from '@/lib/partMakerTypes'
+import { useColorMode } from '@/context/colorMode'
 import { useAiChat } from '@/lib/useAiChat'
 import { useMemo, useState } from 'react'
 import { AiChatPanel } from './AiChatPanel'
@@ -201,16 +202,6 @@ export function PartMakerChat({ spec, onSpecChange }: PartMakerChatProps) {
 
 // ---- Spec form ---------------------------------------------------------------
 
-const inputStyle: React.CSSProperties = {
-  width: '100%',
-  padding: '4px 8px',
-  fontSize: 13,
-  border: '1px solid #cbd5e1',
-  borderRadius: 4,
-  outline: 'none',
-  boxSizing: 'border-box',
-}
-
 function SectionHeader({ children }: { children: React.ReactNode }) {
   return (
     <div
@@ -230,12 +221,13 @@ function SectionHeader({ children }: { children: React.ReactNode }) {
 }
 
 function SpecRow({ label, children }: { label: string; children: React.ReactNode }) {
+  const { isDark } = useColorMode()
   return (
     <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
       <label
         style={{
           fontSize: 12,
-          color: '#64748b',
+          color: isDark ? '#94a3b8' : '#64748b',
           width: 120,
           flexShrink: 0,
           paddingTop: 5,
