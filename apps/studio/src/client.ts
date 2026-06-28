@@ -136,9 +136,7 @@ export function useListWorkspacesQuery(options?: ExtendedQueryOptions) {
 
 export type OpenWorkspaceArgs = {}
 export type OpenWorkspaceResult = string | null
-export function useOpenWorkspaceMutation(
-  options: UseMutationOptions<OpenWorkspaceResult>,
-) {
+export function useOpenWorkspaceMutation(options: UseMutationOptions<OpenWorkspaceResult>) {
   return useMutation<OpenWorkspaceResult, Error, OpenWorkspaceArgs>({
     mutationFn: async () => {
       try {
@@ -159,9 +157,7 @@ export function useOpenWorkspaceMutation(
 }
 
 export type AddWorkspaceArgs = { workspace: Workspace }
-export function useAddWorkspaceMutation(
-  options: UseMutationOptions<void>,
-) {
+export function useAddWorkspaceMutation(options: UseMutationOptions<void>) {
   return useMutation<void, Error, AddWorkspaceArgs>({
     mutationFn: async () => {
       // Handled directly in useOpenWorkspaceMutation for PWA
@@ -171,9 +167,7 @@ export function useAddWorkspaceMutation(
 }
 
 export type RemoveWorkspaceArgs = { workspacePath: string }
-export function useRemoveWorkspaceMutation(
-  options: UseMutationOptions<void>,
-) {
+export function useRemoveWorkspaceMutation(options: UseMutationOptions<void>) {
   return useMutation<void, Error, RemoveWorkspaceArgs>({
     mutationFn: async ({ workspacePath }) => {
       const handles = (await get<any[]>(WORKSPACES_STORE_KEY)) || []
@@ -188,10 +182,7 @@ export type ListProductsArgs = {
   workspacePath: string
 }
 export type ListProductsResult = Array<ProductIndex>
-export function useListProductsQuery(
-  args: ListProductsArgs,
-  options?: ExtendedQueryOptions,
-) {
+export function useListProductsQuery(args: ListProductsArgs, options?: ExtendedQueryOptions) {
   return useQuery({
     queryKey: ['list_products', args],
     queryFn: async () => {
@@ -228,10 +219,7 @@ export type GetProductMetaArgs = {
   productPath: string
 }
 export type GetProductMetaResult = ProductMeta
-export function useGetProductMetaQuery(
-  args: GetProductMetaArgs,
-  options?: ExtendedQueryOptions,
-) {
+export function useGetProductMetaQuery(args: GetProductMetaArgs, options?: ExtendedQueryOptions) {
   return useQuery({
     queryKey: ['get_product_meta', args],
     queryFn: async () => {
@@ -271,10 +259,7 @@ export type GetProductFileArgs = {
   fileName: string
 }
 export type GetProductFileResult = string
-export function useGetProductFileQuery(
-  args: GetProductFileArgs,
-  options?: ExtendedQueryOptions,
-) {
+export function useGetProductFileQuery(args: GetProductFileArgs, options?: ExtendedQueryOptions) {
   return useQuery({
     queryKey: ['get_product_file', args],
     queryFn: async () => {
@@ -321,9 +306,7 @@ export type UpdateProductFileArgs = {
   fileName: string
   content: string
 }
-export function useUpdateProductFileMutation(
-  options?: UseMutationOptions<void>,
-) {
+export function useUpdateProductFileMutation(options?: UseMutationOptions<void>) {
   return useMutation<void, Error, UpdateProductFileArgs>({
     mutationFn: async (args) => {
       if (!args.workspacePath || !args.productPath || !args.fileName)

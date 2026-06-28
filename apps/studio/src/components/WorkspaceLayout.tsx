@@ -17,10 +17,11 @@ import { FaBars, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
 
 interface WorkspaceLayoutProps {
   children: React.ReactNode
+  onPartMaker?: () => void
 }
 
 export function WorkspaceLayout(props: WorkspaceLayoutProps) {
-  const { children } = props
+  const { children, onPartMaker } = props
 
   const { activeWorkspace } = useWorkspacesContext()
   const { productIndexes, selectProductId } = useWorkspaceContext()
@@ -96,6 +97,17 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
             </List.Root>
           </VStack>
           <Box css={{ flexGrow: 1 }} />
+          {onPartMaker && (
+            <Box css={{ padding: 2, width: '100%' }}>
+              <Button
+                variant="toolbar"
+                onClick={onPartMaker}
+                css={{ width: '100%', fontSize: 'sm', justifyContent: 'flex-start' }}
+              >
+                + Part Maker
+              </Button>
+            </Box>
+          )}
         </VStack>
       ) : (
         <Box

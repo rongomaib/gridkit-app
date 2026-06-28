@@ -75,20 +75,41 @@ function serializeSpec(instance: PanelBraceSpec): PanelBraceSpecSerialized {
 }
 function deserializeSpec(object: PanelBraceSpecSerialized): PanelBraceSpec {
   const { variantId, lengthInGrids, heightInGrids, depthInGrids, materialId } = object
-  return new PanelBraceSpec(lengthInGrids, variantId, heightInGrids, depthInGrids, materialId as string | undefined)
+  return new PanelBraceSpec(
+    lengthInGrids,
+    variantId,
+    heightInGrids,
+    depthInGrids,
+    materialId as string | undefined,
+  )
 }
 
 export class PanelBrace extends BasePartCreator<PanelBraceSpec> {
   static create(options: PanelBraceOptions) {
     const { variantId, lengthInGrids, heightInGrids, depthInGrids, id, materialId } = options
-    const spec = new PanelBraceSpec(lengthInGrids, variantId, heightInGrids, depthInGrids, materialId)
+    const spec = new PanelBraceSpec(
+      lengthInGrids,
+      variantId,
+      heightInGrids,
+      depthInGrids,
+      materialId,
+    )
     return new PanelBrace(spec, id)
   }
 
   // Horizontal panel spanning X axis; height rises in Z; depth in Y.
   // z is the bottom-of-panel grid position.
   static X(options: PanelBraceXOptions) {
-    const { id, x, y, z, variantId = getDefaultVariantId(), heightInGrids, depthInGrids, materialId } = options
+    const {
+      id,
+      x,
+      y,
+      z,
+      variantId = getDefaultVariantId(),
+      heightInGrids,
+      depthInGrids,
+      materialId,
+    } = options
 
     const gridUnit = getGridLengthInMeters(variantId)
 
@@ -115,7 +136,16 @@ export class PanelBrace extends BasePartCreator<PanelBraceSpec> {
   // Horizontal panel spanning Y axis; height rises in Z; depth in X.
   // z is the bottom-of-panel grid position.
   static Y(options: PanelBraceYOptions) {
-    const { id, x, y, z, variantId = getDefaultVariantId(), heightInGrids, depthInGrids, materialId } = options
+    const {
+      id,
+      x,
+      y,
+      z,
+      variantId = getDefaultVariantId(),
+      heightInGrids,
+      depthInGrids,
+      materialId,
+    } = options
 
     const gridUnit = getGridLengthInMeters(variantId)
 

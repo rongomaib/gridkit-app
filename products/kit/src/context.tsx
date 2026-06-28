@@ -50,6 +50,7 @@ type ProductKitState = {
   structuralModel: StructuralModel | null
   solverResult: SolverResult | null
   isAnalysing: boolean
+  setPartModuleType: (partId: string, moduleType: string) => void
 }
 
 function useProductKit(): ProductKitState {
@@ -76,7 +77,18 @@ function useProductKit(): ProductKitState {
   // @ts-ignore
   const { isLoading, parts, kitParts } = useParts({ render, paramsValues })
 
-  const partValues = usePartValues(parts)
+  const [partPropertyOverrides, setPartPropertyOverrides] = useState<
+    Record<string, Record<string, string>>
+  >({})
+
+  const setPartModuleType = (partId: string, moduleType: string) => {
+    setPartPropertyOverrides((prev) => ({
+      ...prev,
+      [partId]: { ...prev[partId], moduleType },
+    }))
+  }
+
+  const partValues = usePartValues(parts, partPropertyOverrides)
   const boundingBox = useBoundingBox(parts)
 
   const [selectedPartIds, setSelectedPartIds] = useState<Set<string>>(new Set())
@@ -103,6 +115,7 @@ function useProductKit(): ProductKitState {
     structuralModel,
     solverResult,
     isAnalysing,
+    setPartModuleType,
   }
 }
 
@@ -231,10 +244,21 @@ function useParts<Ps extends Params>(options: UsePartsOptions<Ps>): UsePartsValu
   return { isLoading, parts: partCreators, kitParts }
 }
 
-function usePartValues(partCreators: Array<WithRequiredId<PartCreator>>): Array<PartGlValue> {
+function usePartValues(
+  partCreators: Array<WithRequiredId<PartCreator>>,
+  overrides: Record<string, Record<string, string>>,
+): Array<PartGlValue> {
   return useMemo(() => {
-    return calculateGlValueForAll(partCreators)
-  }, [partCreators])
+    const values = calculateGlValueForAll(partCreators)
+    if (Object.keys(overrides).length === 0) return values
+    return values.map((v) => {
+      const id = (v as any).id as string | undefined
+      if (id == null) return v
+      const patch = overrides[id]
+      if (patch == null) return v
+      return { ...v, ...patch } as PartGlValue
+    })
+  }, [partCreators, overrides])
 }
 
 function useBoundingBox(partCreators: Array<PartCreator>): Box3 {

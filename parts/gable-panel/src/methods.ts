@@ -50,10 +50,7 @@ export function calculateBoundingBox(creator: GablePanel): Box3 {
 
   const g = convert(variant.gridLength, meter).value
   // Bounding box of the triangular prism (conservative: full rectangle)
-  const box = new Box3(
-    new Vector3(0, 0, 0),
-    new Vector3(g, baseInGrids * g, heightInGrids * g),
-  )
+  const box = new Box3(new Vector3(0, 0, 0), new Vector3(g, baseInGrids * g, heightInGrids * g))
 
   box.applyMatrix4(new Matrix4().fromArray(transform))
   return box

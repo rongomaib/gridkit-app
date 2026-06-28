@@ -32,6 +32,7 @@ export function useRender(): ProductKitRender<any> | null {
   if (language === 'unknown') throw new Error(`Unexpected kit file path extension: ${filePath}`)
 
   useEffect(() => {
+    console.log('[useRender] code changed, length:', code.length)
     switch (language) {
       case 'typescript':
         return send({ type: 'renderer.render.typescript', code })

@@ -23,7 +23,7 @@ export function ProductKitView(props: ProductViewProps) {
     isAnalysing,
   } = useProductKitContext()
 
-  const [activeModes, setActiveModes] = useState<Set<VisualizationMode>>(new Set(['heat']))
+  const [activeModes, setActiveModes] = useState<Set<VisualizationMode>>(new Set())
   const [deflectionScale, setDeflectionScale] = useState(100)
   const [showModel, setShowModel] = useState(true)
   const [hiddenPartTypes, setHiddenPartTypes] = useState<Set<string>>(new Set())

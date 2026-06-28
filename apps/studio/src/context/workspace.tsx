@@ -23,7 +23,7 @@ function useWorkspace(options: WorkspaceOptions): WorkspaceState {
   const { workspace } = options
 
   const productIndexesQuery = useListProductsQuery({ workspacePath: workspace.path })
-  const productIndexes = productIndexesQuery.isSuccess ? (productIndexesQuery.data ?? null) : null
+  const productIndexes = productIndexesQuery.isSuccess ? productIndexesQuery.data ?? null : null
 
   const [activeProductId, selectProductId] = useState<string | null>(null)
 

@@ -40,7 +40,7 @@ function PartGl(props: PartGlProps) {
 
   const geometry = useMemo(() => {
     const geo = new BoxGeometry(lengthInMeters, sectionWidthInMeters, sectionDepthInMeters)
-    geo.translate(lengthInMeters / 2, 0, 0)
+    geo.translate(lengthInMeters / 2, sectionWidthInMeters / 2, sectionDepthInMeters / 2)
     return geo
   }, [lengthInMeters, sectionWidthInMeters, sectionDepthInMeters])
 

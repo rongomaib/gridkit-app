@@ -171,7 +171,8 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
     </VStack>
   )
 
-  const { selectedPartId, partValues, setSelectedPartId, solverResult } = useProductKitContext()
+  const { selectedPartId, partValues, setSelectedPartId, solverResult, setPartModuleType } =
+    useProductKitContext()
   const selectedPart = selectedPartId != null ? parts.find((p) => p.id === selectedPartId) : null
   const selectedPartGlValue =
     selectedPartId != null ? partValues.find((p: any) => p.id === selectedPartId) : null
@@ -210,6 +211,15 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
       )
     }
 
+    // Origin from the part's transform matrix (column-major Matrix4, indices 12/13/14 = tx/ty/tz)
+    const transform = (selectedPart as any).transform as number[]
+    const GRID_M = GRID_MM / 1000
+    const originGu = {
+      x: Math.round((transform[12] ?? 0) / GRID_M),
+      y: Math.round((transform[13] ?? 0) / GRID_M),
+      z: Math.round((transform[14] ?? 0) / GRID_M),
+    }
+
     return (
       <VStack as="section" aria-label="Part Inspector" gap="4" css={{ width: '100%', padding: 4 }}>
         <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
@@ -231,6 +241,13 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
           <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
             <Text css={{ color: 'gray.600' }}>Type</Text>
             <Text>{PART_LABELS[partType] ?? partType}</Text>
+          </HStack>
+          <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
+            <Text css={{ color: 'gray.600' }}>Origin</Text>
+            <Text css={{ fontFamily: 'mono', fontSize: 'sm' }}>
+              ({originGu.x}, {originGu.y}, {originGu.z}) gu
+              {' '}/ ({originGu.x * GRID_MM}, {originGu.y * GRID_MM}, {originGu.z * GRID_MM}) mm
+            </Text>
           </HStack>
 
           {partType === 'gridbeam' &&
@@ -415,8 +432,11 @@ export function ProductKitInfo(_props: ProductKitInfoProps) {
             <HStack css={{ justifyContent: 'space-between', width: '100%' }}>
               <Text css={{ color: 'gray.600' }}>Wall module</Text>
               <select
-                value={(selectedPart as any).spec.moduleType ?? 'solid'}
-                onChange={(e) => dispatchSetProperty('moduleType', e.target.value)}
+                value={(selectedPartGlValue as any).moduleType ?? 'solid'}
+                onChange={(e) => {
+                  setPartModuleType(partId, e.target.value)
+                  dispatchSetProperty('moduleType', e.target.value)
+                }}
                 style={{ fontSize: '13px', padding: '2px 4px' }}
               >
                 <option value="solid">Solid panel</option>

@@ -62,7 +62,7 @@ function PartGl(props: PartGlProps) {
   const purlinPositions = useMemo(() => {
     return Array.from({ length: purlinCount }, (_, i) => ({
       x: i * PURLIN_SPACING + PURLIN_SIZE / 2,
-      y: PURLIN_SIZE / 2,
+      y: EDGE_BEAM_H + PURLIN_SIZE / 2,
       z: W / 2,
     }))
   }, [purlinCount, W])

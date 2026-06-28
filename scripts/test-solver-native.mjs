@@ -12,8 +12,8 @@
  */
 
 import { execSync } from 'node:child_process'
-import { writeFileSync, readFileSync } from 'node:fs'
-import { join, dirname } from 'node:path'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -39,7 +39,9 @@ writeFileSync(modelPath, modelJson)
 console.log(`Model written to ${modelPath}`)
 
 const model = JSON.parse(modelJson)
-console.log(`Nodes: ${model.nodes.length}  Members: ${model.members.length}  Supports: ${model.supports.length}`)
+console.log(
+  `Nodes: ${model.nodes.length}  Members: ${model.members.length}  Supports: ${model.supports.length}`,
+)
 console.log(`Load cases: ${model.loadCases.map((lc) => lc.id).join(', ')}`)
 
 // â”€â”€ Validate via PyNite (if available) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

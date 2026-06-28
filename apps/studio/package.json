@@ -11,7 +11,10 @@
     "lint": "biome check ."
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
     "@catppuccin/palette": "^0.2.0",
+    "@react-three/drei": "^10.0.0",
+    "@react-three/fiber": "^9.0.0",
     "@codemirror/autocomplete": "^6.16.2",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lint": "^6.8.0",

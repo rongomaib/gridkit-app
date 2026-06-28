@@ -4,14 +4,8 @@
   "description": "Linear elastic 3D direct-stiffness solver for gridkit structural analysis (WASM)",
   "version": "0.1.0",
   "license": "EUPL-1.2",
-  "files": [
-    "gridkit_solver_bg.wasm",
-    "gridkit_solver.js",
-    "gridkit_solver.d.ts"
-  ],
+  "files": ["gridkit_solver_bg.wasm", "gridkit_solver.js", "gridkit_solver.d.ts"],
   "main": "gridkit_solver.js",
   "types": "gridkit_solver.d.ts",
-  "sideEffects": [
-    "./snippets/*"
-  ]
+  "sideEffects": ["./snippets/*"]
 }

@@ -12,6 +12,7 @@ import { AnalysisPanel, BomPanel } from '@villagekit/product-kit'
 import { Box, Flex, Heading, Tabs } from '@villagekit/ui'
 import { useRef, useState } from 'react'
 import { Loading } from './Loading'
+import { ProductChat } from './ProductChat'
 import { ProductEditor } from './ProductEditor'
 
 export default function Product() {
@@ -86,6 +87,7 @@ function ProductControls() {
       <Tabs.List>
         <Tabs.Trigger value="code">Code</Tabs.Trigger>
         {showParamControls && <Tabs.Trigger value="parameters">Parameters</Tabs.Trigger>}
+        <Tabs.Trigger value="chat">Chat</Tabs.Trigger>
       </Tabs.List>
       <Tabs.Content
         value="code"
@@ -105,6 +107,9 @@ function ProductControls() {
           <ParamControls />
         </Tabs.Content>
       )}
+      <Tabs.Content value="chat" css={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        <ProductChat />
+      </Tabs.Content>
     </Tabs.Root>
   )
 }
@@ -141,7 +146,10 @@ function ProductViewer() {
           <BomPanel />
         </Box>
       </Tabs.Content>
-      <Tabs.Content value="parts" css={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '8px' }}>
+      <Tabs.Content
+        value="parts"
+        css={{ flex: 1, minHeight: 0, overflowY: 'auto', padding: '8px' }}
+      >
         <ProductSummary displayUnit="gu" groupParts />
       </Tabs.Content>
       <Tabs.Content value="info">

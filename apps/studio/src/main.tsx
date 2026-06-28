@@ -1,9 +1,11 @@
 import { AppLayout } from '@/components/Layout'
+import { PartMaker } from '@/components/PartMaker'
 import Product from '@/components/Product'
 import { WorkspaceLayout } from '@/components/WorkspaceLayout'
 import WorkspaceSelector from '@/components/WorkspaceSelector'
 import { useWorkspaceContext } from '@/context/workspace'
 import { useWorkspacesContext } from '@/context/workspaces'
+import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 
 const rootElement = document.getElementById('root')
@@ -16,18 +18,29 @@ createRoot(rootElement).render(
   </AppLayout>,
 )
 
+type AppMode = 'products' | 'part-maker'
+
 function RootPage() {
+  const [mode, setMode] = useState<AppMode>('products')
   const { activeWorkspace } = useWorkspacesContext()
 
-  if (activeWorkspace == null) {
-    return <WorkspaceSelector />
+  if (mode === 'part-maker') {
+    return <PartMaker onBack={() => setMode('products')} />
   }
 
-  return <WorkspacePage />
+  if (activeWorkspace == null) {
+    return <WorkspaceSelector onPartMaker={() => setMode('part-maker')} />
+  }
+
+  return <WorkspacePage onPartMaker={() => setMode('part-maker')} />
 }
 
-function WorkspacePage() {
+function WorkspacePage({ onPartMaker }: { onPartMaker: () => void }) {
   const { activeProductIndex } = useWorkspaceContext()
 
-  return <WorkspaceLayout>{activeProductIndex != null ? <Product /> : null}</WorkspaceLayout>
+  return (
+    <WorkspaceLayout onPartMaker={onPartMaker}>
+      {activeProductIndex != null ? <Product /> : null}
+    </WorkspaceLayout>
+  )
 }

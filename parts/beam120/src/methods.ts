@@ -52,12 +52,12 @@ export function calculateBoundingBox(creator: Beam120): Box3 {
   if (variant == null) throw new Error(`Unknown beam120 variant: ${variantId}`)
 
   const gridUnit = convert(variant.gridLength, meter).value
-  const halfWidth = convert(variant.sectionWidth, meter).value / 2
-  const halfDepth = convert(variant.sectionDepth, meter).value / 2
+  const sectionWidth = convert(variant.sectionWidth, meter).value
+  const sectionDepth = convert(variant.sectionDepth, meter).value
 
   const box = new Box3(
-    new Vector3(0, -halfWidth, -halfDepth),
-    new Vector3(lengthInGrids * gridUnit, halfWidth, halfDepth),
+    new Vector3(0, 0, 0),
+    new Vector3(lengthInGrids * gridUnit, sectionWidth, sectionDepth),
   )
 
   box.applyMatrix4(new Matrix4().fromArray(transform))

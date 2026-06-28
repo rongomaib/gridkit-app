@@ -22,11 +22,7 @@ export class TimberSpec extends BasePartSpec<TimberType> {
   lengthInGrids: number
   materialId: string
 
-  constructor(
-    lengthInGrids: number,
-    variantId?: keyof typeof timberVariants,
-    materialId = 'SG8',
-  ) {
+  constructor(lengthInGrids: number, variantId?: keyof typeof timberVariants, materialId = 'SG8') {
     super('timber')
     this.variantId = variantId ?? getDefaultVariantId()
     this.lengthInGrids = lengthInGrids

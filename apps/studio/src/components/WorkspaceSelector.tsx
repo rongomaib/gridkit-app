@@ -2,7 +2,11 @@ import { useWorkspacesContext } from '@/context/workspaces'
 import { Button, Heading, Icon, IconButton, List, VStack } from '@villagekit/ui'
 import { FaTimes } from 'react-icons/fa'
 
-export default function WorkspaceSelector() {
+interface WorkspaceSelectorProps {
+  onPartMaker?: () => void
+}
+
+export default function WorkspaceSelector({ onPartMaker }: WorkspaceSelectorProps) {
   const { workspaces, openWorkspace, removeWorkspace, selectWorkspace } = useWorkspacesContext()
 
   return (
@@ -28,6 +32,11 @@ export default function WorkspaceSelector() {
       <Button variant="secondary" onClick={openWorkspace}>
         Open new workspace
       </Button>
+      {onPartMaker && (
+        <Button variant="secondary" onClick={onPartMaker}>
+          Open Part Maker
+        </Button>
+      )}
     </VStack>
   )
 }

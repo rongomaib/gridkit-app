@@ -449,7 +449,9 @@ export function ProductEditor(_props: ProductEditorProps) {
   useEffect(() => {
     const handleSetProperty = (e: any) => {
       const { id, property, value } = e.detail
+      console.log('[handleSetProperty] received', { id, property, value })
       const currentCode = codeRef.current
+      console.log('[handleSetProperty] codeRef length', currentCode.length, 'first 80 chars:', currentCode.slice(0, 80))
 
       let searchIdStripped = id
       if (id.includes('__')) {
@@ -525,7 +527,7 @@ export function ProductEditor(_props: ProductEditorProps) {
           break
         }
 
-        const strPropRegex = new RegExp('\\b' + property + "\\s*:\\s*(['\"`])[^'\"\\`]*\\1")
+        const strPropRegex = new RegExp('\\b' + property + '\\s*:\\s*([\'"`])[^\'"\\`]*\\1')
         if (strPropRegex.test(lines[i]!)) {
           lines[i] = lines[i]!.replace(strPropRegex, property + ": '" + value + "'")
           propertyFound = true
@@ -551,11 +553,15 @@ export function ProductEditor(_props: ProductEditorProps) {
           lines.splice(closingLineIndex, 0, `${indent}${property}: '${value}',`)
         }
       } else if (!propertyFound) {
-        console.warn('handleSetProperty: Could not find closing brace for block at', blockStartIndex)
+        console.warn(
+          'handleSetProperty: Could not find closing brace for block at',
+          blockStartIndex,
+        )
         return
       }
 
       const newCode = lines.join('\n')
+      console.log('[handleSetProperty] code changed:', currentCode !== newCode, '| newCode length:', newCode.length)
       setCodeToLoad(newCode)
       if (workspacePath && productPath && fileName) {
         updateFile.mutate({ workspacePath, productPath, fileName, content: newCode })

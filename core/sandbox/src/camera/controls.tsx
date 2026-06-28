@@ -168,7 +168,9 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
     useAutoRotate({ controls, mode, actor, shouldAutoRotate })
 
     useEffect(() => {
-      const onControlStart = () => { hasUserInteracted.current = true }
+      const onControlStart = () => {
+        hasUserInteracted.current = true
+      }
       controls.addEventListener('controlstart', onControlStart)
       return () => controls.removeEventListener('controlstart', onControlStart)
     }, [controls])
