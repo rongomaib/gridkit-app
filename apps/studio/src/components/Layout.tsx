@@ -4,7 +4,7 @@ import { ProductProvider } from '@/context/product'
 import { WorkspaceProvider, useWorkspaceContext } from '@/context/workspace'
 import { WorkspacesProvider, useWorkspacesContext } from '@/context/workspaces'
 import { system } from '@/theme'
-import { ChakraProvider, Flex, Theme } from '@villagekit/ui'
+import { ChakraProvider, Flex } from '@villagekit/ui'
 
 export interface LayoutProps {
   children: React.ReactNode
@@ -64,18 +64,17 @@ function ProductLayout({ children }: LayoutProps) {
 function ContentLayout({ children }: LayoutProps) {
   const { isDark } = useColorMode()
   return (
-    <Theme appearance={isDark ? 'dark' : 'light'}>
-      <Flex
-        css={{
-          flexDirection: 'row',
-          justifyContent: 'center',
-          height: '100dvh',
-          width: '100%',
-          overflow: 'hidden',
-        }}
-      >
-        {children}
-      </Flex>
-    </Theme>
+    <Flex
+      data-theme={isDark ? 'dark' : 'light'}
+      css={{
+        flexDirection: 'row',
+        justifyContent: 'center',
+        height: '100dvh',
+        width: '100%',
+        overflow: 'hidden',
+      }}
+    >
+      {children}
+    </Flex>
   )
 }
