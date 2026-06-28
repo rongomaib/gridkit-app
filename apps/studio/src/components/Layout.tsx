@@ -1,20 +1,24 @@
+import { ColorModeProvider, useColorMode } from '@/context/colorMode'
 import { EditorProvider } from '@/context/editor'
 import { ProductProvider } from '@/context/product'
 import { WorkspaceProvider, useWorkspaceContext } from '@/context/workspace'
 import { WorkspacesProvider, useWorkspacesContext } from '@/context/workspaces'
 import { system } from '@/theme'
-import { ChakraProvider, Flex } from '@villagekit/ui'
+import { ChakraProvider, Flex, Theme } from '@villagekit/ui'
 
 export interface LayoutProps {
   children: React.ReactNode
 }
+
 export function AppLayout({ children }: LayoutProps) {
   return (
-    <ProvidersLayout>
-      <ContextLayout>
-        <ContentLayout>{children}</ContentLayout>
-      </ContextLayout>
-    </ProvidersLayout>
+    <ColorModeProvider>
+      <ProvidersLayout>
+        <ContextLayout>
+          <ContentLayout>{children}</ContentLayout>
+        </ContextLayout>
+      </ProvidersLayout>
+    </ColorModeProvider>
   )
 }
 
@@ -58,8 +62,9 @@ function ProductLayout({ children }: LayoutProps) {
 }
 
 function ContentLayout({ children }: LayoutProps) {
+  const { isDark } = useColorMode()
   return (
-    <>
+    <Theme appearance={isDark ? 'dark' : 'light'}>
       <Flex
         css={{
           flexDirection: 'row',
@@ -71,6 +76,6 @@ function ContentLayout({ children }: LayoutProps) {
       >
         {children}
       </Flex>
-    </>
+    </Theme>
   )
 }
