@@ -18,6 +18,8 @@ export interface AiChatHandle {
   messages: ChatMessage[]
   isStreaming: boolean
   streamingText: string
+  model: string
+  setModel: (model: string) => void
   send: (text: string) => Promise<void>
   reset: (newInitialMessages?: ChatMessage[]) => void
 }
@@ -29,8 +31,15 @@ export function useAiChat(config: AiChatConfig): AiChatHandle {
   const [messages, setMessages] = useState<ChatMessage[]>(() => config.initialMessages ?? [])
   const [isStreaming, setIsStreaming] = useState(false)
   const [streamingText, setStreamingText] = useState('')
+  const [model, setModel] = useState(config.model ?? DEFAULT_MODEL)
+  const modelRef = useRef(model)
   const apiHistoryRef = useRef<MessageParam[]>([])
   const busyRef = useRef(false)
+
+  const handleSetModel = useCallback((m: string) => {
+    modelRef.current = m
+    setModel(m)
+  }, [])
 
   const reset = useCallback((newInitialMessages?: ChatMessage[]) => {
     setMessages(newInitialMessages ?? configRef.current.initialMessages ?? [])
@@ -63,7 +72,8 @@ export function useAiChat(config: AiChatConfig): AiChatHandle {
     setStreamingText('')
 
     try {
-      const { systemPrompt, tools, onToolUse, model = DEFAULT_MODEL } = configRef.current
+      const { systemPrompt, tools, onToolUse } = configRef.current
+      const model = modelRef.current
       let accumulated = ''
 
       const stream = anthropicClient.messages.stream({
@@ -146,5 +156,5 @@ export function useAiChat(config: AiChatConfig): AiChatHandle {
     }
   }, [])
 
-  return { messages, isStreaming, streamingText, send, reset }
+  return { messages, isStreaming, streamingText, model, setModel: handleSetModel, send, reset }
 }

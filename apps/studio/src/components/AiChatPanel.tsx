@@ -7,8 +7,14 @@ interface AiChatPanelProps {
   footer?: React.ReactNode
 }
 
+const MODELS = [
+  { id: 'claude-haiku-4-5-20251001', label: 'Haiku 4.5' },
+  { id: 'claude-sonnet-4-6',         label: 'Sonnet 4.6' },
+  { id: 'claude-opus-4-8',           label: 'Opus 4.8' },
+]
+
 export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
-  const { messages, isStreaming, streamingText, send } = chat
+  const { messages, isStreaming, streamingText, model, setModel, send } = chat
   const [input, setInput] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
@@ -47,6 +53,24 @@ export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
         }}
       >
         <span style={{ fontWeight: 600, fontSize: 14 }}>Claude</span>
+        <select
+          value={model}
+          onChange={(e) => setModel(e.target.value)}
+          disabled={isStreaming}
+          style={{
+            fontSize: 12,
+            padding: '2px 4px',
+            border: '1px solid #cbd5e1',
+            borderRadius: 4,
+            background: '#fff',
+            cursor: isStreaming ? 'default' : 'pointer',
+            color: '#334155',
+          }}
+        >
+          {MODELS.map((m) => (
+            <option key={m.id} value={m.id}>{m.label}</option>
+          ))}
+        </select>
         <span
           style={{
             fontSize: 11,
