@@ -1,5 +1,6 @@
 import { anthropicClient } from '@/lib/aiClient'
 import type { AiChatHandle } from '@/lib/useAiChat'
+import { useColorMode } from '@/context/colorMode'
 import { useEffect, useRef, useState } from 'react'
 
 interface AiChatPanelProps {
@@ -14,6 +15,7 @@ const MODELS = [
 ]
 
 export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
+  const { isDark } = useColorMode()
   const { messages, isStreaming, streamingText, model, setModel, send } = chat
   const [input, setInput] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -45,8 +47,8 @@ export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
         style={{
           flexShrink: 0,
           padding: '8px 12px',
-          borderBottom: '1px solid #e2e8f0',
-          background: '#f8fafc',
+          borderBottom: isDark ? '1px solid #334155' : '1px solid #e2e8f0',
+          background: isDark ? '#1e293b' : '#f8fafc',
           display: 'flex',
           alignItems: 'center',
           gap: 8,
@@ -60,11 +62,11 @@ export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
           style={{
             fontSize: 12,
             padding: '2px 4px',
-            border: '1px solid #cbd5e1',
+            border: isDark ? '1px solid #475569' : '1px solid #cbd5e1',
             borderRadius: 4,
-            background: '#fff',
+            background: isDark ? '#0f172a' : '#fff',
             cursor: isStreaming ? 'default' : 'pointer',
-            color: '#334155',
+            color: isDark ? '#e2e8f0' : '#334155',
           }}
         >
           {MODELS.map((m) => (
@@ -107,8 +109,8 @@ export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
                 maxWidth: '85%',
                 padding: '8px 12px',
                 borderRadius: msg.role === 'user' ? '12px 12px 2px 12px' : '12px 12px 12px 2px',
-                background: msg.role === 'user' ? '#2563eb' : '#f1f5f9',
-                color: msg.role === 'user' ? '#fff' : '#1e293b',
+                background: msg.role === 'user' ? '#2563eb' : (isDark ? '#1e293b' : '#f1f5f9'),
+                color: msg.role === 'user' ? '#fff' : (isDark ? '#e2e8f0' : '#1e293b'),
                 fontSize: 13,
                 lineHeight: 1.5,
                 whiteSpace: msg.role === 'user' ? 'pre-wrap' : undefined,
@@ -127,8 +129,8 @@ export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
                 maxWidth: '85%',
                 padding: '8px 12px',
                 borderRadius: '12px 12px 12px 2px',
-                background: '#f1f5f9',
-                color: '#1e293b',
+                background: isDark ? '#1e293b' : '#f1f5f9',
+                color: isDark ? '#e2e8f0' : '#1e293b',
                 fontSize: 13,
                 lineHeight: 1.5,
                 wordBreak: 'break-word',
@@ -146,7 +148,7 @@ export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
               style={{
                 padding: '8px 12px',
                 borderRadius: '12px 12px 12px 2px',
-                background: '#f1f5f9',
+                background: isDark ? '#1e293b' : '#f1f5f9',
                 color: '#94a3b8',
                 fontSize: 13,
               }}
@@ -163,7 +165,7 @@ export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
       <div
         style={{
           flexShrink: 0,
-          borderTop: '1px solid #e2e8f0',
+          borderTop: isDark ? '1px solid #334155' : '1px solid #e2e8f0',
           padding: 8,
           display: 'flex',
           gap: 8,
@@ -182,12 +184,14 @@ export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
             resize: 'none',
             padding: '6px 10px',
             fontSize: 13,
-            border: '1px solid #cbd5e1',
+            border: isDark ? '1px solid #475569' : '1px solid #cbd5e1',
             borderRadius: 6,
             outline: 'none',
             fontFamily: 'inherit',
             lineHeight: 1.5,
             opacity: isStreaming ? 0.5 : 1,
+            background: isDark ? '#0f172a' : undefined,
+            color: isDark ? '#e2e8f0' : undefined,
           }}
         />
         <button

@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
+import { useColorMode } from '@/context/colorMode'
 import type { PartMakerSpec } from '@/lib/partMakerTypes'
 import { defaultPartMakerSpec } from '@/lib/partMakerTypes'
 import { generatePartFiles } from '@/lib/partCodegen'
@@ -11,6 +12,7 @@ interface PartMakerProps {
 }
 
 export function PartMaker({ onBack }: PartMakerProps) {
+  const { isDark } = useColorMode()
   const [spec, setSpec] = useState<PartMakerSpec>(defaultPartMakerSpec)
   const [isSaving, setIsSaving] = useState(false)
   const [saveStatus, setSaveStatus] = useState<string>('')
@@ -92,9 +94,9 @@ export function PartMaker({ onBack }: PartMakerProps) {
           alignItems: 'center',
           gap: '12px',
           padding: '8px 16px',
-          borderBottom: '1px solid #e2e8f0',
+          borderBottom: isDark ? '1px solid #334155' : '1px solid #e2e8f0',
           flexShrink: 0,
-          backgroundColor: '#f8fafc',
+          backgroundColor: isDark ? '#1e293b' : '#f8fafc',
         }}
       >
         <button
