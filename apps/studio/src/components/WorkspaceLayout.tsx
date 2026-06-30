@@ -1,3 +1,4 @@
+import { useColorMode } from '@/context/colorMode'
 import { useWorkspaceContext } from '@/context/workspace'
 import { type Workspace, useWorkspacesContext } from '@/context/workspaces'
 import {
@@ -13,7 +14,7 @@ import {
   VStack,
 } from '@villagekit/ui'
 import { useMemo, useState } from 'react'
-import { FaBars, FaChevronLeft, FaChevronRight } from 'react-icons/fa'
+import { FaBars, FaChevronLeft, FaChevronRight, FaMoon, FaSun } from 'react-icons/fa'
 
 interface WorkspaceLayoutProps {
   children: React.ReactNode
@@ -26,6 +27,7 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
   const { activeWorkspace } = useWorkspacesContext()
   const { productIndexes, selectProductId } = useWorkspaceContext()
   const [isSidebarOpen, setSidebarOpen] = useState(true)
+  const { isDark, toggle } = useColorMode()
 
   if (activeWorkspace == null) {
     throw new Error('Unexpected: activeWorkspace is null')
@@ -108,6 +110,16 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
               </Button>
             </Box>
           )}
+          <Box css={{ padding: 2, width: '100%' }}>
+            <Button
+              variant="toolbar"
+              onClick={toggle}
+              css={{ width: '100%', fontSize: 'sm', justifyContent: 'flex-start' }}
+            >
+              <Icon as={isDark ? FaSun : FaMoon} />
+              {isDark ? 'Light mode' : 'Dark mode'}
+            </Button>
+          </Box>
         </VStack>
       ) : (
         <Box
@@ -120,6 +132,15 @@ export function WorkspaceLayout(props: WorkspaceLayoutProps) {
             onClick={() => setSidebarOpen(true)}
             icon={<Icon as={FaBars} />}
           />
+          <Box css={{ marginTop: 2 }}>
+            <IconButton
+              aria-label="Toggle dark mode"
+              title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              variant="secondary"
+              onClick={toggle}
+              icon={<Icon as={isDark ? FaSun : FaMoon} />}
+            />
+          </Box>
         </Box>
       )}
       <VStack as="main" css={{ flex: 1, height: '100%', minWidth: 0 }}>

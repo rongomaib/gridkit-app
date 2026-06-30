@@ -1,6 +1,7 @@
+import { useColorMode } from '@/context/colorMode'
 import { useWorkspacesContext } from '@/context/workspaces'
 import { Button, Heading, Icon, IconButton, List, VStack } from '@villagekit/ui'
-import { FaTimes } from 'react-icons/fa'
+import { FaMoon, FaSun, FaTimes } from 'react-icons/fa'
 
 interface WorkspaceSelectorProps {
   onPartMaker?: () => void
@@ -8,6 +9,7 @@ interface WorkspaceSelectorProps {
 
 export default function WorkspaceSelector({ onPartMaker }: WorkspaceSelectorProps) {
   const { workspaces, openWorkspace, removeWorkspace, selectWorkspace } = useWorkspacesContext()
+  const { isDark, toggle } = useColorMode()
 
   return (
     <VStack css={{ maxWidth: { md: 'container.lg', base: 'full' } }}>
@@ -37,6 +39,10 @@ export default function WorkspaceSelector({ onPartMaker }: WorkspaceSelectorProp
           Open Part Maker
         </Button>
       )}
+      <Button variant="secondary" onClick={toggle}>
+        <Icon as={isDark ? FaSun : FaMoon} />
+        {isDark ? 'Light mode' : 'Dark mode'}
+      </Button>
     </VStack>
   )
 }

@@ -14,10 +14,33 @@ const MODELS = [
   { id: 'claude-opus-4-8',           label: 'Opus 4.8' },
 ]
 
+// Inject keyframe animations once at module load
+if (typeof document !== 'undefined' && !document.getElementById('ai-chat-panel-styles')) {
+  const el = document.createElement('style')
+  el.id = 'ai-chat-panel-styles'
+  el.textContent = `
+    @keyframes ai-dot-pulse {
+      0%, 80%, 100% { opacity: 0.2; }
+      40% { opacity: 1; }
+    }
+    @keyframes ai-status-blink {
+      0%, 100% { opacity: 0.45; }
+      50% { opacity: 1; }
+    }
+  `
+  document.head.appendChild(el)
+}
+
+interface AttachedScreenshot {
+  id: string
+  data: string
+}
+
 export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
   const { isDark } = useColorMode()
-  const { messages, isStreaming, streamingText, model, setModel, send } = chat
+  const { messages, isStreaming, streamingText, statusText, model, setModel, send } = chat
   const [input, setInput] = useState('')
+  const [attachedScreenshots, setAttachedScreenshots] = useState<AttachedScreenshot[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -28,7 +51,9 @@ export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
     const text = input.trim()
     if (!text || isStreaming) return
     setInput('')
-    send(text)
+    const images = attachedScreenshots.map((s) => s.data)
+    setAttachedScreenshots([])
+    send(text, images.length > 0 ? images : undefined)
   }
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
@@ -38,6 +63,26 @@ export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
     }
   }
 
+  function getActiveCanvas(): HTMLCanvasElement | null {
+    return (
+      (document.querySelector('#scene-container') as HTMLCanvasElement | null) ??
+      (document.querySelector('#part-maker-canvas') as HTMLCanvasElement | null)
+    )
+  }
+
+  function handleScreenshot() {
+    const canvas = getActiveCanvas()
+    if (!canvas) return
+    const dataUrl = canvas.toDataURL('image/png')
+    const data = dataUrl.replace('data:image/png;base64,', '')
+    setAttachedScreenshots((prev) => [...prev, { id: `${Date.now()}-${Math.random()}`, data }])
+  }
+
+  function removeScreenshot(id: string) {
+    setAttachedScreenshots((prev) => prev.filter((s) => s.id !== id))
+  }
+
+  const screenshotCanvas = getActiveCanvas()
   const showStreaming = isStreaming && streamingText
 
   return (
@@ -146,15 +191,43 @@ export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
           <div style={{ display: 'flex', justifyContent: 'flex-start' }}>
             <div
               style={{
-                padding: '8px 12px',
+                padding: '10px 14px',
                 borderRadius: '12px 12px 12px 2px',
                 background: isDark ? '#1e293b' : '#f1f5f9',
-                color: '#94a3b8',
-                fontSize: 13,
+                display: 'flex',
+                gap: 5,
+                alignItems: 'center',
               }}
             >
-              Thinking…
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  style={{
+                    width: 7,
+                    height: 7,
+                    borderRadius: '50%',
+                    background: '#94a3b8',
+                    display: 'inline-block',
+                    animation: 'ai-dot-pulse 1.4s ease-in-out infinite',
+                    animationDelay: `${i * 0.22}s`,
+                  }}
+                />
+              ))}
             </div>
+          </div>
+        )}
+
+        {statusText && (
+          <div style={{ display: 'flex', justifyContent: 'flex-start', paddingLeft: 4 }}>
+            <span
+              style={{
+                fontSize: 11,
+                color: '#94a3b8',
+                animation: 'ai-status-blink 1.5s ease-in-out infinite',
+              }}
+            >
+              {statusText}
+            </span>
           </div>
         )}
 
@@ -167,51 +240,121 @@ export function AiChatPanel({ chat, footer }: AiChatPanelProps) {
           flexShrink: 0,
           borderTop: isDark ? '1px solid #334155' : '1px solid #e2e8f0',
           padding: 8,
-          display: 'flex',
-          gap: 8,
-          alignItems: 'flex-end',
         }}
       >
-        <textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={isStreaming}
-          placeholder="Describe what you want… (Enter to send)"
-          rows={2}
-          style={{
-            flex: 1,
-            resize: 'none',
-            padding: '6px 10px',
-            fontSize: 13,
-            border: isDark ? '1px solid #475569' : '1px solid #cbd5e1',
-            borderRadius: 6,
-            outline: 'none',
-            fontFamily: 'inherit',
-            lineHeight: 1.5,
-            opacity: isStreaming ? 0.5 : 1,
-            background: isDark ? '#0f172a' : undefined,
-            color: isDark ? '#e2e8f0' : undefined,
-          }}
-        />
-        <button
-          type="button"
-          onClick={handleSend}
-          disabled={!input.trim() || isStreaming}
-          style={{
-            padding: '6px 14px',
-            background: input.trim() && !isStreaming ? '#2563eb' : '#cbd5e1',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 6,
-            cursor: input.trim() && !isStreaming ? 'pointer' : 'default',
-            fontSize: 13,
-            fontWeight: 600,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          Send
-        </button>
+        {attachedScreenshots.length > 0 && (
+          <div
+            style={{
+              display: 'flex',
+              gap: 6,
+              overflowX: 'auto',
+              marginBottom: 6,
+              paddingBottom: 4,
+            }}
+          >
+            {attachedScreenshots.map((s) => (
+              <div
+                key={s.id}
+                style={{ position: 'relative', flexShrink: 0 }}
+              >
+                <img
+                  src={`data:image/png;base64,${s.data}`}
+                  alt="screenshot"
+                  style={{
+                    height: 72,
+                    borderRadius: 5,
+                    border: isDark ? '1px solid #475569' : '1px solid #cbd5e1',
+                    display: 'block',
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => removeScreenshot(s.id)}
+                  style={{
+                    position: 'absolute',
+                    top: -6,
+                    right: -6,
+                    width: 18,
+                    height: 18,
+                    borderRadius: '50%',
+                    background: '#64748b',
+                    color: '#fff',
+                    border: 'none',
+                    cursor: 'pointer',
+                    fontSize: 11,
+                    lineHeight: '18px',
+                    textAlign: 'center',
+                    padding: 0,
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+          <textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={isStreaming}
+            placeholder="Describe what you want… (Enter to send)"
+            rows={2}
+            style={{
+              flex: 1,
+              resize: 'none',
+              padding: '6px 10px',
+              fontSize: 13,
+              border: isDark ? '1px solid #475569' : '1px solid #cbd5e1',
+              borderRadius: 6,
+              outline: 'none',
+              fontFamily: 'inherit',
+              lineHeight: 1.5,
+              opacity: isStreaming ? 0.5 : 1,
+              background: isDark ? '#0f172a' : undefined,
+              color: isDark ? '#e2e8f0' : undefined,
+            }}
+          />
+          <button
+            type="button"
+            onClick={handleScreenshot}
+            disabled={!screenshotCanvas || isStreaming}
+            title="Attach screenshot"
+            style={{
+              padding: '6px 10px',
+              background: screenshotCanvas && !isStreaming ? (isDark ? '#1e293b' : '#f1f5f9') : '#cbd5e1',
+              color: screenshotCanvas && !isStreaming ? (isDark ? '#e2e8f0' : '#475569') : '#94a3b8',
+              border: isDark ? '1px solid #475569' : '1px solid #cbd5e1',
+              borderRadius: 6,
+              cursor: screenshotCanvas && !isStreaming ? 'pointer' : 'default',
+              fontSize: 15,
+              lineHeight: 1,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            📷
+          </button>
+          <button
+            type="button"
+            onClick={handleSend}
+            disabled={!input.trim() || isStreaming}
+            style={{
+              padding: '6px 14px',
+              background: input.trim() && !isStreaming ? '#2563eb' : '#cbd5e1',
+              color: '#fff',
+              border: 'none',
+              borderRadius: 6,
+              cursor: input.trim() && !isStreaming ? 'pointer' : 'default',
+              fontSize: 13,
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Send
+          </button>
+        </div>
       </div>
 
       {footer}

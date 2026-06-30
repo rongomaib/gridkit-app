@@ -24,10 +24,10 @@
     "gridkit-solver": "workspace:*"
   },
   "peerDependencies": {
-    "three": "^0.165.0"
+    "three": "^0.168.0"
   },
   "devDependencies": {
     "vitest": "^1.6.0",
-    "three": "^0.165.0"
+    "three": "^0.168.0"
   }
 }

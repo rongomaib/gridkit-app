@@ -1,10 +1,11 @@
-export type PartShape =
-  | 'box'
-  | 'plate'
-  | 'gusset-right'
-  | 'gusset-isosceles'
-  | 'L-section'
-  | 'custom'
+export interface CustomParam {
+  name: string    // valid JS identifier, used as argument name in customShapeCode
+  label: string   // human-readable display label
+  min: number
+  max: number
+  step: number
+  value: number   // current scrub value (also acts as default)
+}
 
 export interface PartMakerSpec {
   // Identity
@@ -16,37 +17,26 @@ export interface PartMakerSpec {
   gridUnitMm: number
   previewLengthGrids: number
 
-  // Prismatic cross-section (box / plate)
+  // Cross-section
   widthMm: number
   heightMm: number
 
-  // Shape & profile
-  partShape: PartShape
-  cornerRadius: number        // mm — rounds all profile corners (0 = sharp)
+  // Flat parts (plate / panel / steel)
+  thicknessMm: number
 
   // Holes
-  holeDiameter: number        // mm — 0 = no holes
-  holeSpacingMm: number       // centre-to-centre along length
-  holeEdgeOffsetMm: number    // from end face to first hole centre
-  holeRows: number            // 1 = single row, 2 = double row
+  holeDiameter: number        // mm — 0 = no holes; standard is 8
+  holeSpacingMm: number       // centre-to-centre along length; standard is 40
+  holeEdgeOffsetMm: number    // from end face to first hole centre; standard is 20
+  holeRows: number            // columns across the face (1 per 40mm of face width)
 
-  // Flat parts (plate / gusset)
-  thicknessMm: number         // plate / gusset thickness
-
-  // Gusset legs (gusset-right and gusset-isosceles)
-  gussetLeg1Mm: number
-  gussetLeg2Mm: number
-
-  // L-section profile
-  lSectionFlangeWidthMm: number
-  lSectionFlangeHeightMm: number
-  lSectionWebThicknessMm: number
-
-  // Custom shape
-  // JS function body; receives (Shape, mm, widthMm, heightMm, thicknessMm, cornerRadius,
-  // gussetLeg1Mm, gussetLeg2Mm, lSectionFlangeWidthMm, lSectionFlangeHeightMm,
-  // lSectionWebThicknessMm) and must return a Three.js Shape instance.
+  // Custom shape — THREE.js function body
+  // Receives: THREE, mm (=1/1000), widthMm, heightMm, thicknessMm, ...customParams[].name
+  // Must end with: return group  (a THREE.Group)
   customShapeCode: string
+
+  // Custom parameters — passed as named args to customShapeCode
+  customParams: CustomParam[]
 
   // Visual
   color: string               // hex for 3-D preview
@@ -54,34 +44,26 @@ export interface PartMakerSpec {
 }
 
 export const defaultPartMakerSpec: PartMakerSpec = {
-  name: 'my-part',
-  displayName: 'My Part',
+  name: 'new-part',
+  displayName: 'New Part',
   description: '',
 
   gridUnitMm: 40,
   previewLengthGrids: 5,
 
-  widthMm: 120,
-  heightMm: 120,
+  widthMm: 40,
+  heightMm: 40,
 
-  partShape: 'box',
-  cornerRadius: 0,
+  thicknessMm: 8,
 
   holeDiameter: 0,
   holeSpacingMm: 40,
   holeEdgeOffsetMm: 20,
   holeRows: 1,
 
-  thicknessMm: 8,
-
-  gussetLeg1Mm: 200,
-  gussetLeg2Mm: 200,
-
-  lSectionFlangeWidthMm: 90,
-  lSectionFlangeHeightMm: 90,
-  lSectionWebThicknessMm: 10,
-
   customShapeCode: '',
+
+  customParams: [],
 
   color: '#a0855b',
   axes: ['x', 'y', 'z'],

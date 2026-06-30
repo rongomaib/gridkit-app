@@ -18,9 +18,10 @@ export interface AiChatHandle {
   messages: ChatMessage[]
   isStreaming: boolean
   streamingText: string
+  statusText: string
   model: string
   setModel: (model: string) => void
-  send: (text: string) => Promise<void>
+  send: (text: string, images?: string[]) => Promise<void>
   reset: (newInitialMessages?: ChatMessage[]) => void
 }
 
@@ -31,6 +32,7 @@ export function useAiChat(config: AiChatConfig): AiChatHandle {
   const [messages, setMessages] = useState<ChatMessage[]>(() => config.initialMessages ?? [])
   const [isStreaming, setIsStreaming] = useState(false)
   const [streamingText, setStreamingText] = useState('')
+  const [statusText, setStatusText] = useState('')
   const [model, setModel] = useState(config.model ?? DEFAULT_MODEL)
   const modelRef = useRef(model)
   const apiHistoryRef = useRef<MessageParam[]>([])
@@ -44,15 +46,27 @@ export function useAiChat(config: AiChatConfig): AiChatHandle {
   const reset = useCallback((newInitialMessages?: ChatMessage[]) => {
     setMessages(newInitialMessages ?? configRef.current.initialMessages ?? [])
     setStreamingText('')
+    setStatusText('')
     apiHistoryRef.current = []
   }, [])
 
-  const send = useCallback(async (text: string) => {
+  const send = useCallback(async (text: string, images?: string[]) => {
     if (!text.trim() || busyRef.current) return
 
     const userMsg: ChatMessage = { id: `${Date.now()}-user`, role: 'user', content: text }
     setMessages((prev) => [...prev, userMsg])
-    apiHistoryRef.current = [...apiHistoryRef.current, { role: 'user', content: text }]
+
+    const apiContent: MessageParam['content'] = images?.length
+      ? [
+          ...images.map((data) => ({
+            type: 'image' as const,
+            source: { type: 'base64' as const, media_type: 'image/png' as const, data },
+          })),
+          { type: 'text' as const, text },
+        ]
+      : text
+
+    apiHistoryRef.current = [...apiHistoryRef.current, { role: 'user', content: apiContent }]
 
     if (!anthropicClient) {
       setMessages((prev) => [
@@ -70,6 +84,7 @@ export function useAiChat(config: AiChatConfig): AiChatHandle {
     busyRef.current = true
     setIsStreaming(true)
     setStreamingText('')
+    setStatusText('Thinking…')
 
     try {
       const { systemPrompt, tools, onToolUse } = configRef.current
@@ -86,6 +101,7 @@ export function useAiChat(config: AiChatConfig): AiChatHandle {
 
       for await (const event of stream) {
         if (event.type === 'content_block_delta' && event.delta.type === 'text_delta') {
+          if (!accumulated) setStatusText('')
           accumulated += event.delta.text
           setStreamingText(accumulated)
         }
@@ -96,6 +112,7 @@ export function useAiChat(config: AiChatConfig): AiChatHandle {
 
       for (const block of final.content) {
         if (block.type === 'tool_use') {
+          setStatusText('Applying changes…')
           const toolResult = onToolUse(block.name, block.input)
 
           apiHistoryRef.current = [
@@ -107,6 +124,7 @@ export function useAiChat(config: AiChatConfig): AiChatHandle {
             },
           ]
 
+          setStatusText('Finishing up…')
           const followUp = await anthropicClient.messages.create({
             model,
             max_tokens: 512,
@@ -153,8 +171,9 @@ export function useAiChat(config: AiChatConfig): AiChatHandle {
       busyRef.current = false
       setIsStreaming(false)
       setStreamingText('')
+      setStatusText('')
     }
   }, [])
 
-  return { messages, isStreaming, streamingText, model, setModel: handleSetModel, send, reset }
+  return { messages, isStreaming, streamingText, statusText, model, setModel: handleSetModel, send, reset }
 }

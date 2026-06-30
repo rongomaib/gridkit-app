@@ -1,9 +1,12 @@
 import { readFile, readdir, realpath } from 'node:fs/promises'
 import { join } from 'node:path'
-import { reverse, sortBy } from 'lodash-es'
 import { type BuildOptions, defineConfig } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
-import tsconfigPaths from 'vite-tsconfig-paths'
+import _tsconfigPaths from 'vite-tsconfig-paths'
+// vite-tsconfig-paths ships CJS; Node ESM gives us module.exports as default (not unwrapped)
+const tsconfigPaths = (typeof _tsconfigPaths === 'function'
+  ? _tsconfigPaths
+  : (_tsconfigPaths as any).default) as typeof _tsconfigPaths
 
 const host = process.env.TAURI_DEV_HOST
 
@@ -85,28 +88,60 @@ const quietUseClientDirective: RollupOnWarn = (warning, warn) => {
 
 async function workspaceAliases() {
   const aliases: Record<string, string> = {}
-  const workspacePkgsDir = join(__dirname, './node_modules/@villagekit')
-  const workspacePkgs = await readdir(workspacePkgsDir)
+
+  // Collect candidate @villagekit dirs: direct deps + their own node_modules
+  // (catches transitive workspace packages like @villagekit/sandbox).
+  const directPkgsDir = join(__dirname, './node_modules/@villagekit')
+  const directPkgs = await readdir(directPkgsDir)
+
+  const candidateDirs = new Set<string>()
+  candidateDirs.add(directPkgsDir)
   await Promise.all(
-    workspacePkgs.map(async (pkgName) => {
-      const pkgBase = await realpath(join(workspacePkgsDir, pkgName))
-      const pkgJson = JSON.parse(await readFile(join(pkgBase, 'package.json'), 'utf8'))
-      type ExportMap = string | { source?: string; import: string }
-      if (pkgJson['exports'] == null) return
-      let exportEntries = Object.entries<ExportMap>(pkgJson['exports'])
-      // NOTE (mw): sort so ./sub comes before ./
-      //   important for module like @villagekit/part/base
-      exportEntries = reverse(sortBy(exportEntries, ['[0]']))
-      for (const [exportKey, exportMap] of exportEntries) {
-        // Use forward slashes in the alias key — path.join uses backslashes on Windows
-        // but Vite matches aliases against import strings which always use forward slashes.
-        const aliasKey = join('@villagekit', pkgName, exportKey).replace(/\\/g, '/')
-        const aliasTo =
-          typeof exportMap === 'string' ? exportMap : exportMap.source || exportMap.import
-        const aliasValue = join(pkgBase, aliasTo)
-        aliases[aliasKey] = aliasValue
+    directPkgs.map(async (pkgName) => {
+      const pkgBase = await realpath(join(directPkgsDir, pkgName))
+      const transDir = join(pkgBase, 'node_modules/@villagekit')
+      try {
+        await readdir(transDir)
+        candidateDirs.add(transDir)
+      } catch {
+        // package has no nested @villagekit node_modules — skip
       }
     }),
   )
+
+  type ExportMap = string | { source?: string; import: string }
+
+  async function addAliasesFromDir(pkgsDir: string) {
+    const pkgNames = await readdir(pkgsDir)
+    await Promise.all(
+      pkgNames.map(async (pkgName) => {
+        const pkgBase = await realpath(join(pkgsDir, pkgName))
+        const pkgJsonRaw = await readFile(join(pkgBase, 'package.json'), 'utf8').catch(() => null)
+        if (!pkgJsonRaw) return
+        const pkgJson = JSON.parse(pkgJsonRaw.replace(/^﻿/, ''))
+        if (pkgJson['exports'] == null) return
+        let exportEntries = Object.entries<ExportMap>(pkgJson['exports'])
+        // sort so ./sub comes before ./ — important for @villagekit/part/base style imports
+        exportEntries = exportEntries.sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0)).reverse()
+        for (const [exportKey, exportMap] of exportEntries) {
+          const aliasKey = join('@villagekit', pkgName, exportKey).replace(/\\/g, '/')
+          const aliasTo =
+            typeof exportMap === 'string' ? exportMap : exportMap.source || exportMap.import
+          if (!aliasTo) continue
+          // Don't overwrite an alias already set by a higher-priority (direct dep) dir
+          if (!(aliasKey in aliases)) {
+            aliases[aliasKey] = join(pkgBase, aliasTo)
+          }
+        }
+      }),
+    )
+  }
+
+  // Direct deps first (higher priority), then transitive
+  await addAliasesFromDir(directPkgsDir)
+  for (const dir of candidateDirs) {
+    if (dir !== directPkgsDir) await addAliasesFromDir(dir)
+  }
+
   return aliases
 }

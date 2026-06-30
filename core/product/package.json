@@ -43,6 +43,6 @@
   },
   "peerDependencies": {
     "react": "^19.1.0",
-    "three": "^0.165.0"
+    "three": "^0.168.0"
   }
 }

@@ -53,6 +53,6 @@
   "peerDependencies": {
     "@react-three/fiber": "^9.0.0",
     "react": "^19.1.0",
-    "three": "^0.165.0"
+    "three": "^0.168.0"
   }
 }

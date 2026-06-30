@@ -1,4 +1,5 @@
 import { Beam120 } from '@villagekit/part-beam120/creator'
+import { GablePanel } from '@villagekit/part-gable-panel/creator'
 import { GridPanel } from '@villagekit/part-gridpanel/creator'
 import { WallFrame } from '@villagekit/part-wall-frame/creator'
 
@@ -335,6 +336,23 @@ export const parts = ({
       x: POST_X[2] + 3,
       y: [POST_Y_BACK + 43, POST_Y_FRONT],
       z: [FLOOR_Z, POST_H_FRONT],
+    }),
+
+    // ── Gable panels — triangular clerestory on each side wall ───────────
+    // y[0] = tall corner (back wall, full rise); y[1] = zero-height end (front wall)
+    GablePanel.YZ({
+      id: 'gable-w',
+      x: POST_X[0],
+      y: [POST_Y_BACK, POST_Y_FRONT],
+      z: POST_H_FRONT,
+      heightInGrids: POST_H_BACK - POST_H_FRONT,
+    }),
+    GablePanel.YZ({
+      id: 'gable-e',
+      x: POST_X[2] + 3,
+      y: [POST_Y_BACK, POST_Y_FRONT],
+      z: POST_H_FRONT,
+      heightInGrids: POST_H_BACK - POST_H_FRONT,
     }),
   ]
 }

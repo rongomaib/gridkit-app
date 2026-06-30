@@ -17,6 +17,7 @@ import {
   FaBorderAll,
   FaCompressAlt,
   FaExpandAlt,
+  FaLightbulb,
   FaMinus,
   FaPlus,
   FaSlidersH,
@@ -26,6 +27,8 @@ import {
 import screenfull from 'screenfull'
 import type { SandboxInfoProps } from '..'
 import type { CameraControlsRef } from '../camera'
+import type { AppearanceSettings } from '../scenery/appearance-context'
+import { AppearancePanel } from './appearance-panel'
 import { ControlsContextProvider } from './context'
 import { Control } from './control'
 
@@ -39,6 +42,8 @@ export interface SandboxControlsProps {
   showParamControls?: boolean
   alwaysShowFullscreenControls?: boolean
   InfoComponent?: FunctionComponent<SandboxInfoProps>
+  appearanceSettings: AppearanceSettings
+  onUpdateAppearance: (patch: Partial<AppearanceSettings>) => void
 }
 
 export function SandboxControls(props: SandboxControlsProps) {
@@ -52,6 +57,8 @@ export function SandboxControls(props: SandboxControlsProps) {
     showParamControls = false,
     alwaysShowFullscreenControls = false,
     InfoComponent,
+    appearanceSettings,
+    onUpdateAppearance,
   } = props
 
   const handleZoomIn = useCallback(() => {
@@ -134,6 +141,8 @@ export function SandboxControls(props: SandboxControlsProps) {
   })
   /* eslint-enable sort-keys-fix/sort-keys-fix */
 
+  const [showAppearancePanel, setShowAppearancePanel] = useState(false)
+
   const { onPointerEnterTooltip, onPointerLeaveTooltip, showTooltip } = useMobileFriendlyTooltip()
 
   return (
@@ -186,6 +195,22 @@ export function SandboxControls(props: SandboxControlsProps) {
             onClick={handleResetView}
           />
         </HStack>
+      </Control>
+
+      <Control top right alwaysVisible>
+        <VStack gap="2" alignItems="stretch">
+          <IconButton
+            icon={<Icon as={FaLightbulb} boxSize="4" />}
+            variant="toolbar"
+            size="sm"
+            title="Lighting controls"
+            onClick={() => setShowAppearancePanel((v) => !v)}
+            css={showAppearancePanel ? {} : { color: 'gray.400' }}
+          />
+          {showAppearancePanel && (
+            <AppearancePanel settings={appearanceSettings} onUpdate={onUpdateAppearance} />
+          )}
+        </VStack>
       </Control>
 
       {shouldShowFullscreenControls && canShowFullscreenControls && InfoComponent != null && (

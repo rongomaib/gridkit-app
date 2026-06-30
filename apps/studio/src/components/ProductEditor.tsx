@@ -1,4 +1,5 @@
 import { useUpdateProductFileMutation } from '@/client'
+import { useColorMode } from '@/context/colorMode'
 import { useEditorContext } from '@/context/editor'
 import { useWorkspaceContext } from '@/context/workspace'
 import { useWorkspacesContext } from '@/context/workspaces'
@@ -11,6 +12,7 @@ import { useProductHistory } from './useProductHistory'
 interface ProductEditorProps {}
 
 export function ProductEditor(_props: ProductEditorProps) {
+  const { isDark } = useColorMode()
   const { exports } = useProductMeta()
   const { setParentEl, setLanguageExtensions, code, scrollToLine, setCodeToLoad } =
     useEditorContext()
@@ -574,7 +576,7 @@ export function ProductEditor(_props: ProductEditorProps) {
 
   const buttonStyle = {
     padding: '6px 12px',
-    backgroundColor: '#000',
+    backgroundColor: isDark ? '#3b82f6' : '#000',
     color: '#fff',
     border: 'none',
     borderRadius: '4px',
@@ -584,7 +586,7 @@ export function ProductEditor(_props: ProductEditorProps) {
 
   const secondaryButtonStyle = {
     ...buttonStyle,
-    backgroundColor: '#444',
+    backgroundColor: isDark ? '#475569' : '#444',
   }
 
   return (
@@ -601,10 +603,10 @@ export function ProductEditor(_props: ProductEditorProps) {
         css={{
           display: 'flex',
           padding: '8px',
-          borderBottom: '1px solid #ccc',
+          borderBottom: isDark ? '1px solid #334155' : '1px solid #ccc',
           justifyContent: 'space-between',
           alignItems: 'center',
-          backgroundColor: '#f9f9f9',
+          backgroundColor: isDark ? '#1e293b' : '#f9f9f9',
           flexShrink: 0,
           zIndex: 10,
         }}
@@ -621,7 +623,7 @@ export function ProductEditor(_props: ProductEditorProps) {
             History ({history.length})
           </button>
         </Box>
-        <Text css={{ color: '#666', fontSize: '12px' }}>
+        <Text css={{ color: isDark ? '#94a3b8' : '#666', fontSize: '12px' }}>
           {updateFile.isSuccess ? 'Saved successfully!' : ''}
           {updateFile.error ? 'Error saving file.' : ''}
         </Text>
@@ -632,8 +634,8 @@ export function ProductEditor(_props: ProductEditorProps) {
           css={{
             display: 'flex',
             padding: '8px',
-            backgroundColor: '#fef08a',
-            color: '#854d0e',
+            backgroundColor: isDark ? '#422006' : '#fef08a',
+            color: isDark ? '#fbbf24' : '#854d0e',
             justifyContent: 'space-between',
             alignItems: 'center',
             flexShrink: 0,
@@ -657,8 +659,8 @@ export function ProductEditor(_props: ProductEditorProps) {
               style={{
                 ...buttonStyle,
                 backgroundColor: 'transparent',
-                color: '#854d0e',
-                border: '1px solid #854d0e',
+                color: isDark ? '#fbbf24' : '#854d0e',
+                border: isDark ? '1px solid #fbbf24' : '1px solid #854d0e',
               }}
               onClick={() => {
                 clearAutosave()
@@ -677,17 +679,17 @@ export function ProductEditor(_props: ProductEditorProps) {
             display: 'flex',
             flexDirection: 'column',
             padding: '8px',
-            backgroundColor: '#eee',
-            borderBottom: '1px solid #ccc',
+            backgroundColor: isDark ? '#1e293b' : '#eee',
+            borderBottom: isDark ? '1px solid #334155' : '1px solid #ccc',
             maxHeight: '200px',
             overflowY: 'auto',
             flexShrink: 0,
             zIndex: 10,
           }}
         >
-          <Text css={{ fontWeight: 'bold', marginBottom: '4px' }}>Revision History</Text>
+          <Text css={{ fontWeight: 'bold', marginBottom: '4px', color: isDark ? '#e2e8f0' : undefined }}>Revision History</Text>
           {history.length === 0 ? (
-            <Text css={{ color: '#666' }}>No history yet. Save to create a revision.</Text>
+            <Text css={{ color: isDark ? '#94a3b8' : '#666' }}>No history yet. Save to create a revision.</Text>
           ) : (
             history.map((rev) => (
               <Box
@@ -697,7 +699,7 @@ export function ProductEditor(_props: ProductEditorProps) {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   padding: '4px 0',
-                  borderBottom: '1px solid #ddd',
+                  borderBottom: isDark ? '1px solid #334155' : '1px solid #ddd',
                 }}
               >
                 <Text>{new Date(rev.timestamp).toLocaleString()}</Text>

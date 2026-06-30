@@ -10,6 +10,7 @@ import { type FunctionComponent, useMemo, useRef } from 'react'
 import { type Box3, Vector3 } from 'three'
 import { CameraControls, type CameraControlsRef } from './camera/index'
 import { SandboxControls } from './controls/index'
+import { AppearanceSettingsProvider, useAppearanceSettings } from './scenery/appearance-context'
 import { SceneryGl } from './scenery/index'
 import { useDefaultSandboxControlSettings, useSaveSandboxControlSettings } from './settings'
 
@@ -29,7 +30,7 @@ export type SandboxProps = {
   InfoComponent?: FunctionComponent<SandboxInfoProps>
 }
 
-export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
+function SandboxInner(props: React.PropsWithChildren<SandboxProps>) {
   const {
     mode = 'default',
     label,
@@ -59,6 +60,8 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
 
   const containerRef = useRef<HTMLDivElement>(null)
   const cameraControlsRef = useRef<CameraControlsRef | null>(null)
+
+  const { settings: appearanceSettings, update: updateAppearance } = useAppearanceSettings()
 
   const gridLengthInMeters = 0.04
 
@@ -92,7 +95,7 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
           },
         },
 
-        backgroundColor: mode === 'default' ? 'gray.50' : 'inherit',
+        backgroundColor: mode === 'default' ? '#0d0a08' : 'inherit',
         height: 'full',
         position: mode === 'screenshot' ? 'fixed' : 'relative',
         width: 'full',
@@ -100,13 +103,15 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
     >
       <Canvas
         id="scene-container"
+        gl={{ preserveDrawingBuffer: true }}
         performance={{
           max: perfMax,
         }}
         shadows
         orthographic
         camera={{
-          near: 0.01,
+          near: -1000,
+          far: 1000,
         }}
         raycaster={{
           // @ts-ignore
@@ -118,6 +123,7 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
         }}
         resize={{ polyfill: ResizeObserver }}
       >
+        <color attach="background" args={['#0d0a08']} />
         {isDebug && mode !== 'screenshot' && <Perf />}
         <AdaptiveDpr />
         <SceneryGl
@@ -127,6 +133,7 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
           mode={mode}
           shouldDisplayGrid={shouldDisplayGrid}
           shouldDisplayAxes={shouldDisplayAxes}
+          appearanceSettings={appearanceSettings}
         />
         <CameraControls
           ref={cameraControlsRef}
@@ -148,11 +155,21 @@ export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
           showParamControls={showParamControls}
           alwaysShowFullscreenControls={alwaysShowFullscreenControls}
           InfoComponent={InfoComponent}
+          appearanceSettings={appearanceSettings}
+          onUpdateAppearance={updateAppearance}
           // NOTE(mw): before, assembly could be null and this was false.
           //             does this still happen?
           // shouldRenderAssemblyInfo={assembly == null}
         />
       )}
     </Box>
+  )
+}
+
+export function Sandbox(props: React.PropsWithChildren<SandboxProps>) {
+  return (
+    <AppearanceSettingsProvider>
+      <SandboxInner {...props} />
+    </AppearanceSettingsProvider>
   )
 }

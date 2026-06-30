@@ -84,6 +84,15 @@ export const CameraControls = forwardRef<CameraControlsRef, CameraControlsProps>
       window.addEventListener('transform-dragging', handler)
       return () => window.removeEventListener('transform-dragging', handler)
     }, [])
+
+    useEffect(() => {
+      const handler = () => {
+        hasUserInteracted.current = true
+      }
+      window.addEventListener('inspect-part-in-code', handler)
+      return () => window.removeEventListener('inspect-part-in-code', handler)
+    }, [])
+
     const invalidate = useThree(({ invalidate }) => invalidate)
     const camera = useThree(({ camera }) => camera)
     const gl = useThree(({ gl }) => gl)

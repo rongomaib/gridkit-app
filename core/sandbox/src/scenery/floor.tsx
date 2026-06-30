@@ -44,33 +44,26 @@ function Floor(props: FloorProps) {
   return (
     <group name="floor" position={position}>
       {shouldDisplayGrid && (
-        <Grid
-          axisLength={floorLength}
-          smallSize={gridLengthInMeters}
-          largeSize={gridLengthInMeters * 10}
-          color={new Color('#d9e0e8')}
-          // render before shadow floor
-          renderOrder={1}
-        />
+        <group position-z={0.0001}>
+          <Grid
+            axisLength={floorLength}
+            smallSize={gridLengthInMeters}
+            largeSize={gridLengthInMeters * 10}
+            color={new Color('#d9e0e8')}
+            renderOrder={1}
+          />
+        </group>
       )}
-      <FloorShadow floorLength={floorLength} />
+      <FloorPlane floorLength={floorLength} />
     </group>
   )
 }
 
-function FloorShadow({ floorLength }: { floorLength: number }) {
+function FloorPlane({ floorLength }: { floorLength: number }) {
   return (
-    <mesh
-      receiveShadow
-      // render after grid
-      renderOrder={2}
-    >
-      <shadowMaterial
-        args={[{ opacity: 0.5 }]}
-        // depthWrite needed for z-fighting with grid
-        depthWrite={false}
-      />
-      <planeGeometry args={[2 * floorLength, 2 * floorLength]} />
+    <mesh receiveShadow renderOrder={2}>
+      <meshStandardMaterial color="#b8b8b8" roughness={1} metalness={0} />
+      <circleGeometry args={[floorLength, 128]} />
     </mesh>
   )
 }

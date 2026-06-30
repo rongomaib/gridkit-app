@@ -30,7 +30,7 @@
     "@types/node": "^20.14.2",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
-    "@types/three": "^0.165.0",
+    "@types/three": "^0.168.0",
     "@villagekit/tsconfig": "workspace:*",
     "depcheck": "^1.4.7",
     "dts-bundle-generator": "^9.5.1",
@@ -46,7 +46,12 @@
     "vite-tsconfig-paths": "^4.3.2"
   },
   "overrides": {
-    "three": "^0.165.0"
+    "three": "^0.168.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "three": "^0.168.0"
+    }
   },
   "packageManager": "pnpm@9.9.0"
 }

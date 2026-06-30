@@ -32,6 +32,8 @@
   "dependencies": {
     "@juggle/resize-observer": "^3.4.0",
     "@react-three/drei": "^10.0.0",
+    "@react-three/postprocessing": "^2.16.0",
+    "n8ao": "^1.10.2",
     "@villagekit/parameters": "workspace:*",
     "@villagekit/ui": "^1.1.1",
     "camera-controls": "^1.38.2",
@@ -43,7 +45,7 @@
     "@react-three/fiber": "^9.0.0",
     "@xstate/react": "^6.0.0",
     "react": "^19.1.0",
-    "three": "^0.165.0",
+    "three": "^0.168.0",
     "xstate": "^5.28.0"
   },
   "devDependencies": {

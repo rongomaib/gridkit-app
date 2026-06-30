@@ -33,6 +33,7 @@
     "@villagekit/part-wall-frame": "workspace:*",
     "@villagekit/part-gable-panel": "workspace:*",
     "@villagekit/part-roof-panel": "workspace:*",
+    "@villagekit/part-roofing-iron": "workspace:*",
     "@villagekit/part-gridbeam": "workspace:*",
     "@villagekit/part-gridpanel": "workspace:*",
     "@villagekit/part-hinge": "workspace:*",
@@ -54,7 +55,7 @@
     "react-icons": "^5.2.1",
     "react-resplit": "^1.3.1",
     "smol-toml": "^1.2.1",
-    "three": "^0.165.0",
+    "three": "^0.168.0",
     "xstate": "^5.31.1",
     "zod": "^3.23.8"
   },

@@ -45,6 +45,6 @@
     "tsx": "^4.15.6"
   },
   "peerDependencies": {
-    "three": "^0.165.0"
+    "three": "^0.168.0"
   }
 }

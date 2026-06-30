@@ -1,7 +1,9 @@
-import { GizmoHelper, GizmoViewport } from '@react-three/drei'
+import { Environment, GizmoHelper, GizmoViewport, SoftShadows } from '@react-three/drei'
 import { useThree } from '@react-three/fiber'
 import React, { useMemo } from 'react'
 import type { SandboxMode } from '../'
+import type { AppearanceSettings } from './appearance-context'
+import { SceneEffects } from './effects'
 import Floor from './floor'
 import Lights from './lights'
 
@@ -12,6 +14,7 @@ interface SceneryGlProps {
   mode: SandboxMode
   shouldDisplayGrid: boolean
   shouldDisplayAxes: boolean
+  appearanceSettings: AppearanceSettings
 }
 
 export function SceneryGl(props: SceneryGlProps) {
@@ -22,6 +25,7 @@ export function SceneryGl(props: SceneryGlProps) {
     mode,
     shouldDisplayGrid,
     shouldDisplayAxes,
+    appearanceSettings,
   } = props
 
   const performance = useThree((state) => state.performance.current)
@@ -71,7 +75,9 @@ export function SceneryGl(props: SceneryGlProps) {
 
   return (
     <React.Fragment>
-      <Lights {...lights} />
+      <SoftShadows size={appearanceSettings.shadowSize} samples={appearanceSettings.shadowSamples} focus={0} />
+      <Environment preset={appearanceSettings.environmentPreset} background={false} environmentIntensity={appearanceSettings.environmentIntensity} />
+      <Lights {...lights} appearanceSettings={appearanceSettings} />
       <Floor
         {...floor}
         centerInMeters={centerInMeters}
@@ -84,6 +90,7 @@ export function SceneryGl(props: SceneryGlProps) {
           <GizmoViewport axisColors={['#9d4b4b', '#2f7f4f', '#3b5b9d']} labelColor="white" />
         </GizmoHelper>
       )}
+      <SceneEffects appearanceSettings={appearanceSettings} />
     </React.Fragment>
   )
 }

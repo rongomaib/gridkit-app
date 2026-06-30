@@ -3,6 +3,6 @@
   "compilerOptions": {
     "outDir": "dist"
   },
-  "include": ["src", "src/env.d.ts", "stories"],
+  "include": ["src", "src/env.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

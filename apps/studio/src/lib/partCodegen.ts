@@ -336,28 +336,21 @@ function parseNumber(val: number): number {
 }
 `
 
-  const isCustomShape = spec.partShape === 'custom'
-
-  // For custom shapes, embed the builder so the generated package is self-contained.
-  const customObjectBuilder = isCustomShape
-    ? `
+  const customObjectBuilder = `
 // Auto-generated — edit to refine the 3-D object.
 // Receives the full THREE namespace and spec dimension fields; returns a THREE.Group.
 function buildCustomObject(
   mm: number,
-  widthMm: number, heightMm: number, thicknessMm: number, cornerRadius: number,
-  gussetLeg1Mm: number, gussetLeg2Mm: number,
-  lSectionFlangeWidthMm: number, lSectionFlangeHeightMm: number, lSectionWebThicknessMm: number,
+  widthMm: number, heightMm: number, thicknessMm: number,
 ): THREE.Group {
   ${spec.customShapeCode}
 }
 `
-    : ''
 
   const glTsx = `import '@react-three/fiber'
 import type { PartsGlProps } from '@villagekit/part'
 import { useMemo } from 'react'
-${isCustomShape ? "import * as THREE from 'three'" : "import { BoxGeometry, MeshLambertMaterial } from 'three'"}
+import * as THREE from 'three'
 import type { ${N}GlValue } from './types'
 ${customObjectBuilder}
 
@@ -384,34 +377,20 @@ function PartGl(props: PartGlProps) {
   const {
     part: {
       id,
-      lengthInMeters,
       sectionWidthInMeters,
       sectionDepthInMeters,
       position,
       quaternion,
       scale,
-      variant: { material },
     },
     onPartClick,
   } = props
 
-  ${isCustomShape
-    ? `const customObject = useMemo(() => buildCustomObject(
+  const customObject = useMemo(() => buildCustomObject(
     1 / 1000,
     sectionWidthInMeters * 1000, sectionDepthInMeters * 1000, ${spec.thicknessMm},
-    ${spec.cornerRadius}, ${spec.gussetLeg1Mm}, ${spec.gussetLeg2Mm},
-    ${spec.lSectionFlangeWidthMm}, ${spec.lSectionFlangeHeightMm}, ${spec.lSectionWebThicknessMm},
-  ), [sectionWidthInMeters, sectionDepthInMeters])`
-    : `const geometry = useMemo(() => {
-    const geo = new BoxGeometry(lengthInMeters, sectionWidthInMeters, sectionDepthInMeters)
-    geo.translate(lengthInMeters / 2, 0, 0)
-    return geo
-  }, [lengthInMeters, sectionWidthInMeters, sectionDepthInMeters])`}
+  ), [sectionWidthInMeters, sectionDepthInMeters])
 
-  ${isCustomShape ? '' : `const mat = useMemo(() => {
-    return new MeshLambertMaterial({ color: material.color })
-  }, [material.color])
-`}
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: Three.js canvas object, not a DOM element
     <group
@@ -425,15 +404,7 @@ function PartGl(props: PartGlProps) {
         onPartClick?.(id)
       }}
     >
-      ${isCustomShape
-        ? `<primitive object={customObject} />`
-        : `<mesh
-        name={\`${n}-mesh-\${id}\`}
-        geometry={geometry}
-        material={mat}
-        castShadow
-        receiveShadow
-      />`}
+      <primitive object={customObject} />
     </group>
   )
 }
@@ -572,8 +543,22 @@ registerPartModule({
 })
 `
 
+  const tsconfigJson = `{
+  "extends": "@villagekit/tsconfig/react-library.json",
+  "compilerOptions": {
+    "outDir": "dist"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
+`
+
+  const specJson = JSON.stringify(spec, null, 2)
+
   return [
     { name: 'package.json', content: packageJson },
+    { name: 'tsconfig.json', content: tsconfigJson },
+    { name: 'spec.json', content: specJson },
     { name: 'src/types.ts', content: typesTs },
     { name: 'src/schemas.ts', content: schemasTs },
     { name: 'src/variants.ts', content: variantsTs },

@@ -30,6 +30,6 @@
   },
   "homepage": "https://github.com/villagekit/gridkit/tree/main/util/math#readme",
   "peerDependencies": {
-    "three": "^0.165.0"
+    "three": "^0.168.0"
   }
 }

@@ -10,6 +10,7 @@ interface ControlProps {
   right?: boolean
   top?: boolean
   css?: SystemStyleObject
+  alwaysVisible?: boolean
 }
 
 const CONTROL_STYLES = {
@@ -24,7 +25,7 @@ const CONTROL_STYLES = {
 }
 
 export function Control(props: ControlProps) {
-  const { children, bottom, left, right, top, css } = props
+  const { children, bottom, left, right, top, css, alwaysVisible } = props
 
   const { controlMargin, controlScale } = useControlsContext()
 
@@ -49,7 +50,7 @@ export function Control(props: ControlProps) {
         ...positionStyles,
         ...css,
       }}
-      className="sandbox-controls"
+      className={alwaysVisible ? undefined : 'sandbox-controls'}
     >
       {children}
     </Box>
