@@ -1,0 +1,18 @@
+{
+  "name": "gridbeam",
+  "displayName": "Grid Beam",
+  "description": "40×40mm structural timber/aluminium beam on a 40mm grid with 8mm bolt holes on all 4 faces",
+  "gridUnitMm": 40,
+  "previewLengthGrids": 5,
+  "widthMm": 40,
+  "heightMm": 40,
+  "thicknessMm": 40,
+  "holeDiameter": 8,
+  "holeSpacingMm": 40,
+  "holeEdgeOffsetMm": 20,
+  "holeRows": 1,
+  "color": "#a0855b",
+  "axes": ["x", "y", "z"],
+  "customParams": [],
+  "customShapeCode": "const group = new THREE.Group();\nconst g = 40 * mm;\nconst nGrids = 5;\nconst len = nGrids * g;\nconst w = widthMm * mm;\nconst h = heightMm * mm;\nconst geo = new THREE.BoxGeometry(len, w, h);\ngeo.scale(0.995, 0.995, 0.995);\ngeo.translate(g * (nGrids - 1) / 2, 0, 0);\ngroup.add(new THREE.Mesh(geo, new THREE.MeshLambertMaterial({ color: '#a0855b' })));\nconst holeDep = 2 * mm;\nconst holeR = 4 * mm;\nconst holeMat = new THREE.MeshLambertMaterial({ color: '#1a1a1a' });\nfor (let i = 0; i < nGrids; i++) {\n  const x = i * g;\n  const hgTop = new THREE.CylinderGeometry(holeR, holeR, holeDep, 12);\n  hgTop.rotateX(Math.PI / 2);\n  hgTop.translate(x, 0, h / 2 - holeDep / 2);\n  group.add(new THREE.Mesh(hgTop, holeMat));\n  const hgBot = new THREE.CylinderGeometry(holeR, holeR, holeDep, 12);\n  hgBot.rotateX(Math.PI / 2);\n  hgBot.translate(x, 0, -(h / 2 - holeDep / 2));\n  group.add(new THREE.Mesh(hgBot, holeMat));\n  const hgRight = new THREE.CylinderGeometry(holeR, holeR, holeDep, 12);\n  hgRight.translate(x, w / 2 - holeDep / 2, 0);\n  group.add(new THREE.Mesh(hgRight, holeMat));\n  const hgLeft = new THREE.CylinderGeometry(holeR, holeR, holeDep, 12);\n  hgLeft.translate(x, -(w / 2 - holeDep / 2), 0);\n  group.add(new THREE.Mesh(hgLeft, holeMat));\n}\nreturn group;"
+}

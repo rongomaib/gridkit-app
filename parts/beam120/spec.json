@@ -1,0 +1,18 @@
+{
+  "name": "beam120",
+  "displayName": "Beam 120×120",
+  "description": "120×120mm solid square structural post (macrocarpa / aluminium / steel). Runs along X axis; cross-section in Y-Z plane.",
+  "gridUnitMm": 40,
+  "previewLengthGrids": 10,
+  "widthMm": 120,
+  "heightMm": 120,
+  "thicknessMm": 0,
+  "holeDiameter": 0,
+  "holeSpacingMm": 40,
+  "holeEdgeOffsetMm": 20,
+  "holeRows": 1,
+  "color": "#A0672A",
+  "axes": ["z"],
+  "customParams": [],
+  "customShapeCode": "const len = previewLengthGrids * 40 * mm\nconst w = widthMm * mm\nconst h = heightMm * mm\nconst geo = new THREE.BoxGeometry(len, w, h)\ngeo.translate(len / 2, w / 2, h / 2)\nconst mat = new THREE.MeshLambertMaterial({ color: '#A0672A' })\nconst mesh = new THREE.Mesh(geo, mat)\nconst group = new THREE.Group()\ngroup.add(mesh)\nreturn group"
+}

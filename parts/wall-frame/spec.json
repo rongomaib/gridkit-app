@@ -1,0 +1,18 @@
+{
+  "name": "wall-frame",
+  "displayName": "Wall Frame",
+  "description": "Structural wall framing panel — solid slab on the 40 mm grid. depthInMeters = 1 grid (40 mm). Bay width and height are variable in grid multiples.",
+  "gridUnitMm": 40,
+  "previewLengthGrids": 1,
+  "widthMm": 600,
+  "heightMm": 2400,
+  "thicknessMm": 40,
+  "holeDiameter": 0,
+  "holeSpacingMm": 40,
+  "holeEdgeOffsetMm": 20,
+  "holeRows": 1,
+  "customShapeCode": "const group = new THREE.Group()\nconst w = widthMm * mm\nconst h = heightMm * mm\nconst d = thicknessMm * mm\n// Panel occupies XZ plane: X = bay width, Z = panel height, Y = depth\nconst geo = new THREE.BoxGeometry(w, d, h)\ngeo.translate(w / 2, d / 2, h / 2)\nconst mat = new THREE.MeshLambertMaterial({ color: '#D4C4A0' })\ngroup.add(new THREE.Mesh(geo, mat))\nreturn group",
+  "customParams": [],
+  "color": "#D4C4A0",
+  "axes": ["x", "z"]
+}

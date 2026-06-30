@@ -1,0 +1,18 @@
+{
+  "name": "panel-brace",
+  "displayName": "Panel Brace",
+  "description": "120mm deep × 800mm tall structural ply panel module acting as a deep beam / horizontal chord. Occupies a 3×20×60 grid footprint on the 40mm grid.",
+  "gridUnitMm": 40,
+  "previewLengthGrids": 60,
+  "widthMm": 800,
+  "heightMm": 120,
+  "thicknessMm": 18,
+  "holeDiameter": 0,
+  "holeSpacingMm": 40,
+  "holeEdgeOffsetMm": 20,
+  "holeRows": 1,
+  "color": "#D4B483",
+  "axes": ["x", "y"],
+  "customParams": [],
+  "customShapeCode": "const length = widthMm * mm;\nconst height = heightMm * mm;\nconst depth = thicknessMm * mm;\nconst group = new THREE.Group();\nconst geo = new THREE.BoxGeometry(length, height, depth);\ngeo.translate(length / 2, height / 2, 0);\nconst mat = new THREE.MeshLambertMaterial({ color: '#D4B483' });\ngroup.add(new THREE.Mesh(geo, mat));\nreturn group;"
+}

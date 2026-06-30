@@ -1,0 +1,18 @@
+{
+  "name": "gable-panel",
+  "displayName": "Gable Panel",
+  "description": "Right-triangle plaster panel for gable ends. Right angle at origin, base along X, height along Y, depth (1 grid unit) extruded along Z.",
+  "gridUnitMm": 40,
+  "previewLengthGrids": 20,
+  "widthMm": 800,
+  "heightMm": 600,
+  "thicknessMm": 40,
+  "holeDiameter": 0,
+  "holeSpacingMm": 40,
+  "holeEdgeOffsetMm": 20,
+  "holeRows": 1,
+  "customShapeCode": "const shape = new THREE.Shape()\nshape.moveTo(0, 0)\nshape.lineTo(widthMm * mm, 0)\nshape.lineTo(0, heightMm * mm)\nshape.closePath()\nconst geo = new THREE.ExtrudeGeometry(shape, { depth: thicknessMm * mm, bevelEnabled: false })\nconst mat = new THREE.MeshLambertMaterial({ color: '#C8B89A' })\nconst mesh = new THREE.Mesh(geo, mat)\nconst group = new THREE.Group()\ngroup.add(mesh)\nreturn group",
+  "customParams": [],
+  "color": "#C8B89A",
+  "axes": ["x", "y", "z"]
+}

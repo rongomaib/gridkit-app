@@ -1,0 +1,18 @@
+{
+  "name": "fastener",
+  "displayName": "Fastener (M6 Bolt)",
+  "description": "M6 × 75 mm hex bolt with 12 mm hex nut. Joins gridbeam members along any axis.",
+  "gridUnitMm": 40,
+  "previewLengthGrids": 2,
+  "widthMm": 13,
+  "heightMm": 13,
+  "thicknessMm": 6,
+  "holeDiameter": 0,
+  "holeSpacingMm": 40,
+  "holeEdgeOffsetMm": 20,
+  "holeRows": 1,
+  "customShapeCode": "const group = new THREE.Group();\nconst silver = new THREE.MeshLambertMaterial({ color: '#9CA3AF' });\n\nconst shaftR  = 3    * mm;\nconst shaftL  = 75   * mm;\nconst headR   = 6.25 * mm;\nconst headH   = 5    * mm;\nconst nutR    = 6.25 * mm;\nconst nutH    = 12   * mm;\n\n// Bolt shaft along +X, from x=0 to x=shaftL\nconst shaftGeo = new THREE.CylinderGeometry(shaftR, shaftR, shaftL, 16);\nshaftGeo.applyMatrix4(new THREE.Matrix4().makeRotationZ(Math.PI / 2));\nshaftGeo.translate(shaftL / 2, 0, 0);\ngroup.add(new THREE.Mesh(shaftGeo, silver));\n\n// Hex head at x=-headH..0\nconst headGeo = new THREE.CylinderGeometry(headR, headR, headH, 6);\nheadGeo.applyMatrix4(new THREE.Matrix4().makeRotationZ(Math.PI / 2));\nheadGeo.translate(-headH / 2, 0, 0);\ngroup.add(new THREE.Mesh(headGeo, silver));\n\n// Hex nut at far end x=shaftL-nutH..shaftL\nconst nutGeo = new THREE.CylinderGeometry(nutR, nutR, nutH, 6);\nnutGeo.applyMatrix4(new THREE.Matrix4().makeRotationZ(Math.PI / 2));\nnutGeo.translate(shaftL - nutH / 2, 0, 0);\ngroup.add(new THREE.Mesh(nutGeo, silver));\n\nreturn group;",
+  "customParams": [],
+  "color": "#9CA3AF",
+  "axes": ["x", "y", "z"]
+}

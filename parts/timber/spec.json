@@ -1,0 +1,18 @@
+{
+  "name": "timber",
+  "displayName": "Timber Post 120×120",
+  "description": "120×120mm SG8 structural post on the 40mm grid (3×3 footprint). Continuous vertical member.",
+  "gridUnitMm": 40,
+  "previewLengthGrids": 15,
+  "widthMm": 120,
+  "heightMm": 120,
+  "thicknessMm": 0,
+  "holeDiameter": 0,
+  "holeSpacingMm": 40,
+  "holeEdgeOffsetMm": 20,
+  "holeRows": 1,
+  "color": "#C4956A",
+  "axes": ["z"],
+  "customParams": [],
+  "customShapeCode": "const len = previewLengthGrids * 40 * mm;\nconst w = widthMm * mm;\nconst h = heightMm * mm;\nconst geo = new THREE.BoxGeometry(len, w, h);\ngeo.translate(len / 2, 0, 0);\nconst mat = new THREE.MeshLambertMaterial({ color: '#C4956A' });\nconst mesh = new THREE.Mesh(geo, mat);\nconst group = new THREE.Group();\ngroup.add(mesh);\nreturn group;"
+}

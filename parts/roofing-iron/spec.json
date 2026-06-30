@@ -1,0 +1,27 @@
+{
+  "name": "roofing-iron",
+  "displayName": "Roofing Iron",
+  "description": "Corrugated metal roofing sheet with raised ribs. Spans along slope (X), width across roof (Y).",
+  "gridUnitMm": 40,
+  "previewLengthGrids": 10,
+  "widthMm": 240,
+  "heightMm": 12,
+  "thicknessMm": 20,
+  "holeDiameter": 0,
+  "holeSpacingMm": 40,
+  "holeEdgeOffsetMm": 20,
+  "holeRows": 1,
+  "color": "#B8C4C8",
+  "axes": ["x", "y"],
+  "customParams": [
+    {
+      "name": "numRibs",
+      "label": "Rib count",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "value": 2
+    }
+  ],
+  "customShapeCode": "const G = 40 * mm;\nconst len = 10 * G;\nconst W = widthMm * mm;\nconst sheetThickness = 20 * mm;\nconst ribHeight = 12 * mm;\nconst ribWidth = 20 * mm;\nconst ribSpacing = 120 * mm;\n\nconst group = new THREE.Group();\nconst mat = new THREE.MeshLambertMaterial({ color: '#B8C4C8' });\nconst matRib = new THREE.MeshLambertMaterial({ color: '#C8D4D8' });\n\n// Base sheet\nconst sheetGeo = new THREE.BoxGeometry(len, W, sheetThickness);\nsheetGeo.translate(len / 2, W / 2, sheetThickness / 2);\ngroup.add(new THREE.Mesh(sheetGeo, mat));\n\n// Corrugation ribs, evenly spaced across width\nconst count = Math.max(1, numRibs);\nconst margin = (W - count * ribSpacing) / 2 + ribSpacing / 2;\nfor (let i = 0; i < count; i++) {\n  const ribGeo = new THREE.BoxGeometry(len, ribWidth, ribHeight);\n  const yPos = margin + i * ribSpacing;\n  ribGeo.translate(len / 2, yPos, sheetThickness + ribHeight / 2);\n  group.add(new THREE.Mesh(ribGeo, matRib));\n}\n\nreturn group;"
+}

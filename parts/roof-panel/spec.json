@@ -1,0 +1,35 @@
+{
+  "name": "roof-panel",
+  "displayName": "Roof Panel",
+  "description": "Timber-frame roof module: two 120×40mm edge beams along the slope with 40×40mm purlins every 600mm across the 1200mm width. Pitch applied externally as a world-space transform.",
+  "gridUnitMm": 40,
+  "previewLengthGrids": 15,
+  "widthMm": 1200,
+  "heightMm": 120,
+  "thicknessMm": 40,
+  "holeDiameter": 0,
+  "holeSpacingMm": 40,
+  "holeEdgeOffsetMm": 20,
+  "holeRows": 1,
+  "color": "#A0876B",
+  "axes": ["x"],
+  "customParams": [
+    {
+      "name": "lengthGrids",
+      "label": "Sloped length (grids)",
+      "min": 5,
+      "max": 60,
+      "step": 5,
+      "value": 30
+    },
+    {
+      "name": "pitchDeg",
+      "label": "Pitch (°)",
+      "min": 0,
+      "max": 45,
+      "step": 1,
+      "value": 15
+    }
+  ],
+  "customShapeCode": "const G = 0.04\nconst EDGE_H = heightMm * mm\nconst EDGE_W = thicknessMm * mm\nconst PURLIN = thicknessMm * mm\nconst W = widthMm * mm\nconst L = lengthGrids * G\nconst PURLIN_SPACING = 15 * G\n\nconst mat = new THREE.MeshLambertMaterial({ color: '#A0876B' })\nconst group = new THREE.Group()\n\nconst edgeGeo = new THREE.BoxGeometry(L, EDGE_H, EDGE_W)\nconst b1 = new THREE.Mesh(edgeGeo, mat)\nb1.position.set(L / 2, EDGE_H / 2, EDGE_W / 2)\ngroup.add(b1)\n\nconst b2 = new THREE.Mesh(edgeGeo, mat)\nb2.position.set(L / 2, EDGE_H / 2, W - EDGE_W / 2)\ngroup.add(b2)\n\nconst purlinGeo = new THREE.BoxGeometry(PURLIN, PURLIN, W)\nconst purlinCount = Math.floor(L / PURLIN_SPACING) + 1\nfor (let i = 0; i < purlinCount; i++) {\n  const p = new THREE.Mesh(purlinGeo, mat)\n  p.position.set(i * PURLIN_SPACING + PURLIN / 2, EDGE_H + PURLIN / 2, W / 2)\n  group.add(p)\n}\n\nconst pitchRad = (pitchDeg * Math.PI) / 180\ngroup.rotation.x = -pitchRad\n\nreturn group"
+}
