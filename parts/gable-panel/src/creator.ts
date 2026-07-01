@@ -1,19 +1,22 @@
 import { changeOfBasisTransform } from '@villagekit/math'
-import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
+import {
+  BasePartCreator,
+  BasePartSpec,
+  X_AXIS,
+  Y_AXIS,
+  Z_AXIS,
+  partBasis,
+  registerSerializer,
+} from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
 import type { GablePanelType } from './types'
 import { gablePanelVariants } from './variants'
 
 const getDefaultVariantId = (): keyof typeof gablePanelVariants => 'GablePanel_MacrocarpaPlaster'
 
-const X_AXIS: [number, number, number] = [1, 0, 0]
-const Y_AXIS: [number, number, number] = [0, 1, 0]
-const Z_AXIS: [number, number, number] = [0, 0, 1]
-
-const baseBasis = [X_AXIS, Y_AXIS, Z_AXIS] as const
 // Canonical: right-triangle in XY, depth in Z.
 // After this transform: X→Y (base along wall), Y→Z (height up), Z→X (depth into wall)
-const xyToYZTransform = changeOfBasisTransform(baseBasis, [Y_AXIS, Z_AXIS, X_AXIS])
+const xyToYZTransform = changeOfBasisTransform(partBasis, [Y_AXIS, Z_AXIS, X_AXIS])
 
 export class GablePanelSpec extends BasePartSpec<GablePanelType> {
   variantId: keyof typeof gablePanelVariants

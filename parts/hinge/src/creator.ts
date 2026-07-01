@@ -1,5 +1,5 @@
 import { changeOfBasisTransform } from '@villagekit/math'
-import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
+import { BasePartCreator, BasePartSpec, partBasis, registerSerializer } from '@villagekit/part/creator'
 import type { HingeType } from './types'
 import type { hingeVariants } from './variants'
 
@@ -9,17 +9,14 @@ const GRID_UNIT = 0.04 // 40mm in metres
 const LEAF_THICKNESS = 0.004 // plate thickness (same as gl.tsx)
 const BEAM_HALF_WIDTH = GRID_UNIT / 2 // 20mm — half of 40×40 mm gridbeam
 
-const X_AXIS: [number, number, number] = [1, 0, 0]
-const Y_AXIS: [number, number, number] = [0, 1, 0]
-const Z_AXIS: [number, number, number] = [0, 0, 1]
 const NEG_Y_AXIS: [number, number, number] = [0, -1, 0]
-
-const baseBasis = [X_AXIS, Y_AXIS, Z_AXIS] as const
+const Z_AXIS: [number, number, number] = [0, 0, 1]
+const X_AXIS: [number, number, number] = [1, 0, 0]
 
 const HOLE_Y_BOTTOM = 0.0115 // y of lower hole centre from bottom of hinge (matches gl.tsx)
 
 // local Y (barrel) → world Z (vertical), local Z (plate normal) → world +X (right face of post)
-const rxPlus90Transform = changeOfBasisTransform(baseBasis, [NEG_Y_AXIS, Z_AXIS, X_AXIS])
+const rxPlus90Transform = changeOfBasisTransform(partBasis, [NEG_Y_AXIS, Z_AXIS, X_AXIS])
 
 // Y position (grid units) for door panel when using Hinge.Door
 export const HINGE_DOOR_PANEL_Y = 0

@@ -1,21 +1,21 @@
-import { changeOfBasisTransform, mirrorTransform } from '@villagekit/math'
-import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
+import {
+  type BaseCreatorOptions,
+  BasePartCreator,
+  BasePartSpec,
+  mirrorXTransform,
+  mirrorYTransform,
+  mirrorZTransform,
+  parseNumber,
+  parseRange,
+  registerSerializer,
+  xToYTransform,
+  xToZTransform,
+} from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
 import type { Beam120Type } from './types'
 import { beam120Variants } from './variants'
 
 const getDefaultVariantId = (): keyof typeof beam120Variants => 'Beam120_Macrocarpa'
-
-const X_AXIS: [number, number, number] = [1, 0, 0]
-const Y_AXIS: [number, number, number] = [0, 1, 0]
-const Z_AXIS: [number, number, number] = [0, 0, 1]
-
-const baseBasis = [X_AXIS, Y_AXIS, Z_AXIS] as const
-const xToYTransform = changeOfBasisTransform(baseBasis, [Y_AXIS, X_AXIS, Z_AXIS])
-const xToZTransform = changeOfBasisTransform(baseBasis, [Z_AXIS, Y_AXIS, X_AXIS])
-const mirrorXTransform = mirrorTransform('x')
-const mirrorYTransform = mirrorTransform('y')
-const mirrorZTransform = mirrorTransform('z')
 
 export class Beam120Spec extends BasePartSpec<Beam120Type> {
   variantId: keyof typeof beam120Variants
@@ -149,10 +149,6 @@ interface Beam120SpecOptions {
   materialId?: string
 }
 
-interface BaseCreatorOptions {
-  id?: string
-}
-
 interface Beam120Options extends BaseCreatorOptions, Beam120SpecOptions {}
 
 interface Beam120XOptions extends BaseCreatorOptions {
@@ -191,11 +187,3 @@ registerSerializer({
   deserializeSpec,
   Creator: Beam120,
 })
-
-function parseRange(range: [number, number]): [number, number] {
-  return [range[0], range[1]]
-}
-
-function parseNumber(val: number): number {
-  return val
-}

@@ -11,8 +11,10 @@
   "holeSpacingMm": 40,
   "holeEdgeOffsetMm": 20,
   "holeRows": 1,
-  "color": "#A0672A",
-  "axes": ["z"],
+  "customShapeCode": "const len = previewLengthGrids * 40 * mm\nconst w = widthMm * mm\nconst h = heightMm * mm\nconst geo = new THREE.BoxGeometry(len, w, h)\ngeo.translate(len / 2, w / 2, h / 2)\nconst mat = new THREE.MeshLambertMaterial({ color: '#A0672A' })\nconst mesh = new THREE.Mesh(geo, mat)\nconst group = new THREE.Group()\ngroup.add(mesh)\nreturn group",
   "customParams": [],
-  "customShapeCode": "const len = previewLengthGrids * 40 * mm\nconst w = widthMm * mm\nconst h = heightMm * mm\nconst geo = new THREE.BoxGeometry(len, w, h)\ngeo.translate(len / 2, w / 2, h / 2)\nconst mat = new THREE.MeshLambertMaterial({ color: '#A0672A' })\nconst mesh = new THREE.Mesh(geo, mat)\nconst group = new THREE.Group()\ngroup.add(mesh)\nreturn group"
+  "color": "#A0672A",
+  "axes": [
+    "z"
+  ]
 }

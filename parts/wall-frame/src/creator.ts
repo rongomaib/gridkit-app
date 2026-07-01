@@ -1,23 +1,28 @@
-import { changeOfBasisTransform, mirrorTransform } from '@villagekit/math'
-import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
+import { changeOfBasisTransform } from '@villagekit/math'
+import {
+  BasePartCreator,
+  BasePartSpec,
+  X_AXIS,
+  Y_AXIS,
+  Z_AXIS,
+  mirrorXTransform,
+  mirrorYTransform,
+  mirrorZTransform,
+  parseNumber,
+  parseRange,
+  partBasis,
+  registerSerializer,
+} from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
 import type { WallFrameType } from './types'
 import { wallFrameVariants } from './variants'
 
 const getDefaultVariantId = (): keyof typeof wallFrameVariants => 'WallFrame_MacrocarpaPlaster'
 
-const X_AXIS: [number, number, number] = [1, 0, 0]
-const Y_AXIS: [number, number, number] = [0, 1, 0]
-const Z_AXIS: [number, number, number] = [0, 0, 1]
-
-const baseBasis = [X_AXIS, Y_AXIS, Z_AXIS] as const
 // XY panel → XZ wall: X stays in X, Y becomes Z (height up), Z becomes Y (depth into wall)
-const xyToXZTransform = changeOfBasisTransform(baseBasis, [X_AXIS, Z_AXIS, Y_AXIS])
+const xyToXZTransform = changeOfBasisTransform(partBasis, [X_AXIS, Z_AXIS, Y_AXIS])
 // XY panel → YZ wall: X becomes Y (width along Y), Y becomes Z (height up), Z becomes X (depth into wall)
-const xyToYZTransform = changeOfBasisTransform(baseBasis, [Y_AXIS, Z_AXIS, X_AXIS])
-const mirrorXTransform = mirrorTransform('x')
-const mirrorYTransform = mirrorTransform('y')
-const mirrorZTransform = mirrorTransform('z')
+const xyToYZTransform = changeOfBasisTransform(partBasis, [Y_AXIS, Z_AXIS, X_AXIS])
 
 export class WallFrameSpec extends BasePartSpec<WallFrameType> {
   variantId: keyof typeof wallFrameVariants
@@ -187,11 +192,3 @@ registerSerializer({
   deserializeSpec,
   Creator: WallFrame,
 })
-
-function parseRange(range: [number, number]): [number, number] {
-  return [range[0], range[1]]
-}
-
-function parseNumber(val: number): number {
-  return val
-}

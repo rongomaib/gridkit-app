@@ -1,23 +1,27 @@
-import { changeOfBasisTransform, mirrorTransform } from '@villagekit/math'
-import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
+import { changeOfBasisTransform } from '@villagekit/math'
+import {
+  type BaseCreatorOptions,
+  BasePartCreator,
+  BasePartSpec,
+  X_AXIS,
+  Y_AXIS,
+  Z_AXIS,
+  mirrorXTransform,
+  mirrorYTransform,
+  partBasis,
+  registerSerializer,
+} from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
 import type { PanelBraceType } from './types'
 import { panelBraceVariants } from './variants'
 
 const getDefaultVariantId = (): keyof typeof panelBraceVariants => 'Ply_120x800'
 
-const X_AXIS: [number, number, number] = [1, 0, 0]
-const Y_AXIS: [number, number, number] = [0, 1, 0]
-const Z_AXIS: [number, number, number] = [0, 0, 1]
-
-const baseBasis = [X_AXIS, Y_AXIS, Z_AXIS] as const
 // panel-brace spans X or Y; height is in Z; depth is the thin dimension (Y or X respectively)
 // For X-spanning: rotate so height (originally Y) becomes Z, depth (originally Z) becomes Y
-const xSpanTransform = changeOfBasisTransform(baseBasis, [X_AXIS, Z_AXIS, Y_AXIS])
+const xSpanTransform = changeOfBasisTransform(partBasis, [X_AXIS, Z_AXIS, Y_AXIS])
 // For Y-spanning: rotate so the panel spans Y, height in Z, depth in X
-const ySpanTransform = changeOfBasisTransform(baseBasis, [Y_AXIS, Z_AXIS, X_AXIS])
-const mirrorXTransform = mirrorTransform('x')
-const mirrorYTransform = mirrorTransform('y')
+const ySpanTransform = changeOfBasisTransform(partBasis, [Y_AXIS, Z_AXIS, X_AXIS])
 
 export class PanelBraceSpec extends BasePartSpec<PanelBraceType> {
   variantId: keyof typeof panelBraceVariants
@@ -176,10 +180,6 @@ interface PanelBraceSpecOptions {
   heightInGrids?: number
   depthInGrids?: number
   materialId?: string
-}
-
-interface BaseCreatorOptions {
-  id?: string
 }
 
 interface PanelBraceOptions extends BaseCreatorOptions, PanelBraceSpecOptions {}

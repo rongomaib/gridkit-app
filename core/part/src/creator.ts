@@ -1,5 +1,40 @@
-import { type TransformMatrix, degToRad } from '@villagekit/math'
+import { type TransformMatrix, changeOfBasisTransform, degToRad, mirrorTransform } from '@villagekit/math'
 import { Matrix4, Vector3 } from 'three'
+
+export const X_AXIS: [number, number, number] = [1, 0, 0]
+export const Y_AXIS: [number, number, number] = [0, 1, 0]
+export const Z_AXIS: [number, number, number] = [0, 0, 1]
+
+export const partBasis = [X_AXIS, Y_AXIS, Z_AXIS] as const
+
+export const xToYTransform = changeOfBasisTransform(partBasis, [Y_AXIS, X_AXIS, Z_AXIS])
+export const xToZTransform = changeOfBasisTransform(partBasis, [Z_AXIS, Y_AXIS, X_AXIS])
+export const mirrorXTransform = mirrorTransform('x')
+export const mirrorYTransform = mirrorTransform('y')
+export const mirrorZTransform = mirrorTransform('z')
+
+export interface BaseCreatorOptions {
+  id?: string
+}
+
+export function parseRange(range: any, defaultValue = 0): [number, number] {
+  if (!Array.isArray(range)) {
+    const val = typeof range === 'number' && !Number.isNaN(range) ? range : defaultValue
+    return [0, val]
+  }
+  const r0 = typeof range[0] === 'number' && !Number.isNaN(range[0]) ? range[0] : defaultValue
+  const r1 =
+    typeof range[1] === 'number' && !Number.isNaN(range[1])
+      ? range[1]
+      : range[0] !== undefined && typeof range[0] === 'number' && !Number.isNaN(range[0])
+        ? range[0] + 1
+        : defaultValue + 1
+  return [r0, r1]
+}
+
+export function parseNumber(val: any, defaultValue = 0): number {
+  return typeof val === 'number' && !Number.isNaN(val) ? val : defaultValue
+}
 
 export interface Typed<Type extends string> {
   type: Type

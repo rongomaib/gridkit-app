@@ -184,6 +184,10 @@ export type ${N}Variant = {
   gridLength: Length
   sectionWidth: Length
   sectionDepth: Length
+  holeDiameter: number
+  holeSpacingMm: number
+  holeEdgeOffsetMm: number
+  holeRows: number
   material: {
     color: string
   }
@@ -218,6 +222,10 @@ export const ${n}Variants: Record<string, ${N}Variant> = {
     gridLength: { type: 'quantity', unit: millimeter, value: ${spec.gridUnitMm} },
     sectionWidth: { type: 'quantity', unit: millimeter, value: ${spec.widthMm} },
     sectionDepth: { type: 'quantity', unit: millimeter, value: ${spec.heightMm} },
+    holeDiameter: ${spec.holeDiameter},
+    holeSpacingMm: ${spec.holeSpacingMm},
+    holeEdgeOffsetMm: ${spec.holeEdgeOffsetMm},
+    holeRows: ${spec.holeRows},
     material: {
       color: '${spec.color}',
     },
@@ -336,12 +344,20 @@ function parseNumber(val: number): number {
 }
 `
 
+  const customParamTypedArgs = spec.customParams.length > 0
+    ? `,\n  ${spec.customParams.map((p) => `${p.name}: number`).join(', ')}`
+    : ''
+  const customParamCallArgs = spec.customParams.length > 0
+    ? `,\n    ${spec.customParams.map((p) => String(p.value)).join(', ')}`
+    : ''
+
   const customObjectBuilder = `
 // Auto-generated — edit to refine the 3-D object.
-// Receives the full THREE namespace and spec dimension fields; returns a THREE.Group.
+// Named args: THREE, mm, widthMm, heightMm, thicknessMm, gridUnitMm, previewLengthGrids${spec.customParams.map((p) => `, ${p.name}`).join('')}
 function buildCustomObject(
   mm: number,
   widthMm: number, heightMm: number, thicknessMm: number,
+  gridUnitMm: number, previewLengthGrids: number${customParamTypedArgs},
 ): THREE.Group {
   ${spec.customShapeCode}
 }
@@ -379,6 +395,7 @@ function PartGl(props: PartGlProps) {
       id,
       sectionWidthInMeters,
       sectionDepthInMeters,
+      lengthInGrids,
       position,
       quaternion,
       scale,
@@ -389,7 +406,8 @@ function PartGl(props: PartGlProps) {
   const customObject = useMemo(() => buildCustomObject(
     1 / 1000,
     sectionWidthInMeters * 1000, sectionDepthInMeters * 1000, ${spec.thicknessMm},
-  ), [sectionWidthInMeters, sectionDepthInMeters])
+    ${spec.gridUnitMm}, lengthInGrids${customParamCallArgs},
+  ), [sectionWidthInMeters, sectionDepthInMeters, lengthInGrids])
 
   return (
     // biome-ignore lint/a11y/useKeyWithClickEvents: Three.js canvas object, not a DOM element
@@ -410,12 +428,31 @@ function PartGl(props: PartGlProps) {
 }
 `
 
-  const methodsTs = `import type { WithRequiredId } from '@villagekit/part'
+  const methodsTs = `import {
+  AxisId,
+  type Point3,
+  axisIdToDirection,
+  axisIdToDirectionVector,
+  directionToAxisId,
+  mapRange,
+} from '@villagekit/math'
+import type { FasteningPoint, WithRequiredId } from '@villagekit/part'
 import { convert, meter } from '@villagekit/units'
 import { Box3, Matrix4, Quaternion, Vector3 } from 'three'
 import type { ${N} } from './creator'
 import type { ${N}GlValue } from './types'
 import { ${n}Variants } from './variants'
+
+const X_AXIS = axisIdToDirectionVector(AxisId.X)
+
+const fasteningAxesByAxisId: Record<AxisId, Array<AxisId>> = {
+  [AxisId.X]: [AxisId.Y, AxisId['-Y'], AxisId.Z, AxisId['-Z']],
+  [AxisId['-X']]: [AxisId.Y, AxisId['-Y'], AxisId.Z, AxisId['-Z']],
+  [AxisId.Y]: [AxisId.X, AxisId['-X'], AxisId.Z, AxisId['-Z']],
+  [AxisId['-Y']]: [AxisId.X, AxisId['-X'], AxisId.Z, AxisId['-Z']],
+  [AxisId.Z]: [AxisId.X, AxisId['-X'], AxisId.Y, AxisId['-Y']],
+  [AxisId['-Z']]: [AxisId.X, AxisId['-X'], AxisId.Y, AxisId['-Y']],
+}
 
 export function calculateGlValue(creator: WithRequiredId<${N}>): ${N}GlValue {
   const {
@@ -477,8 +514,72 @@ export function calculateBoundingBox(creator: ${N}): Box3 {
   return box
 }
 
-export function calculateFasteningPoints(_creator: WithRequiredId<${N}>): [] {
-  return []
+export function calculateFasteningPoints(creator: WithRequiredId<${N}>): Array<FasteningPoint> {
+  const {
+    spec: { variantId, lengthInGrids },
+    transform,
+  } = creator
+
+  const variant = ${n}Variants[variantId]
+  if (variant == null) throw new Error(\`Unknown ${t} variant: \${variantId}\`)
+
+  if (variant.holeDiameter <= 0 || variant.holeSpacingMm <= 0) return []
+
+  const gridLengthInMeters = convert(variant.gridLength, meter).value
+  const gridUnitMm = gridLengthInMeters * 1000
+
+  const matrix = new Matrix4().fromArray(transform)
+  const position = new Vector3()
+  const quaternion = new Quaternion()
+  const scale = new Vector3()
+  matrix.decompose(position, quaternion, scale)
+
+  const locationInGrids = position.clone().divideScalar(gridLengthInMeters).toArray()
+
+  matrix.setPosition(0, 0, 0)
+  const direction = X_AXIS.clone().applyMatrix4(matrix).toArray()
+  const axis = directionToAxisId(direction)
+
+  if (axis == null) throw new Error(\`${t} direction axis is not standard: [\${direction.join(', ')}]\`)
+
+  const fasteningAxes = fasteningAxesByAxisId[axis]
+
+  const holeEdgeInGrids = variant.holeEdgeOffsetMm / gridUnitMm
+  const holeSpacingInGrids = variant.holeSpacingMm / gridUnitMm
+  const lengthMm = lengthInGrids * gridUnitMm
+  const holeCount = Math.floor((lengthMm - variant.holeEdgeOffsetMm * 2) / variant.holeSpacingMm) + 1
+
+  const fasteningPoints: Array<FasteningPoint> = []
+
+  for (let hi = 0; hi < holeCount; hi++) {
+    const posAlongLength = holeEdgeInGrids + hi * holeSpacingInGrids
+    const cellPosition: Point3 = [
+      locationInGrids[0] + direction[0] * posAlongLength,
+      locationInGrids[1] + direction[1] * posAlongLength,
+      locationInGrids[2] + direction[2] * posAlongLength,
+    ]
+
+    const iHalved = hi >= holeCount / 2 ? Math.abs(hi - holeCount + 1) : hi
+    const gradient = holeCount > 1 ? mapRange(iHalved, 0, Math.floor(holeCount / 2), 1, 0) : 1
+
+    for (const fasteningAxis of fasteningAxes) {
+      const offset = axisIdToDirection(fasteningAxis)
+      const facePosition: Point3 = [
+        cellPosition[0] + offset[0] * 0.5,
+        cellPosition[1] + offset[1] * 0.5,
+        cellPosition[2] + offset[2] * 0.5,
+      ]
+      fasteningPoints.push({
+        axis: fasteningAxis,
+        cellPosition,
+        facePosition,
+        gradient,
+        part: creator,
+      })
+    }
+  }
+
+  return fasteningPoints
 }
 
 export function calculateNumFastenersToFasten(_creator: WithRequiredId<${N}>): number {

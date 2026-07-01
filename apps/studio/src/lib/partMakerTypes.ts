@@ -31,7 +31,7 @@ export interface PartMakerSpec {
   holeRows: number            // columns across the face (1 per 40mm of face width)
 
   // Custom shape — THREE.js function body
-  // Receives: THREE, mm (=1/1000), widthMm, heightMm, thicknessMm, ...customParams[].name
+  // Receives: THREE, mm (=1/1000), widthMm, heightMm, thicknessMm, gridUnitMm, previewLengthGrids, ...customParams[].name
   // Must end with: return group  (a THREE.Group)
   customShapeCode: string
 

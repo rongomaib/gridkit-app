@@ -2,6 +2,7 @@
   "name": "@villagekit/part-beam120",
   "version": "0.1.0",
   "license": "EUPL-1.2",
+  "description": "120×120mm solid square structural post (macrocarpa / aluminium / steel). Runs along X axis; cross-section in Y-Z plane.",
   "type": "module",
   "exports": {
     ".": {
@@ -10,21 +11,11 @@
       "import": "./dist/index.js",
       "default": "./dist/index.js"
     },
-    "./creator": {
-      "types": "./dist/creator.d.ts",
-      "source": "./src/creator.ts",
-      "import": "./dist/creator.js",
-      "default": "./dist/creator.js"
-    },
-    "./bundles/creator": "./dist-bundles/creator.js",
     "./package.json": "./package.json"
   },
-  "files": ["./src", "./dist", "./dist-bundles"],
-  "sideEffects": ["./src/index.ts", "./dist/index.js", "./src/creator.ts", "./dist/creator.js"],
+  "files": ["./src", "./dist"],
   "scripts": {
-    "build:dist": "tsup src",
-    "build:dist-bundles": "rollup dist/creator.js --file ./dist-bundles/creator.js --format esm",
-    "build:pkg": "pnpm run build:dist && pnpm run build:dist-bundles",
+    "build:pkg": "tsup src",
     "lint": "biome check ."
   },
   "dependencies": {
@@ -36,6 +27,6 @@
   "peerDependencies": {
     "@react-three/fiber": "^9.0.0",
     "react": "^19.1.0",
-    "three": "^0.168.0"
+    "three": "^0.165.0"
   }
 }

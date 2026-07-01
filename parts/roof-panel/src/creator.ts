@@ -1,16 +1,15 @@
 import { changeOfBasisTransform } from '@villagekit/math'
-import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
+import {
+  BasePartCreator,
+  BasePartSpec,
+  partBasis,
+  registerSerializer,
+} from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
 import type { RoofPanelType } from './types'
 import { roofPanelVariants } from './variants'
 
 const getDefaultVariantId = (): keyof typeof roofPanelVariants => 'RoofPanel_TimberFrame'
-
-const X_AXIS: [number, number, number] = [1, 0, 0]
-const Y_AXIS: [number, number, number] = [0, 1, 0]
-const Z_AXIS: [number, number, number] = [0, 0, 1]
-
-const baseBasis = [X_AXIS, Y_AXIS, Z_AXIS] as const
 
 export class RoofPanelSpec extends BasePartSpec<RoofPanelType> {
   variantId: keyof typeof roofPanelVariants
@@ -145,7 +144,7 @@ export class RoofPanel extends BasePartCreator<RoofPanelSpec> {
       [0, Math.sin(pitchRad), Math.cos(pitchRad)], //  canonical Y → outward normal
       [1, 0, 0], //                                    canonical Z → world X (width)
     ]
-    const roofTransform = changeOfBasisTransform(baseBasis, pitchedBasis)
+    const roofTransform = changeOfBasisTransform(partBasis, pitchedBasis)
 
     return RoofPanel.create({
       id,

@@ -1,21 +1,21 @@
-import { changeOfBasisTransform, mirrorTransform } from '@villagekit/math'
-import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
+import {
+  type BaseCreatorOptions,
+  BasePartCreator,
+  BasePartSpec,
+  mirrorXTransform,
+  mirrorYTransform,
+  mirrorZTransform,
+  parseNumber,
+  parseRange,
+  registerSerializer,
+  xToYTransform,
+  xToZTransform,
+} from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
 import type { TimberType } from './types'
 import { timberVariants } from './variants'
 
 const getDefaultVariantId = (): keyof typeof timberVariants => 'Timber_120x120_SG8'
-
-const X_AXIS: [number, number, number] = [1, 0, 0]
-const Y_AXIS: [number, number, number] = [0, 1, 0]
-const Z_AXIS: [number, number, number] = [0, 0, 1]
-
-const baseBasis = [X_AXIS, Y_AXIS, Z_AXIS] as const
-const xToYTransform = changeOfBasisTransform(baseBasis, [Y_AXIS, X_AXIS, Z_AXIS])
-const xToZTransform = changeOfBasisTransform(baseBasis, [Z_AXIS, Y_AXIS, X_AXIS])
-const mirrorXTransform = mirrorTransform('x')
-const mirrorYTransform = mirrorTransform('y')
-const mirrorZTransform = mirrorTransform('z')
 
 export class TimberSpec extends BasePartSpec<TimberType> {
   variantId: keyof typeof timberVariants
@@ -145,10 +145,6 @@ interface TimberSpecOptions {
   materialId?: string
 }
 
-interface BaseCreatorOptions {
-  id?: string
-}
-
 interface TimberOptions extends BaseCreatorOptions, TimberSpecOptions {}
 
 interface TimberXOptions extends BaseCreatorOptions {
@@ -187,11 +183,3 @@ registerSerializer({
   deserializeSpec,
   Creator: Timber,
 })
-
-function parseRange(range: [number, number]): [number, number] {
-  return [range[0], range[1]]
-}
-
-function parseNumber(val: number): number {
-  return val
-}

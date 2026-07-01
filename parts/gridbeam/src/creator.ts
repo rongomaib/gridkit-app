@@ -1,22 +1,22 @@
-import { changeOfBasisTransform, mirrorTransform } from '@villagekit/math'
-import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
+import {
+  type BaseCreatorOptions,
+  BasePartCreator,
+  BasePartSpec,
+  mirrorXTransform,
+  mirrorYTransform,
+  mirrorZTransform,
+  parseNumber,
+  parseRange,
+  registerSerializer,
+  xToYTransform,
+  xToZTransform,
+} from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
 import type { GridBeamType } from './types'
 import { gridBeamVariants } from './variants'
 
 const getDefaultVariantId = (): keyof typeof gridBeamVariants =>
   'Grid40mm_Hole8mm_MaterialDouglasFir'
-
-const X_AXIS: [number, number, number] = [1, 0, 0]
-const Y_AXIS: [number, number, number] = [0, 1, 0]
-const Z_AXIS: [number, number, number] = [0, 0, 1]
-
-const baseBasis = [X_AXIS, Y_AXIS, Z_AXIS] as const
-const xToYTransform = changeOfBasisTransform(baseBasis, [Y_AXIS, X_AXIS, Z_AXIS])
-const xToZTransform = changeOfBasisTransform(baseBasis, [Z_AXIS, Y_AXIS, X_AXIS])
-const mirrorXTransform = mirrorTransform('x')
-const mirrorYTransform = mirrorTransform('y')
-const mirrorZTransform = mirrorTransform('z')
 
 export class GridBeamSpec extends BasePartSpec<GridBeamType> {
   variantId: keyof typeof gridBeamVariants
@@ -150,10 +150,6 @@ interface GridBeamSpecOptions {
   materialId?: string
 }
 
-interface BaseCreatorOptions {
-  id?: string
-}
-
 interface GridBeamOptions extends BaseCreatorOptions, GridBeamSpecOptions {}
 
 interface GridBeamXOptions extends BaseCreatorOptions {
@@ -195,22 +191,3 @@ registerSerializer({
   deserializeSpec,
   Creator: GridBeam,
 })
-
-function parseRange(range: any, defaultValue = 0): [number, number] {
-  if (!Array.isArray(range)) {
-    const val = typeof range === 'number' && !Number.isNaN(range) ? range : defaultValue
-    return [0, val]
-  }
-  const r0 = typeof range[0] === 'number' && !Number.isNaN(range[0]) ? range[0] : defaultValue
-  const r1 =
-    typeof range[1] === 'number' && !Number.isNaN(range[1])
-      ? range[1]
-      : range[0] !== undefined && typeof range[0] === 'number' && !Number.isNaN(range[0])
-        ? range[0] + 1
-        : defaultValue + 1
-  return [r0, r1]
-}
-
-function parseNumber(val: any, defaultValue = 0): number {
-  return typeof val === 'number' && !Number.isNaN(val) ? val : defaultValue
-}

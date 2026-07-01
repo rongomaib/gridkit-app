@@ -1,5 +1,18 @@
-import { changeOfBasisTransform, mirrorTransform } from '@villagekit/math'
-import { BasePartCreator, BasePartSpec, registerSerializer } from '@villagekit/part/creator'
+import { changeOfBasisTransform } from '@villagekit/math'
+import {
+  BasePartCreator,
+  BasePartSpec,
+  X_AXIS,
+  Y_AXIS,
+  Z_AXIS,
+  mirrorXTransform,
+  mirrorYTransform,
+  mirrorZTransform,
+  parseNumber,
+  parseRange,
+  partBasis,
+  registerSerializer,
+} from '@villagekit/part/creator'
 import { convert, meter } from '@villagekit/units'
 import type {
   GridPanelFit,
@@ -14,16 +27,8 @@ import { gridPanelVariants } from './variants'
 const getDefaultVariantId = (): keyof typeof gridPanelVariants =>
   'Grid40mm_Hole8mm_Thickness12mm_MaterialPlywood'
 
-const X_AXIS: [number, number, number] = [1, 0, 0]
-const Y_AXIS: [number, number, number] = [0, 1, 0]
-const Z_AXIS: [number, number, number] = [0, 0, 1]
-
-const baseBasis = [X_AXIS, Y_AXIS, Z_AXIS] as const
-const xyToYZTransform = changeOfBasisTransform(baseBasis, [Y_AXIS, Z_AXIS, X_AXIS])
-const xyToXZTransform = changeOfBasisTransform(baseBasis, [X_AXIS, Z_AXIS, Y_AXIS])
-const mirrorXTransform = mirrorTransform('x')
-const mirrorYTransform = mirrorTransform('y')
-const mirrorZTransform = mirrorTransform('z')
+const xyToYZTransform = changeOfBasisTransform(partBasis, [Y_AXIS, Z_AXIS, X_AXIS])
+const xyToXZTransform = changeOfBasisTransform(partBasis, [X_AXIS, Z_AXIS, Y_AXIS])
 
 export class GridPanelSpec extends BasePartSpec<GridPanelType> {
   variantId: keyof typeof gridPanelVariants
@@ -375,23 +380,4 @@ function toSpecHoleVariant(holeVariant: GridPanelHoleVariant) {
     case 'half-reverse':
       return 'half'
   }
-}
-
-function parseRange(range: any, defaultValue = 0): [number, number] {
-  if (!Array.isArray(range)) {
-    const val = typeof range === 'number' && !Number.isNaN(range) ? range : defaultValue
-    return [0, val]
-  }
-  const r0 = typeof range[0] === 'number' && !Number.isNaN(range[0]) ? range[0] : defaultValue
-  const r1 =
-    typeof range[1] === 'number' && !Number.isNaN(range[1])
-      ? range[1]
-      : range[0] !== undefined && typeof range[0] === 'number' && !Number.isNaN(range[0])
-        ? range[0] + 1
-        : defaultValue + 1
-  return [r0, r1]
-}
-
-function parseNumber(val: any, defaultValue = 0): number {
-  return typeof val === 'number' && !Number.isNaN(val) ? val : defaultValue
 }
