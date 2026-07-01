@@ -21,12 +21,14 @@ function CustomGroupGeometry({ spec, onFeatureClick }: { spec: PartMakerSpec; on
       const fn = new Function(
         'THREE', 'mm',
         'widthMm', 'heightMm', 'thicknessMm',
+        'gridUnitMm', 'previewLengthGrids',
         ...paramNames,
         spec.customShapeCode,
       )
       return fn(
         THREE, 1 / 1000,
         spec.widthMm, spec.heightMm, spec.thicknessMm,
+        spec.gridUnitMm, spec.previewLengthGrids,
         ...paramValues,
       ) as THREE.Group
     } catch (err) {

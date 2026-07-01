@@ -143,7 +143,7 @@ const UPDATE_SPEC_TOOL: Anthropic.Tool = {
       customShapeCode: {
         type: 'string',
         description:
-          'JS function body returning a THREE.Group. Receives: THREE, mm (=1/1000), widthMm, heightMm, thicknessMm, plus any names in customParams. Must end with: return group',
+          'JS function body returning a THREE.Group. Receives: THREE, mm (=1/1000), widthMm, heightMm, thicknessMm, gridUnitMm (=40), previewLengthGrids, plus any names in customParams. Must end with: return group',
       },
       customParams: {
         type: 'array',
