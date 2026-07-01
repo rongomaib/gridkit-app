@@ -2,7 +2,7 @@ import type { PartMakerSpec } from '@/lib/partMakerTypes'
 import { GizmoHelper, GizmoViewport, OrbitControls } from '@react-three/drei'
 import { Canvas, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { Suspense, useEffect, useMemo, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { GridHelper } from 'three'
 import { useColorMode } from '@/context/colorMode'
 import { PartMakerSvg } from './PartMakerSvg'
@@ -12,7 +12,32 @@ interface PartMakerPreviewProps {
   onFeatureClick?: (file: string) => void
 }
 
-function CustomGroupGeometry({ spec, onFeatureClick }: { spec: PartMakerSpec; onFeatureClick?: (file: string) => void }) {
+function CameraAutoFit({ group, orbitRef }: { group: THREE.Group | null; orbitRef: React.RefObject<any> }) {
+  const { camera } = useThree()
+  useEffect(() => {
+    if (!group) return
+    const box = new THREE.Box3().setFromObject(group)
+    if (box.isEmpty()) return
+    const sphere = box.getBoundingSphere(new THREE.Sphere())
+    const fov = (camera as THREE.PerspectiveCamera).fov
+    const dist = (sphere.radius / Math.sin(((fov * Math.PI) / 180) / 2)) * 1.5
+    const { x, y, z } = sphere.center
+    camera.position.set(x + dist * 0.55, y - dist * 0.75, z + dist * 0.4)
+    camera.lookAt(x, y, z)
+    camera.updateProjectionMatrix()
+    if (orbitRef.current) {
+      orbitRef.current.target.set(x, y, z)
+      orbitRef.current.update()
+    }
+  }, [group, camera, orbitRef])
+  return null
+}
+
+function CustomGroupGeometry({ spec, onFeatureClick, onGroup }: {
+  spec: PartMakerSpec
+  onFeatureClick?: (file: string) => void
+  onGroup?: (g: THREE.Group | null) => void
+}) {
   const group = useMemo(() => {
     if (!spec.customShapeCode.trim()) return null
     try {
@@ -36,6 +61,10 @@ function CustomGroupGeometry({ spec, onFeatureClick }: { spec: PartMakerSpec; on
       return null
     }
   }, [spec])
+
+  useEffect(() => {
+    onGroup?.(group)
+  }, [group, onGroup])
 
   if (!group) return null
 
@@ -67,13 +96,16 @@ function CameraUp() {
 }
 
 function Scene({ spec, onFeatureClick }: { spec: PartMakerSpec; onFeatureClick?: (file: string) => void }) {
+  const [fittedGroup, setFittedGroup] = useState<THREE.Group | null>(null)
+  const orbitRef = useRef<any>(null)
   return (
     <>
       <CameraUp />
-      <OrbitControls enableDamping />
+      <CameraAutoFit group={fittedGroup} orbitRef={orbitRef} />
+      <OrbitControls ref={orbitRef} enableDamping />
       <ambientLight intensity={2.5} />
       <directionalLight position={[5, 5, 10]} intensity={0.4} />
-      <CustomGroupGeometry spec={spec} onFeatureClick={onFeatureClick} />
+      <CustomGroupGeometry spec={spec} onFeatureClick={onFeatureClick} onGroup={setFittedGroup} />
       <SceneGrid />
       <GizmoHelper alignment="bottom-right" margin={[72, 72]}>
         <GizmoViewport
